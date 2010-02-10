@@ -7,14 +7,18 @@ use \lithium\net\http\Router;
 
 class ThreadTest extends \lithium\test\Unit {
 
-	public function setUp() {}
+	public function setUp() {
+		$this->_context = new MockThreadRenderer();
+		$this->_base = $this->_context->request()->env('base');
+	}
 
 	public function tearDown() {}
 
 	public function testForm() {}
 
 	public function testComments() {
-		$thread = new Thread(array('context' => new MockThreadRenderer()));
+
+		$thread = new Thread(array('context' => $this->_context));
 
 		$data = (object) array(
 			'id' => 1,
@@ -23,9 +27,9 @@ class ThreadTest extends \lithium\test\Unit {
 					'content' => 'one',
 					'comments' => array(
 						(object) array(
-							'content' => 'one-two',
+							'content' => 'one-one',
 							'comments' => array(
-								(object) array('content' => 'one-two-three')
+								(object) array('content' => 'one-one-one')
 							)
 						)
 					)
@@ -34,31 +38,31 @@ class ThreadTest extends \lithium\test\Unit {
 					'content' => 'two',
 					'comments' => array(
 						(object) array(
-							'content' => 'two-two',
+							'content' => 'two-one',
 							'comments' => array(
-								(object) array('content' => 'two-two-three')
+								(object) array('content' => 'two-one-one')
 							)
 						)
 					)
 				)
 			)
 		);
-		$expected = '<ul><li>one : <a href="">comment</a>'
-			. '<ul><li>one-two : <a href="">comment</a>'
-			. '<ul><li>one-two-three : <a href="">comment</a></li></ul>'
+		$expected = '<ul><li>one : <a href="' . $this->_base . '/posts/comment/1/0">reply</a>'
+			. '<ul><li>one-one : <a href="' . $this->_base . '/posts/comment/1/0/0">reply</a>'
+			. '<ul><li>one-one-one : <a href="' . $this->_base . '/posts/comment/1/0/0/0">reply</a></li></ul>'
 			. '</li></ul></li>'
-			. '<li>two : <a href="">comment</a>'
-			. '<form action="/lithium_universe" method="POST">'
+			. '<li>two : <a href="' . $this->_base . '/posts/comment/1/1">reply</a>'
+			. '<form action="' . $this->_base . '" method="POST">'
 			. "\n"
-			. '<textarea name="comments[1][comments][0][comments][1][content]"></textarea>'
+			. '<textarea name="comments[1][comments][1][content]"></textarea>'
 			. "\n"
 			. '<input type="submit" value="save" />'
 			. "\n"
 			. '</form>'
-			. '<ul><li>two-two : <a href="/lithium_universe/posts/comment/1/0/1/0">comment</a>'
-			. '<ul><li>two-two-three : <a href="/lithium_universe/posts/comment/1/0/1/0/0">comment</a>'
+			. '<ul><li>two-one : <a href="' . $this->_base . '/posts/comment/1/1/0">reply</a>'
+			. '<ul><li>two-one-one : <a href="' . $this->_base . '/posts/comment/1/1/0/0">reply</a>'
 			. '</li></ul></li></ul></li></ul>';
-		$result = $thread->comments($data, array('args' => array('0' => 0, '1' => 1)));
+		$result = $thread->comments($data, array('args' => array('0' => 1)));
 		$this->assertEqual($expected, $result);
 	}
 }
