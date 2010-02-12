@@ -10,8 +10,9 @@
 <html>
 <head>
 	<?=$this->html->charset();?>
-	<title>Application > <?=$this->title?></title>
-	<?=$this->html->style('base');?>
+	<title>Lithosphere ❍ <?=$this->title?></title>
+	<?=$this->html->style(array('base', 'sphere'));?>
+	<?=$this->html->script('http://code.jquery.com/jquery-1.4.1.min');?>
 	<?=$this->scripts();?>
 	<?=$this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -31,8 +32,37 @@
 				?>
 			</div>
 		</div>
-		<div id="content">
-			<?=$this->content;?>
+		<div class="width-constraint">
+			<div class="nav timespan">
+				<nav>
+					<span id="timespan-icon" class="icon">Timespan</span>
+					<ul>
+						<li><a href="#">today</a></li>
+						<li><a href="#">yesterday</a></li>
+						<li><a href="#" title="1 week">1wk</a></li>
+						<li><a href="#" title="2 weeks">2wk</a></li>
+						<li><a href="#" title="1 month">1mo</a></li>
+						<li><a href="#" title="1 year">1yr</a></li>
+						<li><a href="#" class="active">all</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div class="nav sources">
+				<nav>
+					<span id="sources-icon" class="icon">Sources</span>
+					<ul>
+						<li><a href="#" class="active">All</a></li>
+						<li><a href="#">Sphere</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div id="content">
+				<div class="article">
+					<article>
+						<?=$this->content;?>
+					</article>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

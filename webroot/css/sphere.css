@@ -1,0 +1,80 @@
+
+.width-constraint {
+	width: 1002px;
+	margin: 0 auto;
+}
+#header {
+	padding: 2em 0 0 2em;
+	margin-bottom: -3em;
+}
+#header h1 {
+	margin: 0;
+	padding: 0;
+}
+#header h1 a {
+	display: block;
+	width: 330px;
+	height: 0;
+	padding: 144px 0 0 0;
+	overflow: hidden;
+	background: url(../img/lithosphere.png) no-repeat top left;
+}
+#header h2 {
+	display: none;
+}
+
+#content {
+	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	padding: 2em;
+	float: left;
+	width: 50em;
+}
+.icon {
+	display: block;
+	width: 28px;
+	height: 0;
+	padding: 22px 0 0 0;
+	overflow: hidden;
+}
+#timespan-icon {
+	background: url(../img/timespan-icon.png) no-repeat center center;
+	float: left;
+}
+#sources-icon {
+	background: url(../img/sources-icon.png) no-repeat center center;
+}
+.nav {
+	background: #f2f2f2;
+	padding: .5em;
+}
+.nav a {
+	color: #a6a6a6;
+}
+.nav a:hover, .nav a.active {
+	color: #404040;
+}
+.nav.timespan {
+	min-width: 300px;
+	float: left;
+	margin: 0 0 0 18em;
+}
+.nav.timespan ul {
+	float: inline;
+	list-style: none;
+	margin: 0;
+	padding: 0 .5em 0 2em;
+}
+.nav.timespan ul li {
+	display: inline;
+	padding: 0 .5em;
+	font-size: .75em;
+}
+
+.nav.sources {
+	float: left;
+	clear: both;
+	width: 15em;
+	margin: 2em 0 0 0;
+}
+
