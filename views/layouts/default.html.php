@@ -27,12 +27,23 @@
 		<div id="header">
 			<h1><?=$this->html->link('Lithium Sphere', '/');?></h1>
 			<h2><?=$this->html->link('power of community', '/');?></h2>
-			<div style="float:right;color: green">
+			<div class="nav account">
 				<?php
 					if ($user = \lithium\storage\Session::read('user')) {
-						echo $user['username'] . ' > ';
+						echo $this->html->image(
+							'http://gravatar.com/avatar/' . md5($user['email']) . '?s=16',
+							array('title' => $user['username'])
+						);
 						echo $this->html->link('logout', array(
 							'controller' => 'users', 'action' => 'logout'
+						));
+					} else {
+						echo $this->html->link('login', array(
+							'controller' => 'users', 'action' => 'login'
+						));
+						echo ' | ';
+						echo $this->html->link('register', array(
+							'controller' => 'users', 'action' => 'register'
 						));
 					}
 				?>
