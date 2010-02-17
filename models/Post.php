@@ -3,6 +3,8 @@
 namespace app\models;
 
 use lithium\util\String;
+use lithium\storage\Session;
+use \app\models\User;
 
 class Post extends \lithium\data\Model {
 
@@ -22,8 +24,18 @@ class Post extends \lithium\data\Model {
 			$params['record']->type = 'post';
 			if (empty($params['record']->created)) {
 				$params['record']->created = date('Y-m-d H:i:s');
+				if ($user = Session::read('user')) {
+					$params['record']->user_id = $user['id'];
+				}
 			}
 			return $chain->next($self, $params, $chain);
+		});
+		static::applyFilter('find', function ($self, $params, $chain) {
+			$result = $chain->next($self, $params, $chain);
+			if (!empty($params['options']['conditions']['id']) && !empty($result->user_id)) {
+				$result->set(array('user' => User::find($result->user_id)));
+			}
+			return $result;
 		});
 	}
 

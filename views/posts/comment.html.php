@@ -1,4 +1,5 @@
 <h2><?=$this->title($post->title);?></h2>
+<p>by: <?=$post->user->username;?>
 <p><?php echo $this->oembed->classify($post->content); ?></p>
 <h3>comments</h3>
 <?php echo $this->thread->form((array) count($post->comments));?>
