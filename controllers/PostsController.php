@@ -44,7 +44,7 @@ class PostsController extends \lithium\action\Controller {
 			$data = $this->request->data;
 			if (!empty($this->request->data['comments']) && $post->comments) {
 				$data['comments'] = Set::merge(
-					Set::reverse($post->comments->data()), $this->request->data['comments']
+					Set::to('array', $post->comments->data()), $this->request->data['comments']
 				);
 			}
 			if ($post->save($data)) {

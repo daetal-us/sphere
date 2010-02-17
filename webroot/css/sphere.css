@@ -26,6 +26,7 @@
 #content {
 	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
 	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	border: 1px solid #efefef;
 	padding: 2em;
 	float: left;
 	width: 50em;
@@ -43,6 +44,7 @@
 }
 #sources-icon {
 	background: url(../img/sources-icon.png) no-repeat center center;
+	cursor: pointer;
 }
 .nav {
 	background: #f2f2f2;

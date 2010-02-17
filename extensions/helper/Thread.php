@@ -2,6 +2,7 @@
 
 namespace app\extensions\helper;
 
+
 class Thread extends \lithium\template\Helper {
 
 	public function form($key, $options = array()) {
@@ -23,11 +24,12 @@ class Thread extends \lithium\template\Helper {
 		));
 	}
 
-	public function  comments($thread, $options = array(), $parent = array()) {
+	public function comments($thread, $options = array(), $parent = array()) {
 		if (empty($thread->comments)) {
 			return null;
 		}
 		$html = $this->_context->helper('html');
+		$oembed = $this->_context->helper('oembed');
 		$defaults = array('args' => null);
 		$options += $defaults;
 		$parts = array();
@@ -39,6 +41,7 @@ class Thread extends \lithium\template\Helper {
 			$reply = $html->link('reply', array(
 				'action' => 'comment', 'args' => array_merge(array($thread->id), $args)
 			));
+			$comment->content = $oembed->classify($comment->content);
 			$row = "{$comment->content} : {$reply}";
 
 			if (isset($options['args']) && $options['args'] == $args) {

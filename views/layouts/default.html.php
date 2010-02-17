@@ -9,12 +9,18 @@
 <!doctype html>
 <html>
 <head>
-	<?=$this->html->charset();?>
-	<title>Lithosphere ❍ <?=$this->title?></title>
-	<?=$this->html->style(array('base', 'sphere'));?>
-	<?=$this->html->script('http://code.jquery.com/jquery-1.4.1.min');?>
-	<?=$this->scripts();?>
-	<?=$this->html->link('Icon', null, array('type' => 'icon'));?>
+	<?php echo $this->html->charset();?>
+	<title>Lithosphere ❍ <?php echo $this->title?></title>
+	<?php echo $this->html->style(array('base', 'sphere'));?>
+	<?php
+		$jQuery = 'http://code.jquery.com/jquery-1.4.1.min';
+		if (\lithium\core\Environment::is('development')) {
+			$jQuery = 'jquery';
+		}
+	?>
+	<?php echo $this->html->script(array($jQuery, 'sphere', 'jquery.oembed-1.0.3.min'));?>
+	<?php echo $this->scripts();?>
+	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
 <body class="app">
 	<div id="container">
@@ -59,11 +65,17 @@
 			<div id="content">
 				<div class="article">
 					<article>
-						<?=$this->content;?>
+						<?php echo $this->content;?>
 					</article>
 				</div>
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			li3Sphere.setup();
+			$('a.oembed').oembed();
+		});
+	</script>
 </body>
 </html>
