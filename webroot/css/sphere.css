@@ -26,6 +26,7 @@
 #content {
 	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
 	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	box-shadow: 0 0 12px rgba(0,0,0,.15);
 	border: 1px solid #efefef;
 	padding: 2em;
 	float: left;
@@ -93,5 +94,21 @@
 }
 .nav.account a {
 	padding: 0 0.5em;
+}
+.oembed-container {
+	display: block;
+	margin: .5em auto;
+	background: #f2f2f2;
+	padding: 1em;
+	width: 425px;
+	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
+	box-shadow: 0 0 12px rgba(0,0,0,.15);
+}
+.oembed-container .source {
+	font-size: 0.65em;
+	color: #999;
+	text-align: right;
+	display: block;
 }
 

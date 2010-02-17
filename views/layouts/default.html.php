@@ -18,7 +18,7 @@
 			$jQuery = 'jquery';
 		}
 	?>
-	<?php echo $this->html->script(array($jQuery, 'sphere', 'jquery.oembed-1.0.3.min'));?>
+	<?php echo $this->html->script(array($jQuery, 'sphere', 'jquery.oembed'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -85,7 +85,11 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			li3Sphere.setup();
-			$('a.oembed').oembed();
+			$('a.oembed').oembed(null, {
+				embedMethod: 'annotate',
+				maxWidth: 425,
+				maxHeight: 425
+			});
 		});
 	</script>
 </body>
