@@ -10,7 +10,7 @@
 <html>
 <head>
 	<?php echo $this->html->charset();?>
-	<title>Lithosphere ❍ <?php echo $this->title?></title>
+	<title>Sphere ❍ <?php echo $this->title?></title>
 	<?php echo $this->html->style(array('base', 'sphere'));?>
 	<?php
 		$jQuery = 'http://code.jquery.com/jquery-1.4.1.min';
@@ -25,7 +25,7 @@
 <body class="app">
 	<div id="container">
 		<div id="header">
-			<h1>Lithosphere</h1>
+			<h1><?=$this->html->link('Lithium Sphere', '/');?></h1>
 			<h2><?=$this->html->link('power of community', '/');?></h2>
 			<div style="float:right;color: green">
 				<?php
