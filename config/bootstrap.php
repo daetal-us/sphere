@@ -54,10 +54,28 @@ require __DIR__ . '/bootstrap/libraries.php';
  * it intercepts any writes where the `'expires'` key is set in the options array.  When creating a
  * new application, it is suggested that you change the value of `'key'` below.
  */
-// use \lithium\storage\Session;
-//
-// Session::config(array(
-// 	'default' => array('adapter' => 'Php')
-// ));
+use \lithium\storage\Session;
+
+Session::config(array(
+	'default' => array('adapter' => 'Php')
+));
+
+use \lithium\security\Auth;
+
+Auth::config(array(
+	'user' => array(
+		'adapter' => 'lithium\security\auth\adapter\Form',
+		'model' => 'app\models\User',
+		'query' => 'login',
+		'fields' => array('username', 'password')
+	)
+));
+
+// use \lithium\action\Dispatcher;
+// 
+// Dispatcher::applyFilter('_call', function($self, $params, $chain) {
+// 	$result = Auth::check('user', $params['request']);
+// 	return $chain->next($self, $params, $chain);
+// });
 
 ?>

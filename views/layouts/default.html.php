@@ -20,6 +20,16 @@
 		<div id="header">
 			<h1>Lithosphere</h1>
 			<h2><?=$this->html->link('power of community', '/');?></h2>
+			<div style="float:right;color: green">
+				<?php
+					if ($user = \lithium\storage\Session::read('user')) {
+						echo $user['username'] . ' > ';
+						echo $this->html->link('logout', array(
+							'controller' => 'users', 'action' => 'logout'
+						));
+					}
+				?>
+			</div>
 		</div>
 		<div id="content">
 			<?=$this->content;?>

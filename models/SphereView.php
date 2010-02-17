@@ -11,16 +11,33 @@ class SphereView extends \lithium\data\Model {
 			'id' => '_design/all',
 			'language' => 'javascript',
 			'views' => array(
-				'latest' => array(
+				'posts' => array(
 					'map' => 'function(doc) {
-						emit(doc.created, doc);
+						if (doc.type == "post") {
+							emit(doc.created, doc);
+						}
 					}'
 				),
-				'popular' => array(
+				'users' => array(
 					'map' => 'function(doc) {
-						emit(doc.points, doc);
+						if (doc.type == "user") {
+							emit(doc.created, doc);
+						}
 					}'
 				),
+			),
+		),
+		'user' => array(
+			'id' => '_design/user',
+			'language' => 'javascript',
+			'views' => array(
+				'by_username' => array(
+					'map' => 'function(doc) {
+						if(doc.type == "user") {
+							emit(doc.username, doc);
+						}
+					}'
+				)
 			)
 		)
 	);
