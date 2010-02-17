@@ -39,7 +39,7 @@ class User extends \lithium\data\Model {
 				'key' => json_encode($data['conditions']['username'])
 			)
 		));
-		if ($data['conditions']['password'] === $result->password) {
+		if (!empty($result) && $data['conditions']['password'] === $result->password) {
 			return $result;
 		}
 		return false;

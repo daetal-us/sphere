@@ -34,6 +34,7 @@ class UsersController extends \lithium\action\Controller {
 		if (!empty($this->request->data)) {
 			$user = User::create($this->request->data);
 			if ($user->save()) {
+				Auth::set('user', $user);
 				$this->redirect(array(
 					'controller' => 'users', 'action' => 'view',
 					'args' => array($user->id)
