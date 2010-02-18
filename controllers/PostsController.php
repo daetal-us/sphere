@@ -9,7 +9,7 @@ class PostsController extends \lithium\action\Controller {
 
 	public function index() {
 		$posts = Post::all(array(
-			'conditions' => array('design' => 'all', 'view' => 'latest')
+			'conditions' => array('design' => 'all', 'view' => 'posts')
 		));
 		return compact('posts');
 	}
