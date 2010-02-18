@@ -18,7 +18,7 @@ class Post extends \lithium\data\Model {
 		'created' => array('type' => 'date'),
 	);
 
-	public static function __init($options = array()) {
+	public static function __init(array $options = array()) {
 		parent::__init($options);
 		static::applyFilter('save', function ($self, $params, $chain) {
 			$params['record']->type = 'post';

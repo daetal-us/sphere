@@ -21,7 +21,7 @@ class UsersController extends \lithium\action\Controller {
 	}
 
 	public function logout() {
-		Session::delete('user');
+		Auth::clear('user');
 		$this->redirect(array('action' => 'login'));
 	}
 

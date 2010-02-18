@@ -64,7 +64,7 @@ use \lithium\security\Auth;
 
 Auth::config(array(
 	'user' => array(
-		'adapter' => 'lithium\security\auth\adapter\Form',
+		'adapter' => 'Form',
 		'model' => 'app\models\User',
 		'query' => 'login',
 		'fields' => array('username', 'password')
