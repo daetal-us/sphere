@@ -13,7 +13,7 @@
 	<title>Sphere ❍ <?php echo $this->title?></title>
 	<?php echo $this->html->style(array('base', 'sphere'));?>
 	<?php
-		$jQuery = 'http://code.jquery.com/jquery-1.4.1.min';
+		$jQuery = 'http://code.jquery.com/jquery-1.4.1.min.js';
 		if (\lithium\core\Environment::is('development')) {
 			$jQuery = 'jquery';
 		}
