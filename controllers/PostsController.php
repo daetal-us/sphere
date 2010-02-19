@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use \app\models\Post;
 use \lithium\util\Set;
+use \lithium\storage\Session;
 
 class PostsController extends \lithium\action\Controller {
 
@@ -20,6 +21,11 @@ class PostsController extends \lithium\action\Controller {
 	}
 
 	public function add() {
+		if (!$user = Session::read('user')) {
+			$this->redirect(array(
+				'controller' => 'users', 'action' => 'login'
+			));
+		}
 		if (!empty($this->request->data)) {
 			$post = Post::create($this->request->data);
 			if ($post->save()) {

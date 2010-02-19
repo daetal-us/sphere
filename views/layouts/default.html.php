@@ -11,14 +11,7 @@
 <head>
 	<?php echo $this->html->charset();?>
 	<title>Sphere ❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('base', 'sphere'));?>
-	<?php
-		$jQuery = 'http://code.jquery.com/jquery-1.4.1.min.js';
-		if (\lithium\core\Environment::is('development')) {
-			$jQuery = 'jquery';
-		}
-	?>
-	<?php echo $this->html->script(array($jQuery, 'sphere', 'jquery.oembed'));?>
+	<?php echo $this->html->style(array('lithium', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -82,6 +75,13 @@
 			</div>
 		</div>
 	</div>
+	<?php echo $this->html->script(array(
+		'http://code.jquery.com/jquery-1.4.1.min.js',
+		"lithium_site",
+		"sphere",
+		"jquery.oembed",
+		"http://lithify.me/js/rad.cli.js",
+	)); ?>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			li3Sphere.setup();
@@ -90,6 +90,7 @@
 				maxWidth: 425,
 				maxHeight: 425
 			});
+			RadCli.setup();
 		});
 	</script>
 </body>

@@ -2,8 +2,8 @@
 
 namespace app\models;
 
-use lithium\util\String;
-use lithium\storage\Session;
+use \lithium\util\String;
+use \lithium\storage\Session;
 use \app\models\User;
 
 class Post extends \lithium\data\Model {
