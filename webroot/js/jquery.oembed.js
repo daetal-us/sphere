@@ -63,7 +63,16 @@
 				var oembedContainer = this.getOembedContainer(container, oembed);
 				oembedContainer.html(oembed.code + '<span class="source">' + container.html() +
 				'</span>');
-				container.replaceWith(oembedContainer);
+				container.addClass('oembed-link').click(function() {
+					if ($(this).hasClass("open")) {
+						return true;
+					}
+					var oembedContainer = $(this).next();
+					$(oembedContainer).show();
+					$(this).addClass("open");
+					return false;
+				});
+				container.after(oembedContainer.hide());
 				break;
 		}
 	}

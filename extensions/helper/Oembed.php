@@ -16,7 +16,7 @@ class Oembed extends \lithium\template\Helper {
 	public function classify($string = null, $options = array()) {
 		$defaults = array(
 			'class' => 'oembed',
-			'title' => 'oEmbed'
+			'title' => 'View oEmbed Media'
 		);
 
 		if (!empty($options) && is_string($options)) {
