@@ -3,13 +3,16 @@
 	margin: 0 auto;
 }
 #header {
-	padding: 4em 0 0 2em;
-	margin-bottom: -3em;
+	padding: 8em 0 0 2em;
 	position: relative;
 }
 #header h1 {
 	margin: 0;
 	padding: 0;
+	position: absolute;
+	left: 1em;
+	top: 1.5em;
+	z-index: 10;
 }
 #header h1 a {
 	display: block;
@@ -36,13 +39,15 @@
 #content {
 	float: none;
 	margin: 0 auto 2em;
+	clear: both;
 }
 .new-post {
 	display: block;
+	float:right;
 	background: #f2f2f2;
 	padding: 0.5em;
-	margin: 2em auto 0 auto;
-	font-size: 2em;
+	margin-right: 7.5em;
+	font-size: 1.5em;
 	border-bottom: none;
 	width: 6em;
 	text-align: center;
@@ -115,6 +120,7 @@
 }
 .oembed-link {
 	background: url(../img/icons/oembed.png) no-repeat top right;
+	padding-top: 2px;
 	padding-right: 20px;
 	border-bottom: none;
 }
@@ -123,17 +129,18 @@
 }
 .oembed-container {
 	display: block;
-	margin: .5em auto;
+	margin: 1.5em auto;
 	background: #f2f2f2;
-	padding: 1em;
+	border: 1px solid #e6e6e6;
+	padding: 1em 1em .5em 1em;
 	width: 425px;
-	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
-	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
-	box-shadow: 0 0 12px rgba(0,0,0,.15);
+	-moz-box-shadow: 2px 2px 12px rgba(0,0,0,.15);
+	-webkit-box-shadow: 2px 2px 12px rgba(0,0,0,.15);
+	box-shadow: 2px 2px 12px rgba(0,0,0,.15);
 }
 .oembed-container .source {
-	font-size: 0.65em;
-	color: #999;
+	font-size: 0.85em;
+	color: #bbb;
 	text-align: right;
 	display: block;
 }
@@ -151,6 +158,10 @@ ul.posts li.post {
 	clear: both;
 }
 
+ul.posts li.post:last-child {
+	margin-bottom: 3em;
+}
+
 li.post img.gravatar {
 	float: left;
 	padding: .5em;
@@ -159,6 +170,28 @@ li.post img.gravatar {
 }
 
 li.post h2 {
-	margin-top: 0;
-	padding-top: 0.25em;
+	margin: 0;
+	padding-top: 0.65em;
+	font-size: 1.75em;
+}
+li.post h2 a {
+	border-bottom: none;
+}
+
+li.post cite, li.post .comments {
+	font-size: .75em;
+	color: #ccc;
+	padding:.5em 1.75em .25em 2em;
+	background: url(../img/icons/dummy.png) no-repeat center left;
+	display: block;
+	float: left;
+}
+li.post .comments.none {
+	background-image: url(../img/icons/comments-disabled.png);
+}
+li.post .comments.one {
+	background-image: url(../img/icons/comment.png);
+}
+li.post .comments.many {
+	background-image: url(../img/icons/comments.png);
 }
