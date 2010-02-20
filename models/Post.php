@@ -32,8 +32,12 @@ class Post extends \lithium\data\Model {
 		});
 		static::applyFilter('find', function ($self, $params, $chain) {
 			$result = $chain->next($self, $params, $chain);
-			if (!empty($params['options']['conditions']['id']) && !empty($result->user_id)) {
+			if (!empty($params['options']['conditions']['id'])) {
 				$result->set(array('user' => User::find($result->user_id)));
+			} else {
+				while ($row = $result->next()) {
+					$row->set(array('user' => User::find($row->user_id)));
+				}
 			}
 			return $result;
 		});

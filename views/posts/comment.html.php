@@ -1,4 +1,4 @@
-<h2><?=$this->title($post->title);?></h2>
+<h1><?=$this->title($post->title);?></h1>
 <p>by: <?=$post->user->username;?>
 <p><?php echo $this->oembed->classify($post->content); ?></p>
 <h3>comments</h3>

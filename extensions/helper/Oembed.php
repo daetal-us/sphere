@@ -2,8 +2,6 @@
 
 namespace app\extensions\helper;
 
-use \lithium\util\String;
-
 class Oembed extends \lithium\template\Helper {
 
 	/**
@@ -15,8 +13,7 @@ class Oembed extends \lithium\template\Helper {
 	 */
 	public function classify($string = null, $options = array()) {
 		$defaults = array(
-			'class' => 'oembed',
-			'title' => 'View oEmbed Media'
+			'class' => 'oembed'
 		);
 
 		if (!empty($options) && is_string($options)) {
@@ -27,7 +24,7 @@ class Oembed extends \lithium\template\Helper {
 
 		$string = preg_replace(
 			'@(https?://([-\w\.]+)+(:\d+)?(/([-\w/_\.]*(#?)([-\w]+)(\?\S+)?)?)?)@',
-			'<a href="$1" title="'.$title.'" class="'.$class.'">$1</a>',
+			'<a href="$1" class="'.$class.'">$1</a>',
 			$string
 		);
 

@@ -65,7 +65,7 @@
 				</ul>
 			</nav>
 		</div>
-		<?php echo $this->html->link('post a note', array('controller' => 'posts', 'action' => 'add'), array('class' => 'new-post')); ?>
+		<?php echo $this->html->link('contribute', array('controller' => 'posts', 'action' => 'add'), array('class' => 'new-post')); ?>
 		<div id="content">
 			<div class="article">
 				<article>

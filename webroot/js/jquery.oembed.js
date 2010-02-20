@@ -63,6 +63,9 @@
 				var oembedContainer = this.getOembedContainer(container, oembed);
 				oembedContainer.html(oembed.code + '<span class="source">' + container.html() +
 				'</span>');
+				container.attr({
+					title: "View oEmbed media"
+				});
 				container.addClass('oembed-link').click(function() {
 					if ($(this).hasClass("open")) {
 						return true;
