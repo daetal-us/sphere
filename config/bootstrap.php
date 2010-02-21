@@ -43,6 +43,13 @@ if (!include LITHIUM_LIBRARY_PATH . '/lithium/core/Libraries.php') {
 require __DIR__ . '/bootstrap/libraries.php';
 
 /**
+ * This file defines bindings between classes which are triggered during the request cycle, and
+ * allow the framework to automatically configure its environmental settings. You can add your own
+ * behavior and modify the dispatch cycle to suit your needs.
+ */
+require __DIR__ . '/bootstrap/action.php';
+
+/**
  * This file contains your application's globalization rules, including inflections,
  * transliterations, localized validation, and how localized text should be loaded. Uncomment this
  * line if you plan to globalize your site.
