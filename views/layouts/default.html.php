@@ -76,7 +76,6 @@
 	</div>
 	<?php echo $this->html->script(array(
 		'http://code.jquery.com/jquery-1.4.1.min.js',
-		"lithium_site",
 		"sphere",
 		"jquery.oembed",
 		"http://lithify.me/js/rad.cli.js",
@@ -90,6 +89,14 @@
 				maxHeight: 425
 			});
 			RadCli.setup();
+
+			// Post Comment Links
+			$("a.post-comment").click(function() {
+				$("#add-comment").animate({
+					opacity: "toggle"
+				});
+				return false;
+			});
 		});
 	</script>
 </body>

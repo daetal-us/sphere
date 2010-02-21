@@ -40,22 +40,30 @@ class Thread extends \lithium\template\Helper {
 
 			$reply = $html->link('reply', array(
 				'action' => 'comment', 'args' => array_merge(array($thread->id), $args)
-			));
+			), array('class' => 'post-comment-reply', 'title' => 'reply to this comment'));
 			$comment->content = $oembed->classify($comment->content);
-			$row = "{$comment->content} : {$reply}";
+
+			$style =	'style="background-image:url(http://gravatar.com/avatar/' .
+						$comment->user->email . '?s=16);"';
+			$name = $comment->user->username;
+			$date = date("F j, Y, g:i a T", strtotime($comment->created));
+			$author = "<b>{$name}</b> said";
+			$author = "<span class=\"post-comment-author\" title=\"{$date}\" $style>{$author}</span>";
+
+			$row = "{$reply} {$author} <div class=\"post-comment-content\">{$comment->content}</div>";
 
 			if (isset($options['args']) && $options['args'] == $args) {
 				$next = (!empty($comment->comments) ? count($comment->comments) : 0);
 				$row .= $this->form(array_merge($args, array($next)));
 			}
 			$row .= $this->comments($comment, $options, $args);
-			$parts[] = "<li>{$row}</li>";
+			$parts[] = "<li class=\"comment\">{$row}</li>";
 		}
 		if (empty($parts)) {
 			return null;
 		}
 		$list = join("", $parts);
-		return "<ul>{$list}</ul>";
+		return "<ul class=\"comments\">{$list}</ul>";
 	}
 }
 ?>

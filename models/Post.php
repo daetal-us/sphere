@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use \lithium\util\Set;
 use \lithium\util\String;
 use \lithium\storage\Session;
 use \app\models\User;
@@ -15,6 +16,7 @@ class Post extends \lithium\data\Model {
 	protected $_schema = array(
 		'title' => array('type' => 'string', 'length' => 250),
 		'content' => array('type' => 'text'),
+		'comment_count' => array('type' => 'numeric', 'default' => 0),
 		'created' => array('type' => 'date'),
 	);
 
@@ -44,25 +46,50 @@ class Post extends \lithium\data\Model {
 	}
 
 	public static function comment($params) {
+		$default = array(
+			'author' => Session::read('user')
+		);
+		$params += $default;
 		extract($params);
-		if (empty($record->comments)) {
-			$record->comments = array();
+		if (empty($post->comments)) {
+			$post->comments = array();
 		}
-		if (!empty($data['comment'])) {
-			$comment_id = (!isset($data['comment_id']))
-				? count($record->comments)
-				: $data['comment_id'] . (count($record->comments) - 1);
-			$comments = array(
-				'id' => $comment_id,
-				'content' => $data['comment']
+		if(!empty($data['comments'])) {
+			if (!empty($author)) {
+				$data = static::commentMeta($data, $author);
+			}
+		}
+		if (!empty($data['comments']) && $post->comments) {
+			$data['comments'] = Set::merge(
+				Set::to('array', $post->comments->data()),
+				$data['comments']
 			);
 		}
+		return $post->save($data);
+	}
 
-		if (!empty($comments)) {
-			$comments = (!empty($record->comments))
-				? $record->comments->data() + $comments : $comments;
+	/**
+	 * This method walks through a multidimensional array of data seeking relevant content key and
+	 * appending author (user) data, and created date to new (assumed posted) comment.
+	 *
+	 * @param array $data
+	 * @param array $author data from user authenticated session.
+	 */
+	public static function commentMeta($data = array(), $author) {
+		if (!empty($data)) {
+			$key = key($data);
+			if (array_key_exists('content', $data)) {
+				$data['user'] = array(
+					'id' => $author['id'],
+					'username' => $author['username'],
+					'email' => md5($author['email'])
+				);
+				$data['created'] = date('Y-m-d H:i:s');
+			} else {
+				$data[$key] = static::commentMeta($data[$key], $author);
+			}
 		}
-		return $comments;
+		return $data;
 	}
 }
 

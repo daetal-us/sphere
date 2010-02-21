@@ -35,14 +35,20 @@ class Post extends \lithium\template\Helper {
 					'controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id)
 				)) . '</h2>';
 
-				$author = 	'<cite class="author">submitted by <strong>' .
-								$post->user->username . '</strong></cite>';
+				$author = 	'<span class="post-author">submitted by <b>' . $post->user->username .
+								'</b></span>';
 
 				$count = (empty($post->comments) ? 0 : $post->comments->count());
 				$commentsClass = ($count > 0) ? (($count > 1) ? 'many' : 'one') : 'none';
-				$comments = 	'<span class="comments ' . $commentsClass . '">' .
-									(($count < 1) ? 'no' : $count) . ' comment' .
-									(($count !== 1) ? 's' : '') . '</span>';
+				$commentsText = 	(($count < 1) ? 'no' : $count) . ' comment' .
+										(($count !== 1) ? 's' : '');
+				$comments = $html->link(
+					$commentsText,
+					array(
+						'controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id),
+					),
+					array('class' => 'comments ' . $commentsClass)
+				);
 
 				$content .= '<li class="post">' . $image . $heading . $author . $comments;
 			}

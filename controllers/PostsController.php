@@ -47,13 +47,14 @@ class PostsController extends \lithium\action\Controller {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
 		if (!empty($this->request->data)) {
-			$data = $this->request->data;
-			if (!empty($this->request->data['comments']) && $post->comments) {
-				$data['comments'] = Set::merge(
-					Set::to('array', $post->comments->data()), $this->request->data['comments']
-				);
+
+			if (!$user = Session::read('user')) {
+				$this->redirect(array(
+					'controller' => 'users', 'action' => 'login'
+				));
 			}
-			if ($post->save($data)) {
+			$data = $this->request->data;
+			if (Post::comment(compact('post', 'data'))) {
 				$this->redirect(array(
 					'controller' => 'posts', 'action' => 'comment',
 					'args' => array($post->id)

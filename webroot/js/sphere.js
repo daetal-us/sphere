@@ -20,6 +20,7 @@ var li3Sphere = {
 	setup: function(options) {
 		$.extend(this.options, options);
 		this.setupSourcesMenu();
+		//this.setupCommentThreads();
 		return this;
 	},
 
@@ -55,6 +56,18 @@ var li3Sphere = {
 		}, 250, function() {
 			$('.nav.sources').toggleClass('closed');
 		})
+	},
 
+	setupCommentThreads: function() {
+		$('.post > ul.comments > li.comment > ul.comments').each(function(i, e) {
+			var reply = $(e).siblings('a.post-comment-reply');
+			var viewThread = $('<a class="post-comment-thread">thread</a>').click(function() {
+				$(this).siblings('ul.comments').animate({
+					opacity: "toggle"
+				});
+			});
+			reply.after(viewThread);
+			$(e).hide();
+		})
 	}
 }
