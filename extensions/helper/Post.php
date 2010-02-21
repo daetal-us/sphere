@@ -38,7 +38,7 @@ class Post extends \lithium\template\Helper {
 				$author = 	'<span class="post-author">submitted by <b>' . $post->user->username .
 								'</b></span>';
 
-				$count = (empty($post->comments) ? 0 : $post->comments->count());
+				$count = (empty($post->comment_count) ? 0 : $post->comment_count);
 				$commentsClass = ($count > 0) ? (($count > 1) ? 'many' : 'one') : 'none';
 				$commentsText = 	(($count < 1) ? 'no' : $count) . ' comment' .
 										(($count !== 1) ? 's' : '');

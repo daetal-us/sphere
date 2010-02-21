@@ -78,12 +78,14 @@
 		'http://code.jquery.com/jquery-1.4.1.min.js',
 		"sphere",
 		"jquery.oembed",
+		"pretty.date",
+		"showdown/showdown",
 		"http://lithify.me/js/rad.cli.js",
 	)); ?>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			li3Sphere.setup();
-			$('a.oembed').oembed(null, {
+			$('.post-content a, .post-comment-content a').oembed(null, {
 				embedMethod: 'annotate',
 				maxWidth: 425,
 				maxHeight: 425

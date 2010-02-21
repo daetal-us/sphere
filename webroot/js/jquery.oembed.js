@@ -61,8 +61,8 @@
 				break;
 			case "annotate":
 				var oembedContainer = this.getOembedContainer(container, oembed);
-				oembedContainer.html(oembed.code + '<span class="source">' + container.html() +
-				'</span>');
+				oembedContainer.html(oembed.code + '<cite class="source">' + container.html() +
+				'</cite>');
 				container.attr({
 					title: "View oEmbed media"
 				});

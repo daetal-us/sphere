@@ -19,7 +19,7 @@ class Thread extends \lithium\template\Helper {
 		return join("\n", array(
 			$form->create(),
 			$form->textarea("comments[{$next}]{$children}[content]"),
-			$form->submit('save'),
+			$form->submit('post comment'),
 			$form->end()
 		));
 	}
@@ -38,19 +38,34 @@ class Thread extends \lithium\template\Helper {
 			$comment->id = $thread->id;
 			$args = array_merge($parent, (array) $key);
 
-			$reply = $html->link('reply', array(
+			$reply = $html->link('<span>reply</span>', array(
 				'action' => 'comment', 'args' => array_merge(array($thread->id), $args)
-			), array('class' => 'post-comment-reply', 'title' => 'reply to this comment'));
-			$comment->content = $oembed->classify($comment->content);
+			), array(
+				'class' => 'post-comment-reply',
+				'title' => 'reply to this comment',
+				'escape' => false
+			));
+
+			$comment->content = 	'<pre class="markdown">' .
+										$oembed->classify($comment->content, array('markdown' => true)) .
+			 							'</pre>';
 
 			$style =	'style="background-image:url(http://gravatar.com/avatar/' .
 						$comment->user->email . '?s=16);"';
 			$name = $comment->user->username;
-			$date = date("F j, Y, g:i a T", strtotime($comment->created));
-			$author = "<b>{$name}</b> said";
-			$author = "<span class=\"post-comment-author\" title=\"{$date}\" $style>{$author}</span>";
 
-			$row = "{$reply} {$author} <div class=\"post-comment-content\">{$comment->content}</div>";
+			$timestamp = strtotime($comment->created);
+			$date = date("F j, Y, g:i a T", $timestamp);
+			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">{$date}" .
+						"<span class=\"timestamp\">{$timestamp}</span></span>";
+
+			$author = "<b>{$name}</b>";
+			$author = "<span class=\"post-comment-author\" $style>{$author}</span>";
+
+			$meta = $author . $time;
+
+			$row = 	"<div class=\"meta aside\"><aside>{$meta}<aside></div> {$reply}" .
+						"<div class=\"post-comment-content\">{$comment->content}</div>";
 
 			if (isset($options['args']) && $options['args'] == $args) {
 				$next = (!empty($comment->comments) ? count($comment->comments) : 0);

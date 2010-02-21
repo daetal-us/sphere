@@ -27,10 +27,10 @@
 	display: none;
 }
 #content {
-	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
-	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
-	box-shadow: 0 0 12px rgba(0,0,0,.15);
-	border: 1px solid #efefef;
+	-moz-box-shadow: 0 0 12px rgba(0,0,0,.05);
+	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.05);
+	box-shadow: 0 0 12px rgba(0,0,0,.05);
+	border: 1px solid rgba(0,0,0,.05);
 	padding: 2em;
 	float: left;
 	width: 50em;
@@ -40,6 +40,25 @@
 	float: none;
 	margin: 0 auto 2em;
 	clear: both;
+}
+.article {
+	padding-bottom: 1em;
+}
+.markdown-help {
+	margin: 1em 0 0 0;
+	padding: 2em 2em 1em;
+	background: rgba(0,0,0,.05);
+	font-size: 0.85em;
+}
+.markdown-help h4 {
+	margin-top: 0;
+}
+blockquote {
+	font-size: 0.85em;
+	color: rgba(0,0,0,.5);
+}
+blockquote:before, blockquote:after {
+	display: none;
 }
 .new-post {
 	display: block;
@@ -51,6 +70,10 @@
 	border-bottom: none;
 	width: 6em;
 	text-align: center;
+}
+
+span.timestamp {
+	display: none;
 }
 
 /** Icons **/
@@ -136,9 +159,6 @@
 .oembed-container {
 	display: block;
 	margin: 1.5em auto;
-	background: #f2f2f2;
-	background:rgba(0,0,0,.05);
-	border: 1px solid rgba(0,0,0,.05);
 	padding: 1em 1em .5em 1em;
 	width: 425px;
 	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
@@ -147,7 +167,7 @@
 	background: rgba(0,0,0,.03);
 }
 .oembed-container .source {
-	font-size: 1em;
+	font-size: 0.75em;
 	color: #bbb;
 	color: rgba(0,0,0,.2);
 	text-align: right;
@@ -212,19 +232,28 @@ li.post .comments.many {
 }
 
 /** Post **/
+.post {
+	position: relative;
+}
 .post h1 {
 	margin: 0;
 }
-.post .post-author, .post .post-date {
+div.post .post-author, div.post .post-date {
 	color: #999;
 	font-size: 0.85em;
 	display: block;
 	padding: 0.5em 1.5em 0.25em 2em;
 	background: url(../img/icons/dummy.png) no-repeat center left;
-	float: left;
+	position: absolute;
+	top: -2em;
+	right: -2em;
 }
-.post .post-date {
-	background-image: url(../img/icons/timespan.png);
+div.post .post-author {
+	right: 5em;
+}
+div.post .post-date {
+	background: none;
+	padding-left: 1.5em;
 }
 .post .post-content {
 	clear: both;
@@ -236,62 +265,105 @@ li.post .comments.many {
 }
 .post .post-comment {
 	float: right;
-	display: block;
-	padding: 0.75em 2em 0.5em;
 	border-bottom: none;
+	font-size: 1em;
+	padding-right:1em;
+	background: #f2f2f2;
+}
+.post .post-comment span {
+	display: block;
+	padding: 0.75em 2em 0.5em 1.5em;
 	background: url(../img/icons/balloon.png) no-repeat center right;
-	font-size: 0.85em;
 }
 /** Comment Thread **/
 .post > ul.comments {
-	font-size: 0.85em;
+	font-size: 1em;
 }
 ul.comments {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
+ul.comments li.comment .post-comment-content:after {
+	content: "";
+	display: block;
+	clear: both;
+	height: 1px;
+}
 ul.comments li.comment {
 	clear: both;
 	display: block;
-	border-top: 1px solid rgba(0,0,0,.05);
-	border-left: 1px solid rgba(0,0,0,.05);
-	padding: 0.5em 0 0 1em;
-	margin: 0 0 0 0.5em;
+	padding: 1em 0 0 1em;
 }
-li.comment li.comment li.comment li.comment li.comment li.comment li.comment li.comment li.comment
-li.comment li.comment li.comment li.comment li.comment li.comment li.comment li.comment {
+li.comment {
+	border: 1px solid rgba(0,0,0,.05);
+	border-width: 1px 0 0 1px;
+	position: relative;
+}
+li.comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment
+ .comment .comment .comment .comment .comment .comment {
 	color: white;
 }
-ul.comments li.comment:hover li.comment {
-	background:rgba(0,0,0,.03);
+ul.comments li.comment .comment {
+
 }
-ul.comments li.comment:hover {
-	background: white !important;
+li.comment.focused {
+	background: #f8f8f8;
+	border-width: 1px 1px 0 1px;
 }
+li.comment.focused .comment {
+	background: rgba(7,206,255,.04);
+	background: rgba(0,0,0,.03);
+}
+/*li.comment.focused .comment:nth-child(even) {
+	background:rgba(255,0,255,.04) !important;
+}*/
 li.comment .post-comment-reply, li.comment .post-comment-thread {
 	float: right;
 	display: block;
-	padding: 2em 0 0 0;
-	width:2em;
-	height:0;
-	overflow: hidden;
-	margin-right: 0.5em;
-	background: url(../img/icons/balloon-plus.png) no-repeat center center;
+	display:none;
+	padding: 0 1em .5em 1em;
 	border-bottom: none;
 	font-style: italic;
-	font-size: 0.85em;
+	font-size: .85em;
+	background: #f8f8f8;
+}
+li.comment .post-comment-reply span, li.comment .post-comment-thread span {
+	display: block;
+	padding: 0.5em 2em .25em 0;
+	background: url(../img/icons/balloon-plus.png) no-repeat center right;
+}
+li.comment .post-comment-reply {
+	float: none;
+	position:absolute;
+	top: -1px;
+	right: -6.1em;
+	border: 1px solid rgba(0,0,0,.05);
+	border-width: 1px 1px 1px 0;
 }
 li.comment .post-comment-thread {
 	background-image: url(../img/icons/comments.png);
 }
-li.comment .post-comment-author {
-	display:block;
+li.comment .meta {
+	display: block;
+	float: left;
+	padding: 0.25em 1em;
+	margin: -1em 1em 1em -1em;
+	background: rgba(0,0,0,.02);
 	color: rgba(0,0,0,.25);
-	padding: 0.35em 1.5em 0.25em 2.25em;
+	text-align: center;
+}
+li.comment .post-comment-author, li.comment .post-comment-created {
+	font-size: 0.75em;
+}
+li.comment .post-comment-author {
+	padding: .5em 0 .5em 2.25em;
 	background: url(../img/icons/dummy.png) no-repeat center left;
 	font-style: italic;
-	font-size: 0.85em;
+	font-size: 0.75em;
+}
+li.comment .post-comment-created {
+	display: block;
 }
 li.comment .icon.created {
 	background: url(../img/icons/timespan.png) no-repeat center center;
@@ -300,15 +372,18 @@ li.comment .icon.created {
 	float: left;
 }
 li.comment .post-comment-content {
-	padding: 0.5em 0;
+	padding-right: 1em;
 }
-
+#add-comment form, li.comment form {
+	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
+	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
+	box-shadow: inset 0 0 12px rgba(0,0,0,.15);
+	border: 1px solid rgba(0,0,0,.05);
+	background: rgba(0,0,0,.03);
+	position: relative;
+}
 li.comment form {
 	margin: 1em;
 	position: relative;
 	top: -1em;
-	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	background: rgba(0,0,0,.03);
 }

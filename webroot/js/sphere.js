@@ -12,6 +12,13 @@ var li3Sphere = {
 	options: {},
 
 	/**
+	 * Reserved for Showdown object
+	 * @param object Showdown
+	 * @see http://attacklab.net/showdown/
+	 */
+	Showdown: {},
+
+	/**
 	 * Setup method assigns `options` and performs some other tasks needed to startup.
 	 *
 	 * @param object options
@@ -21,7 +28,42 @@ var li3Sphere = {
 		$.extend(this.options, options);
 		this.setupSourcesMenu();
 		//this.setupCommentThreads();
+		this.setupShowdownHelp();
+		this.setupShowdown();
+		this.setupComments();
+		this.cleanDates();
 		return this;
+	},
+
+	/**
+	 * Setup Showdown and convert applicable element contents.
+	 * @return object this
+	 */
+	setupShowdown: function() {
+		this.Showdown = new Showdown.converter();
+		$('pre.markdown').each(function(i,e) {
+			$(e).replaceWith(
+				li3Sphere.Showdown.makeHtml($(e).text())
+			);
+		});
+		return this;
+	},
+
+	setupShowdownHelp: function() {
+		$("#add-comment form, li.comment form").each(function(i,e) {
+			var help = 	"# header &nbsp; &nbsp; " +
+						"<em>*italic*</em> &nbsp; &nbsp; " +
+						"<strong>**bold**</strong> &nbsp; &nbsp; " +
+						"- unordered list &nbsp; &nbsp; " +
+						"1. ordered list &nbsp; &nbsp; " +
+						"> blockquote &nbsp; &nbsp; " +
+						"[a link](http://example.com) &nbsp; &nbsp; " +
+						"![image text](http://example.com/image.jpg) &nbsp; &nbsp; " +
+						"<code>`code`</code> &nbsp; &nbsp; " +
+						"<pre><code>{{{ code }}}</code></pre>";
+			var html = $("<div class=\"markdown-help\"><h4>markdown help:</h4>"+help+"</div>");
+			$(e).append(html);
+		});
 	},
 
 	/**
@@ -58,8 +100,22 @@ var li3Sphere = {
 		})
 	},
 
+	setupComments: function() {
+		$('.post li.comment').each(function(i,e) {
+			$(e).mouseover(function(e) {
+				$(this).addClass('focused');
+				$(this).children('.post-comment-reply').show();
+				e.stopPropagation();
+			});
+			$(e).mouseout(function(e) {
+				$(this).removeClass('focused');
+				$(this).children('.post-comment-reply').hide();
+			});
+		});
+	},
+
 	setupCommentThreads: function() {
-		$('.post > ul.comments > li.comment > ul.comments').each(function(i, e) {
+		$('.post > ul.comments > li.comment > ul.comments').each(function(i,e) {
 			var reply = $(e).siblings('a.post-comment-reply');
 			var viewThread = $('<a class="post-comment-thread">thread</a>').click(function() {
 				$(this).siblings('ul.comments').animate({
@@ -69,5 +125,25 @@ var li3Sphere = {
 			reply.after(viewThread);
 			$(e).hide();
 		})
+	},
+
+	/**
+	 * This method requires instantiation of PrettyDate. Using it, it converts the time to a
+	 * relative time (i.e. `3 minutes ago`).
+	 *
+	 * To utilize this conversion, this method seeks out elements as follows:
+	 * `<element class="pretty-date">text <element class="timestamp">timestamp</element></element>`
+	 *
+	 * Then, replaces the text with the relative time. Then, setting a timeout for 15 seconds to run
+	 * again.
+	 *
+	 */
+	cleanDates: function() {
+		$('.pretty-date').each(function(i,e) {
+			var timestamp = $(e).children('.timestamp');
+			var time = PrettyDate.convert(timestamp.text());
+			$(e).html(time).append(timestamp);
+		});
+		window.setTimeout(li3Sphere.cleanDates, 15000);
 	}
 }

@@ -36,9 +36,13 @@ class Post extends \lithium\data\Model {
 			$result = $chain->next($self, $params, $chain);
 			if (!empty($params['options']['conditions']['id'])) {
 				$result->set(array('user' => User::find($result->user_id)));
+				$result = Post::commentCount($result);
 			} else {
-				while ($row = $result->next()) {
+				$result->first();
+				while ($row = $result->current()) {
 					$row->set(array('user' => User::find($row->user_id)));
+					$row = Post::commentCount($row);
+					$result->next();
 				}
 			}
 			return $result;
@@ -89,6 +93,23 @@ class Post extends \lithium\data\Model {
 				$data[$key] = static::commentMeta($data[$key], $author);
 			}
 		}
+		return $data;
+	}
+
+	public static function commentCount($data = array()) {
+		$count = 0;
+		if (!empty($data) && !empty($data->comments)) {
+			$count = $data->comments->count();
+			$data->comments->first();
+			while ($comment = $data->comments->current()) {
+				if (!empty($comment->comments)) {
+					$comment = static::commentCount($comment);
+					$count += $comment->comment_count;
+				}
+				$data->comments->next();
+			}
+		}
+		$data->set(array('comment_count' => $count));
 		return $data;
 	}
 }
