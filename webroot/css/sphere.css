@@ -309,7 +309,6 @@ ul.comments li.comment .comment {
 }
 li.comment.focused {
 	background: #f8f8f8;
-	border-width: 1px 1px 0 1px;
 }
 li.comment.focused .comment {
 	background: rgba(7,206,255,.04);
