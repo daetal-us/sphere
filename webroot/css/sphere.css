@@ -235,7 +235,7 @@ li.post .comments.many {
 .post {
 	position: relative;
 }
-.post h1 {
+.post h1, h1:first-child {
 	margin: 0;
 }
 div.post .post-author, div.post .post-date {
@@ -373,7 +373,7 @@ li.comment .icon.created {
 li.comment .post-comment-content {
 	padding-right: 1em;
 }
-#add-comment form, li.comment form {
+#add-post form, #add-comment form, li.comment form {
 	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
 	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
 	box-shadow: inset 0 0 12px rgba(0,0,0,.15);

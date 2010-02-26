@@ -1,2 +1,2 @@
-<h3><?=$user->username;?></h3>
+<h1><?=$user->username;?></h1>
 <?=$user->email;?>

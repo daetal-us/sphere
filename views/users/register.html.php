@@ -1,4 +1,4 @@
-<h3><?=$this->title('Register')?></h3>
+<h1><?=$this->title('Register')?></h1>
 <?php
 echo $this->form->create();
 echo $this->form->field('username');
