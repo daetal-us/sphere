@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use \lithium\data\model\Document;
+use \lithium\util\Collection;
 use \lithium\util\Set;
 use \lithium\util\String;
 use \lithium\storage\Session;
@@ -51,47 +53,63 @@ class Post extends \lithium\data\Model {
 
 	public static function comment($params) {
 		$default = array(
-			'author' => Session::read('user')
+			'author' => Session::read('user'),
+			'args' => array(),
+			'post' => null
 		);
 		$params += $default;
 		extract($params);
+
+		if (!empty($data['comment'])) {
+			$data['content'] = $data['comment'];
+			unset($data['comment']);
+		}
+
+		if (empty($post) || empty($data['content'])) {
+			return null;
+		}
+
+		$data = static::commentMeta($data, $author);
+
 		if (empty($post->comments)) {
-			$post->comments = array();
+			$post->comments = new Document();
 		}
-		if(!empty($data['comments'])) {
-			if (!empty($author)) {
-				$data = static::commentMeta($data, $author);
+		$comments = $post->comments->data();
+
+		array_shift($args);
+		if (!empty($args)) {
+			$path = '/' . implode('/comments/', array_values($args));
+			$current = Set::extract($comments, $path);
+			$index = 0;
+			if (isset($current[0]['comments']) && count($current[0]['comments']) > 0) {
+				$keys = array_keys($current[0]['comments']);
+				$index = array_pop($keys) + 1;
 			}
+			$args[] = $index;
+
+			$comments = Set::insert($comments, implode('.comments.', $args), $data);
+
+		} else {
+			$comments[] = $data;
 		}
-		if (!empty($data['comments']) && $post->comments) {
-			$data['comments'] = Set::merge(
-				Set::to('array', $post->comments->data()),
-				$data['comments']
-			);
-		}
+		$data = compact('comments');
 		return $post->save($data);
 	}
 
 	/**
-	 * This method walks through a multidimensional array of data seeking relevant content key and
-	 * appending author (user) data, and created date to new (assumed posted) comment.
+	 * This method appends author (user) data, and created date to comment data.
 	 *
 	 * @param array $data
 	 * @param array $author data from user authenticated session.
 	 */
 	public static function commentMeta($data = array(), $author) {
-		if (!empty($data)) {
-			$key = key($data);
-			if (array_key_exists('content', $data)) {
-				$data['user'] = array(
-					'id' => $author['id'],
-					'username' => $author['username'],
-					'email' => md5($author['email'])
-				);
-				$data['created'] = date('Y-m-d H:i:s');
-			} else {
-				$data[$key] = static::commentMeta($data[$key], $author);
-			}
+		if (!empty($data) && !empty($author)) {
+			$data['user'] = array(
+				'id' => $author['id'],
+				'username' => $author['username'],
+				'email' => md5($author['email'])
+			);
+			$data['created'] = date('Y-m-d H:i:s');
 		}
 		return $data;
 	}

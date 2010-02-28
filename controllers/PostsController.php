@@ -43,25 +43,26 @@ class PostsController extends \lithium\action\Controller {
 
 	public function comment($id = null) {
 		$post = Post::find($id);
+		$author = Session::read('user');
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
 		if (!empty($this->request->data)) {
-
-			if (!$user = Session::read('user')) {
+			if (!$author = Session::read('user')) {
 				$this->redirect(array(
 					'controller' => 'users', 'action' => 'login'
 				));
 			}
 			$data = $this->request->data;
-			if (Post::comment(compact('post', 'data'))) {
+			$args = $this->request->args;
+			if (Post::comment(compact('post', 'data', 'author', 'args'))) {
 				$this->redirect(array(
 					'controller' => 'posts', 'action' => 'comment',
 					'args' => array($post->id)
 				));
 			}
 		}
-		return compact('post');
+		return compact('post', 'author');
 	}
 
 	public function edit($id = null) {

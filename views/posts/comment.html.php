@@ -17,14 +17,33 @@
 			echo $this->oembed->classify($post->content, array('markdown' => true));
 		?></pre>
 	</div>
+	<?php
+		$commentClass = 'post-comment';
+		$commentUrl = \lithium\net\http\Router::match(
+			array('controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id))
+		);
+		if (empty($author)) {
+			$commentClass .= ' inactive';
+			$commentUrl = array(
+				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($commentUrl)
+			);
+		}
+	?>
+	<?=$this->html->link(
+		'<span>comment on this post</span>',
+		$commentUrl,
+		array('class' => $commentClass, 'escape' => false)
+	);?>
 
-	<?=$this->html->link('<span>comment on this post</span>', '#', array(
-		'class' => 'post-comment', 'escape' => false
-	));?>
 	<h3>comments</h3>
+	<?php if (!empty($author)) { ?>
 	<div id="add-comment" style="display:none;">
-		<?php echo $this->thread->form((array) count($post->comments));?>
+		<?php echo $this->form->create(); ?>
+		<?php echo $this->form->textarea("comment"); ?>
+		<?php echo $this->form->submit('post comment'); ?>
+		<?php echo $this->form->end(); ?>
 	</div>
+	<?php } ?>
 
 	<?php
 	$args = $this->request()->params['args'];

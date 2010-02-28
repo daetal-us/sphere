@@ -45,7 +45,9 @@ class Post extends \lithium\template\Helper {
 				$comments = $html->link(
 					$commentsText,
 					array(
-						'controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id),
+						'controller' => 'posts', 'action' => 'comment', 'args' => array(
+							'id' => $post->id
+						),
 					),
 					array('class' => 'comments ' . $commentsClass)
 				);

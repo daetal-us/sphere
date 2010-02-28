@@ -21,6 +21,8 @@ use \lithium\net\http\Router;
  */
 Router::connect('/', array('controller' => 'posts', 'action' => 'index'));
 
+Router::connect('/users/login/{:return}', array('controller' => 'users', 'action' => 'login'));
+
 /**
  * ...and connect the rest of 'Pages' controller's urls.
  */

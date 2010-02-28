@@ -14,9 +14,13 @@ class UsersController extends \lithium\action\Controller {
 	}
 
 	public function login() {
+		$return = null;
+		if (!empty($this->request->params['return'])) {
+			$return = $this->request->params['return'];
+		}
 		if (!empty($this->request->data)) {
 			$user = Auth::check('user', $this->request);
-			return compact('user');
+			return compact('user', 'return');
 		}
 	}
 

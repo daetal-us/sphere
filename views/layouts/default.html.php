@@ -93,8 +93,23 @@
 			RadCli.setup();
 
 			// Post Comment Links
-			$("a.post-comment").click(function() {
+			$("a.post-comment:not(.inactive)").click(function() {
 				$("#add-comment").animate({
+					opacity: "toggle"
+				});
+				return false;
+			});
+
+			//Comment Reply Links
+			$('a.post-comment-reply').click(function() {
+				var form = $(this).siblings('form');
+				if (form.length == 0) {
+					form = $("#add-comment form").clone().attr({
+						action: $(this).attr('href')
+					}).hide();
+					$(this).siblings('.post-comment-content').after(form);
+				}
+				$(form).animate({
 					opacity: "toggle"
 				});
 				return false;

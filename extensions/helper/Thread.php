@@ -2,6 +2,7 @@
 
 namespace app\extensions\helper;
 
+use \lithium\storage\Session;
 
 class Thread extends \lithium\template\Helper {
 
@@ -34,21 +35,36 @@ class Thread extends \lithium\template\Helper {
 		$options += $defaults;
 		$parts = array();
 
+		$user = Session::read('user');
+
 		foreach ($thread->comments as $key => $comment) {
 			$comment->id = $thread->id;
 			$args = array_merge($parent, (array) $key);
 
-			$reply = $html->link('<span>reply</span>', array(
+			$commentUrl = \lithium\net\http\Router::match(array(
+				'controller' => 'posts',
 				'action' => 'comment', 'args' => array_merge(array($thread->id), $args)
-			), array(
-				'class' => 'post-comment-reply',
-				'title' => 'reply to this comment',
-				'escape' => false
 			));
+			if (empty($user)) {
+				$commentUrl = array(
+					'controller' => 'users',
+					'action' => 'login',
+					'return' => base64_encode($commentUrl)
+				);
+			}
+			$reply = $html->link(
+				'<span>reply</span>',
+				$commentUrl,
+				array(
+					'class' => 'post-comment-reply',
+					'title' => 'reply to this comment',
+					'escape' => false
+				)
+			);
 
 			$comment->content = 	'<pre class="markdown">' .
 										$oembed->classify($comment->content, array('markdown' => true)) .
-			 							'</pre>';
+										'</pre>';
 
 			$style =	'style="background-image:url(http://gravatar.com/avatar/' .
 						$comment->user->email . '?s=16);"';
@@ -67,12 +83,13 @@ class Thread extends \lithium\template\Helper {
 			$row = 	"<div class=\"meta aside\"><aside>{$meta}<aside></div> {$reply}" .
 						"<div class=\"post-comment-content\">{$comment->content}</div>";
 
-			if (isset($options['args']) && $options['args'] == $args) {
-				$next = (!empty($comment->comments) ? count($comment->comments) : 0);
-				$row .= $this->form(array_merge($args, array($next)));
-			}
+			// if (isset($options['args']) && $options['args'] == $args) {
+			// 	$next = (!empty($comment->comments) ? count($comment->comments) : 0);
+			// 	$row .= $this->form(array_merge($args, array($next)));
+			// }
 			$row .= $this->comments($comment, $options, $args);
-			$parts[] = "<li class=\"comment\">{$row}</li>";
+			$id = implode('-', $args);
+			$parts[] = "<li class=\"comment\" id=\"comment-{$id}\">{$row}</li>";
 		}
 		if (empty($parts)) {
 			return null;
