@@ -11,3 +11,12 @@
 	?>
 
 </div>
+<?php if (empty($posts)) return; ?>
+<ul class="posts">
+<?php
+	foreach ($posts as $post) {
+		$post->doc->id = $post->doc->_id;
+		echo $this->post->row($post->doc);
+	}
+?>
+</ul>
