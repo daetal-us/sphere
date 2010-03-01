@@ -34,7 +34,8 @@ class Post extends \lithium\template\Helper {
 		$options += $defaults;
 		extract($options);
 		$html = $this->_context->helper('html');
-
+		$rating = 	'<span class="post-rating ' . ((empty($post->rating)) ? 'empty' : '' ) .
+						'"><span>' . $post->rating . '</span></span>';
 		$image = $html->image(
 			'http://gravatar.com/avatar/'.md5($post->user->email).'?s='.$gravatar['size'],
 			array('class' => 'gravatar')
@@ -48,7 +49,7 @@ class Post extends \lithium\template\Helper {
 			'args' => array($post->id)
 		)) . '</h2>';
 
-		$author = 	'<span class="post-author">submitted by'
+		$author = 	'<span class="post-author">submitted by '
 			. '<b>' . $post->user->username . '</b>'
 			. '</span>';
 
@@ -64,7 +65,7 @@ class Post extends \lithium\template\Helper {
 			),
 			array('class' => 'comments ' . $commentsClass)
 		);
-		return '<li class="post">' . $image . $heading . $author . $comments .'</li>';
+		return '<li class="post">' . $image . $rating . $heading . $author . $comments .'</li>';
 	}
 }
 

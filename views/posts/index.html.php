@@ -1,1 +1,1 @@
-<?php echo $this->post->posts($posts); ?>
+<?php echo $this->post->rows($posts); ?>
