@@ -22,6 +22,7 @@ class User extends \lithium\data\Model {
 		static::applyFilter('save', function ($self, $params, $chain) {
 			$params['record']->type = 'user';
 			if (empty($params['record']->created)) {
+				$params['record']->id = $params['record']->email;
 				$params['record']->created = date('Y-m-d H:i:s');
 				$params['record']->password = String::hash($params['record']->password);
 			}

@@ -41,7 +41,7 @@ class User extends \lithium\template\Helper {
 		}
 		return $greeting;
 	}
-	
+
 	public function session() {
 		return Session::read('user');
 	}

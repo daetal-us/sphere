@@ -4,6 +4,7 @@ namespace app\models;
 
 use \lithium\data\model\Document;
 use \lithium\util\Collection;
+use \lithium\util\Inflector;
 use \lithium\util\Set;
 use \lithium\util\String;
 use \lithium\storage\Session;
@@ -27,6 +28,7 @@ class Post extends \lithium\data\Model {
 		static::applyFilter('save', function ($self, $params, $chain) {
 			$params['record']->type = 'post';
 			if (empty($params['record']->created)) {
+				$params['record']->id = Inflector::slug($params['record']->title);
 				$params['record']->created = date('Y-m-d H:i:s');
 				if ($user = Session::read('user')) {
 					$params['record']->user_id = $user['id'];
