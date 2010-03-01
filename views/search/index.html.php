@@ -11,10 +11,13 @@
 	?>
 
 </div>
-<?php if (empty($posts)) return; ?>
+<?php if (empty($posts->rows)) {
+	echo "<h2>No Results</h2>";
+	return;
+} ?>
 <ul class="posts">
 <?php
-	foreach ($posts as $post) {
+	foreach ($posts->rows as $post) {
 		$post->doc->id = $post->doc->_id;
 		echo $this->post->row($post->doc);
 	}
