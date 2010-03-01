@@ -65,6 +65,20 @@ class PostsController extends \lithium\action\Controller {
 		return compact('post', 'author');
 	}
 
+	public function endorse($id = null) {
+		$post = Post::find($id);
+		$author = Session::read('user');
+		if (empty($post)) {
+			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
+		}
+		$data = $post->data();
+		$args = $this->request->args;
+		$endorsement = Post::endorse($id, compact('post', 'author', 'args'));
+		$this->redirect(
+			array('controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $id))
+		);
+	}
+
 	public function edit($id = null) {
 		$post = Post::find($id);
 		if (empty($post)) {

@@ -22,18 +22,34 @@
 		$commentUrl = \lithium\net\http\Router::match(
 			array('controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id))
 		);
+		$endorseClass = 'endorse-post';
+		$endorseUrl = \lithium\net\http\Router::match(
+			array('controller' => 'posts', 'action' => 'endorse', 'args' => array('id' => $post->id))
+		);
 		if (empty($author)) {
 			$commentClass .= ' inactive';
 			$commentUrl = array(
 				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($commentUrl)
 			);
+			$endorseClass .= ' inactive';
+			$endorseUrl = array(
+				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($endorseUrl)
+			);
 		}
+		$comment = $this->html->link(
+			'<span>comment</span>',
+			$commentUrl,
+			array('class' => $commentClass, 'escape' => false, 'title' => 'comment on this post')
+		);
+		$endorse = $this->html->link(
+			'<span>endorse</span>',
+			$endorseUrl,
+			array('class' => $endorseClass, 'escape' => false, 'title' => 'endorse this post')
+		);
 	?>
-	<?=$this->html->link(
-		'<span>comment on this post</span>',
-		$commentUrl,
-		array('class' => $commentClass, 'escape' => false)
-	);?>
+
+	<?php echo $endorse;?>
+	<?php echo $comment;?>
 
 	<h3>comments</h3>
 	<?php if (!empty($author)) { ?>

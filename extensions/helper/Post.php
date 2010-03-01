@@ -38,6 +38,8 @@ class Post extends \lithium\template\Helper {
 				$author = 	'<span class="post-author">submitted by <b>' . $post->user->username .
 								'</b></span>';
 
+				$rating = '<span class="post-rating ' . ((empty($post->rating)) ? 'empty' : '' ) . '"><span>' . $post->rating . '</span></span>';
+
 				$count = (empty($post->comment_count) ? 0 : $post->comment_count);
 				$commentsClass = ($count > 0) ? (($count > 1) ? 'many' : 'one') : 'none';
 				$commentsText = 	(($count < 1) ? 'no' : $count) . ' comment' .
@@ -52,7 +54,7 @@ class Post extends \lithium\template\Helper {
 					array('class' => 'comments ' . $commentsClass)
 				);
 
-				$content .= '<li class="post">' . $image . $heading . $author . $comments;
+				$content .= '<li class="post">' . $image . $rating . $heading . $author . $comments;
 			}
 
 			$out = '<ul class="' . $class . '">' . $content . '</ul>';

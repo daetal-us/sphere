@@ -27,9 +27,9 @@ var li3Sphere = {
 	setup: function(options) {
 		$.extend(this.options, options);
 		this.setupSourcesMenu();
-		//this.setupCommentThreads();
 		this.setupShowdownHelp();
 		this.setupShowdown();
+		this.setupPost();
 		this.setupComments();
 		this.cleanDates();
 		return this;
@@ -104,27 +104,51 @@ var li3Sphere = {
 		$('.post li.comment').each(function(i,e) {
 			$(e).mouseover(function(e) {
 				$(this).addClass('focused');
-				$(this).children('.post-comment-reply').show();
+				$(this).children('.post-comment-reply, .endorse-post-comment').show();
 				e.stopPropagation();
 			});
 			$(e).mouseout(function(e) {
 				$(this).removeClass('focused');
-				$(this).children('.post-comment-reply').hide();
+				$(this).children('.post-comment-reply, .endorse-post-comment').hide();
 			});
 		});
-	},
 
-	setupCommentThreads: function() {
-		$('.post > ul.comments > li.comment > ul.comments').each(function(i,e) {
-			var reply = $(e).siblings('a.post-comment-reply');
-			var viewThread = $('<a class="post-comment-thread">thread</a>').click(function() {
-				$(this).siblings('ul.comments').animate({
+		//Comment Reply Links
+		$('a.post-comment-reply:not(.inactive)').click(function() {
+			var form = $(this).siblings('form');
+			if (form.length == 0) {
+				form = $("#add-comment form").clone().attr({
+					action: $(this).attr('href')
+				}).hide();
+				$(this).siblings('.post-comment-content').after(form);
+			}
+			$(form).animate({
+				opacity: "toggle"
+			});
+			return false;
+		});
+
+		//Thread View Links
+		$('a.view-post-comment-replies').click(function() {
+			$(this).toggleClass("open");
+			var comments = [$(this).siblings('ul.comments'), $(this).siblings('ul.comments').find('ul.comments')];
+			$(comments).each(function(i,e) {
+				$(e).animate({
 					opacity: "toggle"
 				});
 			});
-			reply.after(viewThread);
-			$(e).hide();
-		})
+			return false;
+		});
+	},
+
+	setupPost: function() {
+		// Post Comment Links
+		$("a.post-comment:not(.inactive)").click(function() {
+			$("#add-comment").animate({
+				opacity: "toggle"
+			});
+			return false;
+		});
 	},
 
 	/**

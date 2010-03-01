@@ -43,7 +43,13 @@ class Thread extends \lithium\template\Helper {
 
 			$commentUrl = \lithium\net\http\Router::match(array(
 				'controller' => 'posts',
-				'action' => 'comment', 'args' => array_merge(array($thread->id), $args)
+				'action' => 'comment',
+				'args' => array_merge(array($thread->id), $args)
+			));
+			$endorseUrl = \lithium\net\http\Router::match(array(
+				'controller' => 'posts',
+				'action' => 'endorse',
+				'args' => array_merge(array($thread->id), $args)
 			));
 			if (empty($user)) {
 				$commentUrl = array(
@@ -51,13 +57,27 @@ class Thread extends \lithium\template\Helper {
 					'action' => 'login',
 					'return' => base64_encode($commentUrl)
 				);
+				$endorsUrl = array(
+					'controller' => 'users',
+					'action' => 'login',
+					'return' => base64_encode($endorseUrl)
+				);
 			}
 			$reply = $html->link(
 				'<span>reply</span>',
 				$commentUrl,
 				array(
-					'class' => 'post-comment-reply',
+					'class' => 'post-comment-reply' . ((empty($user)) ? ' inactive' : ''),
 					'title' => 'reply to this comment',
+					'escape' => false
+				)
+			);
+			$endorsement = $html->link(
+				'<span>endorse</span>',
+				$endorseUrl,
+				array(
+					'class' => 'endorse-post-comment',
+					'title' => 'endorse this comment',
 					'escape' => false
 				)
 			);
@@ -65,6 +85,15 @@ class Thread extends \lithium\template\Helper {
 			$comment->content = 	'<pre class="markdown">' .
 										$oembed->classify($comment->content, array('markdown' => true)) .
 										'</pre>';
+
+			$replies = null;
+			if (empty($parent) && !empty($comment->comment_count)) {
+				$replies = $html->link(
+					"view replies ({$comment->comment_count})",
+					'#',
+					array('class' => 'view-post-comment-replies')
+				);
+			}
 
 			$style =	'style="background-image:url(http://gravatar.com/avatar/' .
 						$comment->user->email . '?s=16);"';
@@ -78,10 +107,18 @@ class Thread extends \lithium\template\Helper {
 			$author = "<b>{$name}</b>";
 			$author = "<span class=\"post-comment-author\" $style>{$author}</span>";
 
-			$meta = $author . $time;
+			if (empty($comment->rating)) {
+				$comment->rating = 0;
+			}
+			$rating = 	"<span class=\"post-comment-rating " .
+							((empty($comment->rating) ? 'empty' : '' )) .
+							"\">{$comment->rating}</span>";
 
-			$row = 	"<div class=\"meta aside\"><aside>{$meta}<aside></div> {$reply}" .
-						"<div class=\"post-comment-content\">{$comment->content}</div>";
+			$meta = 	'<span class="post-comment-source">posted ' . $time . ' by ' . $author .
+						'</span>' . $rating;
+
+			$row = 	"<div class=\"meta aside\"><aside>{$meta}<aside></div> {$reply} {$endorsement}" .
+						"<div class=\"post-comment-content\">{$comment->content}</div> {$replies}";
 
 			// if (isset($options['args']) && $options['args'] == $args) {
 			// 	$next = (!empty($comment->comments) ? count($comment->comments) : 0);

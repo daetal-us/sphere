@@ -187,6 +187,7 @@ ul.posts li.post {
 	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
 	clear: both;
+	border-top: 1px solid rgba(0,0,0,.05);
 }
 
 ul.posts li.post:last-child {
@@ -195,13 +196,37 @@ ul.posts li.post:last-child {
 
 li.post img.gravatar {
 	float: left;
-	padding: .5em;
-	margin: 0 1em 1em 0;
-	background: #e6e6e6;
+	padding: 8px 8px 0 8px;
+	margin: 0 1em 0 0;
+	background: rgba(0,0,0,.05);
 }
 
+li.post .post-rating {
+	clear: left;
+	float: left;
+	padding: 0 8px;
+	width: 64px;
+	text-align: center;
+	margin: 0 1em 1em 0;
+	background: rgba(0,0,0,.05);
+	color: #00BBFF;
+}
+li.post .post-rating span {
+	display: inline;
+	padding: 2px 4px 4px 1.25em;
+	background: url(../img/icons/star-small.png) no-repeat top left;
+	font-weight: bold;
+}
+li.post .post-rating.empty {
+	color: rgba(0,0,0,.25);
+}
+li.post .post-rating.empty span {
+	background-image: url(../img/icons/star-small-disabled.png);
+}
+
+
 li.post h2 {
-	margin: 0;
+	margin: 0 0 .25em 0;
 	padding-top: 0.65em;
 	font-size: 1.75em;
 }
@@ -214,8 +239,7 @@ li.post .post-author, li.post .comments {
 	color: #ccc;
 	padding:.5em 1.75em .25em 2em;
 	background: url(../img/icons/dummy.png) no-repeat center left;
-	display: block;
-	float: left;
+	display: inline;
 	border-bottom: none;
 }
 li.post .comments:hover {
@@ -226,9 +250,11 @@ li.post .comments.none {
 }
 li.post .comments.one {
 	background-image: url(../img/icons/comment.png);
+	color: #00BBFF;
 }
 li.post .comments.many {
 	background-image: url(../img/icons/comments.png);
+	color: #00BBFF;
 }
 
 /** Post **/
@@ -263,21 +289,38 @@ div.post .post-date {
 .post h3 {
 	margin: 0;
 }
-.post .post-comment {
+.post .post-comment, .post .endorse-post {
 	float: right;
+	border: 1px solid rgba(0,0,0,.03);
 	border-bottom: none;
 	font-size: 1em;
 	padding-right:1em;
-	background: #f2f2f2;
+	background: rgba(0,0,0,.05);
+	font-weight: bold;
 }
-.post .post-comment span {
+.post .post-comment:hover, .post .endorse-post:hover {
+	background: rgba(0,0,0,.03);
+}
+.post .post-comment {
+	border-right: 0;
+}
+.post .endorse-post {
+	border-left: 0;
+}
+.post .post-comment span, .post .endorse-post span {
 	display: block;
-	padding: 0.75em 2em 0.5em 1.5em;
+	padding: 0.5em 2em 0.5em 1.5em;
 	background: url(../img/icons/balloon.png) no-repeat center right;
+}
+.post .endorse-post span {
+	background-image: url(../img/icons/star.png);
 }
 /** Comment Thread **/
 .post > ul.comments {
 	font-size: 1em;
+	border: 1px solid #efefef;
+	border-width: 0 1px 1px 0;
+	clear: both;
 }
 ul.comments {
 	margin: 0;
@@ -304,65 +347,105 @@ li.comment .comment .comment .comment .comment .comment .comment .comment .comme
  .comment .comment .comment .comment .comment .comment {
 	color: white;
 }
-ul.comments li.comment .comment {
-
+ul.comments ul.comments {
+	display: none;
+}
+ul.comments.open, ul.comments.open ul {
+	display: block !important;
 }
 li.comment.focused {
-	background: #f8f8f8;
+	background: #f9f9f9;
 }
 li.comment.focused .comment {
-	background: rgba(7,206,255,.04);
 	background: rgba(0,0,0,.03);
 }
 /*li.comment.focused .comment:nth-child(even) {
 	background:rgba(255,0,255,.04) !important;
 }*/
-li.comment .post-comment-reply, li.comment .post-comment-thread {
+li.comment .post-comment-reply,
+li.comment .post-comment-thread,
+li.comment .endorse-post-comment {
 	float: right;
-	display: block;
-	display:none;
-	padding: 0 1em .5em 1em;
+	display: none;
+	padding: 0 1em	;
 	border-bottom: none;
-	font-style: italic;
-	font-size: .85em;
-	background: #f8f8f8;
+	font-size: .75em;
+	background: #f9f9f9;
+	border: 1px solid rgba(0,0,0,.03);
+	border-left-width: 0;
 }
-li.comment .post-comment-reply span, li.comment .post-comment-thread span {
+li.comment .post-comment-reply span,
+li.comment .post-comment-thread span,
+li.comment .endorse-post-comment span {
 	display: block;
-	padding: 0.5em 2em .25em 0;
+	padding: 0.35em 2em 0.35em 0;
 	background: url(../img/icons/balloon-plus.png) no-repeat center right;
 }
-li.comment .post-comment-reply {
+li.comment .endorse-post-comment span {
+	background-image: url(../img/icons/star.png);
+}
+li.comment .post-comment-reply, li.comment .endorse-post-comment {
 	float: none;
-	position:absolute;
+	position: absolute;
 	top: -1px;
-	right: -6.1em;
-	border: 1px solid rgba(0,0,0,.05);
-	border-width: 1px 1px 1px 0;
+	right: -8em;
+	width: 6em;
+	text-align: right;
+}
+li.comment .endorse-post-comment {
+	top: 2.25em;
+	border-top-width: 0;
+}
+li.comment .view-post-comment-replies {
+	font-size: 0.75em;
+	color: rgba(0,0,0,.25);
+	display:block;
+	clear: both;
+	background: rgba(0,0,0,.03) url(../img/icons/control-double-270-small-off.png) no-repeat 4px 2px;
+	border: 1px solid rgba(0,0,0,.03);
+	border-width: 1px 0 0 1px;
+	padding: 0 1em 0 2em;
+}
+li.comment .view-post-comment-replies:hover {
+	color: rgba(0,0,0,.5);
+	background-image: url(../img/icons/control-double-270-small.png);
+}
+li.comment .view-post-comment-replies.open {
+	background-image: url(../img/icons/control-double-090-small-off.png);
+}
+li.comment .view-post-comment-replies.open:hover {
+	background-image: url(../img/icons/control-double-090-small.png);
 }
 li.comment .post-comment-thread {
 	background-image: url(../img/icons/comments.png);
 }
 li.comment .meta {
 	display: block;
-	float: left;
-	padding: 0.25em 1em;
-	margin: -1em 1em 1em -1em;
-	background: rgba(0,0,0,.02);
+	float: right;
+	padding: 0.25em 0.5em;
+	margin: -1em 0 0 1em;
 	color: rgba(0,0,0,.25);
-	text-align: center;
+	text-align: right;
 }
-li.comment .post-comment-author, li.comment .post-comment-created {
-	font-size: 0.75em;
-}
-li.comment .post-comment-author {
-	padding: .5em 0 .5em 2.25em;
-	background: url(../img/icons/dummy.png) no-repeat center left;
-	font-style: italic;
-	font-size: 0.75em;
-}
-li.comment .post-comment-created {
+li.comment .post-comment-source {
 	display: block;
+	font-size: 0.75em;
+}
+li.comment .post-comment-author, li.comment .post-comment-created, li.comment .post-comment-rating {
+}
+li.comment .post-comment-author, li.comment .post-comment-rating {
+	padding: .5em 2.25em .5em 0;
+	background: url(../img/icons/dummy.png) no-repeat center right;
+	font-style: italic;
+}
+li.comment .post-comment-rating {
+	padding: .5em 2.25em .5em 0;
+	background: url(../img/icons/star-small.png) no-repeat center right;
+	font-weight: bold;
+	font-size: 0.75em;
+}
+li.comment .post-comment-rating.empty {
+	background-image: url(../img/icons/star-small-disabled.png);
 }
 li.comment .icon.created {
 	background: url(../img/icons/timespan.png) no-repeat center center;

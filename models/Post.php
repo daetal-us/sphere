@@ -39,11 +39,13 @@ class Post extends \lithium\data\Model {
 			if (!empty($params['options']['conditions']['id'])) {
 				$result->set(array('user' => User::find($result->user_id)));
 				$result = Post::commentCount($result);
+				$result = Post::endorsements($result);
 			} else {
 				$result->first();
 				while ($row = $result->current()) {
 					$row->set(array('user' => User::find($row->user_id)));
 					$row = Post::commentCount($row);
+					$row = Post::endorsements($row);
 					$result->next();
 				}
 			}
@@ -128,6 +130,71 @@ class Post extends \lithium\data\Model {
 			}
 		}
 		$data->set(array('comment_count' => $count));
+		return $data;
+	}
+
+	public static function endorse($id, $options = array()) {
+		$defaults = array(
+			'author' => Session::read('user'),
+			'args' => array(),
+			'post' => null
+		);
+		$options += $defaults;
+		extract($options);
+
+		if ((empty($id) && empty($post)) && (!$post = Post::find($id)) && empty($author)) {
+			return false;
+		}
+
+		$result = false;
+
+		if (empty($post->endorsements)) {
+			$post->endorsements = new Document();
+		}
+
+		$data = $post->data();
+
+		array_shift($args);
+		if (!empty($args)) {
+			$path = '/comments/' . implode('/comments/', array_values($args));
+			$comment = Set::extract($data, $path);
+			$comment = array_shift($comment);
+			if (
+				!isset($comment['endorsements']) ||
+				(array_search($author['id'], $comment['endorsements']) === false)
+			) {
+				$comment['endorsements'][] = $author['id'];
+			}
+			$data = Set::insert($data, 'comments.' . implode('.comments.', $args), $comment);
+		} else {
+			if (array_search($author['id'], $data['endorsements']) === false) {
+				$data['endorsements'][] = $author['id'];
+			}
+		}
+		$result = $post->save($data);
+		///
+
+		return $result;
+	}
+
+	public static function endorsements($data = array()) {
+		$rating = 0;
+		if (!empty($data)) {
+			if (!empty($data->endorsements)) {
+				$rating = count($data->endorsements);
+			}
+			if (!empty($data->comment_count)) {
+				$rating += ($data->comment_count * .5);
+			}
+			if (!empty($data->comments)) {
+				$data->comments->first();
+				while ($comment = $data->comments->current()) {
+					$comment = static::endorsements($comment);
+					$data->comments->next();
+				}
+			}
+		}
+		$data->set(array('rating' => round($rating)));
 		return $data;
 	}
 }
