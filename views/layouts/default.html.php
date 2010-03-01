@@ -29,6 +29,9 @@
 					echo $this->html->link('logout', array(
 						'controller' => 'users', 'action' => 'logout'
 					));
+					echo $this->html->link('search', array(
+						'controller' => 'search', 'action' => 'index'
+					));
 				} else {
 					echo $this->html->link('login', array(
 						'controller' => 'users', 'action' => 'login'

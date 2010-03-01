@@ -29,6 +29,11 @@ Router::connect('/users/login/{:return}', array('controller' => 'users', 'action
 Router::connect('/pages/{:args}', array('controller' => 'pages', 'action' => 'view'));
 
 /**
+ * The search has to be handled as well y'know.
+ */
+Router::connect('/search/{:term}', array('controller' => 'search'));
+
+/**
  * Connect the testing routes.
  */
 Router::connect('/test/{:args}', array('controller' => '\lithium\test\Controller'));
