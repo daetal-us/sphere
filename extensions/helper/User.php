@@ -3,6 +3,7 @@
 namespace app\extensions\helper;
 
 use \lithium\util\String;
+use \lithium\storage\Session;
 
 class User extends \lithium\template\Helper {
 
@@ -33,12 +34,16 @@ class User extends \lithium\template\Helper {
 			);
 			if (rand(0,100) == 47) {
 				$greeting = base64_decode(
-					'UEMgTE9BRCBMRVRURVIgPHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTouMzVlbTsgY29sb3I6I2U2ZTZlNjsiP' .
-					'ih5b3UncmUgbG9nZ2VkIGluKTwvc3Bhbj4='
+					'UEMgTE9BRCBMRVRURVIgPHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTouMzVlbTsgY29sb3I6I2'
+					. 'U2ZTZlNjsiPih5b3UncmUgbG9nZ2VkIGluKTwvc3Bhbj4='
 				);
 			}
 		}
 		return $greeting;
+	}
+	
+	public function session() {
+		return Session::read('user');
 	}
 
 }

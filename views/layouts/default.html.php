@@ -21,7 +21,7 @@
 		<h2><?=$this->html->link('power of community', '/');?></h2>
 		<div class="nav account">
 			<?php
-				if ($user = \lithium\storage\Session::read('user')) {
+				if ($user = $this->user->session()) {
 					echo $this->html->image(
 						'http://gravatar.com/avatar/' . md5($user['email']) . '?s=16',
 						array('title' => $user['username'])
