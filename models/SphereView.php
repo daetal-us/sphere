@@ -13,14 +13,14 @@ class SphereView extends \lithium\data\Model {
 			'views' => array(
 				'posts' => array(
 					'map' => 'function(doc) {
-						if (doc.type == "post") {
+						if (doc.type && doc.type == "post" && doc.created) {
 							emit(doc.created, doc);
 						}
 					}'
 				),
 				'users' => array(
 					'map' => 'function(doc) {
-						if (doc.type == "user") {
+						if (doc.type && doc.type == "user" && doc.created) {
 							emit(doc.created, doc);
 						}
 					}'
@@ -32,8 +32,8 @@ class SphereView extends \lithium\data\Model {
 			'language' => 'javascript',
 			'views' => array(
 				'by_username' => array(
-					'map' => 'function(doc) {
-						if(doc.type == "user") {
+					'map' => 'function(doc) {   
+						if(doc.type && doc.type == "user" && doc.username) {
 							emit(doc.username, doc);
 						}
 					}'
