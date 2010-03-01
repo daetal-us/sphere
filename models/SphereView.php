@@ -73,7 +73,33 @@ class SphereView extends \lithium\data\Model {
                     }'
                 ),
 
+                // Search by user email
+                'by_email' => array(
+                    'index' => 'function(doc) {
+                        var ret = new Document();
+                        if (doc.type && doc.type == "user") {
+                            ret.add(doc.email);
+                        }
 
+                        return ret;
+                    }'
+                ),
+
+                // Search by comment
+                'by_comments' => array(
+                    'index' => 'function(doc) {
+                        var ret = new Document();
+                        if (doc.type && doc.type == "post" && doc.comments && doc.comments.length > 0) {
+                            for (var i = 0; i < doc.comments.length; i++) {
+                                if (doc.comments[i] && doc.comments[i].content) {
+                                    ret.add(doc.comments[i].content);
+                                }
+                            }
+                        }
+
+                        return ret;
+                    }'
+                ),
             ),
         ),
 	);
