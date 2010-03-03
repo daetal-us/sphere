@@ -19,6 +19,6 @@ require dirname(__DIR__) . '/config/bootstrap.php';
 /**
  * Dispatch a new request with the default settings.
  */
-echo lithium\action\Dispatcher::run();
+echo lithium\action\Dispatcher::run(new \lithium\action\Request());
 
 ?>
