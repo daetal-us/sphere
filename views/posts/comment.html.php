@@ -1,3 +1,6 @@
+<?php
+use \lithium\net\http\Router;
+?>
 <div class="post">
 
 	<h1><?=$this->title($post->title);?></h1>
@@ -19,12 +22,13 @@
 	</div>
 	<?php
 		$commentClass = 'post-comment';
-		$commentUrl = \lithium\net\http\Router::match(
-			array('controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $post->id))
+		$commentUrl = Router::match(
+			array('controller' => 'posts', 'action' => 'comment', 'id' => $post->id)
 		);
 		$endorseClass = 'endorse-post';
-		$endorseUrl = \lithium\net\http\Router::match(
-			array('controller' => 'posts', 'action' => 'endorse', 'args' => array('id' => $post->id))
+		$endorseUrl = Router::match(
+			array('controller' => 'posts', 'action' => 'endorse',
+			'args' => array('id' => $post->id))
 		);
 		if (empty($author)) {
 			$commentClass .= ' inactive';
@@ -62,9 +66,7 @@
 	<?php } ?>
 
 	<?php
-	$args = $this->request()->params['args'];
-	$id = array_shift($args);
-
+	$args = $this->request()->args;
 	if (!empty($post->comments)) {
 		echo $this->thread->comments($post, compact('args'));
 	}

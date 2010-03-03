@@ -15,11 +15,6 @@ class PostsController extends \lithium\action\Controller {
 		return compact('posts');
 	}
 
-	public function view($id = null) {
-		$post = Post::find($id);
-		return compact('post');
-	}
-
 	public function add() {
 		if (!$user = Session::read('user')) {
 			$this->redirect(array(
@@ -41,24 +36,24 @@ class PostsController extends \lithium\action\Controller {
 		return compact('post');
 	}
 
-	public function comment($id = null) {
-		$post = Post::find($id);
+	public function comment() {
+		$post = Post::find($this->request->id);
 		$author = Session::read('user');
+
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
 		if (!empty($this->request->data)) {
-			if (!$author = Session::read('user')) {
-				$this->redirect(array(
+			if (!$author) {
+				return $this->redirect(array(
 					'controller' => 'users', 'action' => 'login'
 				));
 			}
 			$data = $this->request->data;
 			$args = $this->request->args;
 			if (Post::comment(compact('post', 'data', 'author', 'args'))) {
-				$this->redirect(array(
-					'controller' => 'posts', 'action' => 'comment',
-					'args' => array($post->id)
+				return $this->redirect(array(
+					'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
 				));
 			}
 		}
@@ -67,16 +62,15 @@ class PostsController extends \lithium\action\Controller {
 
 	public function endorse($id = null) {
 		$post = Post::find($id);
-		$author = Session::read('user');
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
-		$data = $post->data();
+		$author = Session::read('user');
 		$args = $this->request->args;
 		$endorsement = Post::endorse($id, compact('post', 'author', 'args'));
-		$this->redirect(
-			array('controller' => 'posts', 'action' => 'comment', 'args' => array('id' => $id))
-		);
+		$this->redirect(array(
+			'controller' => 'posts', 'action' => 'comment', 'id' => $id
+		));
 	}
 
 	public function edit($id = null) {

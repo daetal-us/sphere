@@ -3,6 +3,7 @@
 namespace app\extensions\helper;
 
 use \lithium\storage\Session;
+use \lithium\net\http\Router;
 
 class Thread extends \lithium\template\Helper {
 
@@ -41,14 +42,12 @@ class Thread extends \lithium\template\Helper {
 			$comment->id = $thread->id;
 			$args = array_merge($parent, (array) $key);
 
-			$commentUrl = \lithium\net\http\Router::match(array(
-				'controller' => 'posts',
-				'action' => 'comment',
-				'args' => array_merge(array($thread->id), $args)
+			$commentUrl = Router::match(array(
+				'controller' => 'posts', 'action' => 'comment', 'id' => $thread->id,
+				'args' => $args
 			));
-			$endorseUrl = \lithium\net\http\Router::match(array(
-				'controller' => 'posts',
-				'action' => 'endorse',
+			$endorseUrl = Router::match(array(
+				'controller' => 'posts', 'action' => 'endorse',
 				'args' => array_merge(array($thread->id), $args)
 			));
 			if (empty($user)) {

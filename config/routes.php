@@ -20,18 +20,10 @@ use \lithium\net\http\Router;
  * to use (in this case, /app/views/pages/home.html.php)...
  */
 Router::connect('/', array('controller' => 'posts', 'action' => 'index'));
-
+Router::connect('/p/{:id}', array('controller' => 'posts', 'action' => 'comment'));
+Router::connect('/p/{:id}/{:args}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/users/login/{:return}', array('controller' => 'users', 'action' => 'login'));
-
-/**
- * ...and connect the rest of 'Pages' controller's urls.
- */
-Router::connect('/pages/{:args}', array('controller' => 'pages', 'action' => 'view'));
-
-/**
- * The search has to be handled as well y'know.
- */
-Router::connect('/search/{:term}', array('controller' => 'search'));
+Router::connect('/search', array('controller' => 'search', 'action' => 'index'));
 
 /**
  * Connect the testing routes.

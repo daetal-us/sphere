@@ -80,7 +80,6 @@ class Post extends \lithium\data\Model {
 		}
 		$comments = $post->comments->data();
 
-		array_shift($args);
 		if (!empty($args)) {
 			$path = '/' . implode('/comments/', array_values($args));
 			$current = Set::extract($comments, $path);

@@ -51,8 +51,7 @@ class Post extends \lithium\template\Helper {
 		}
 
 		$heading = '<h2>' . $html->link($post->title, array(
-			'controller' => 'posts', 'action' => 'comment',
-			'args' => array($post->id)
+			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
 		)) . '</h2>';
 
 		$author = 	'<span class="post-author">submitted by '
@@ -63,11 +62,9 @@ class Post extends \lithium\template\Helper {
 		$commentsClass = ($count > 0) ? (($count > 1) ? 'many' : 'one') : 'none';
 		$commentsText = (($count < 1) ? 'no' : $count)
 			. ' comment' . (($count !== 1) ? 's' : '');
-		$comments = $html->link(
-			$commentsText,
+		$comments = $html->link($commentsText,
 			array(
-				'controller' => 'posts', 'action' => 'comment',
-				'args' => array($post->id),
+				'controller' => 'posts', 'action' => 'comment', 'id' => $post->id,
 			),
 			array('class' => 'comments ' . $commentsClass)
 		);
