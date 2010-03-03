@@ -14,7 +14,7 @@
 
 	<div class="post-content">
 		<pre class="markdown"><?php
-			echo $this->oembed->classify($post->content, array('markdown' => true));
+			echo $h($this->oembed->classify($post->content, array('markdown' => true)));
 		?></pre>
 	</div>
 	<?php
