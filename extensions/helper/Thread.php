@@ -40,6 +40,9 @@ class Thread extends \lithium\template\Helper {
 
 		foreach ($thread->comments as $key => $comment) {
 			$comment->id = $thread->id;
+			if (empty($comment->user)) {
+				continue;
+			}
 			$args = array_merge($parent, (array) $key);
 
 			$commentUrl = Router::match(array(
@@ -81,9 +84,9 @@ class Thread extends \lithium\template\Helper {
 				)
 			);
 
-			$comment->content = 	'<pre class="markdown">' .
-										$oembed->classify($comment->content, array('markdown' => true)) .
-										'</pre>';
+			$comment->content = '<pre class="markdown">' .
+				$oembed->classify($comment->content, array('markdown' => true)) .
+			'</pre>';
 
 			$replies = null;
 			if (empty($parent) && !empty($comment->comment_count)) {
@@ -93,9 +96,8 @@ class Thread extends \lithium\template\Helper {
 					array('class' => 'view-post-comment-replies')
 				);
 			}
-
-			$style =	'style="background-image:url(http://gravatar.com/avatar/' .
-						$comment->user->email . '?s=16);"';
+			$style = 'style="background-image:url(http://gravatar.com/avatar/' .
+				md5($comment->user->email) . '?s=16);"';
 			$name = $comment->user->username;
 
 			$timestamp = strtotime($comment->created);
@@ -106,9 +108,6 @@ class Thread extends \lithium\template\Helper {
 			$author = "<b>{$name}</b>";
 			$author = "<span class=\"post-comment-author\" $style>{$author}</span>";
 
-			if (empty($comment->rating)) {
-				$comment->rating = 0;
-			}
 			$rating = 	"<span class=\"post-comment-rating " .
 							((empty($comment->rating) ? 'empty' : '' )) .
 							"\">{$comment->rating}</span>";

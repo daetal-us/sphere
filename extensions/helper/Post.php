@@ -43,7 +43,7 @@ class Post extends \lithium\template\Helper {
 		$rating = 	'<span class="post-rating' . $ratingClass .
 						'"><span>' . $post->rating . '</span></span>';
 		$image = $html->image(
-			'http://gravatar.com/avatar/'.md5($post->user->email).'?s='.$gravatar['size'],
+			'http://gravatar.com/avatar/'.md5($post->user()->email).'?s='.$gravatar['size'],
 			array('class' => 'gravatar')
 		);
 		if ($gravatar['link']) {
@@ -55,7 +55,7 @@ class Post extends \lithium\template\Helper {
 		)) . '</h2>';
 
 		$author = 	'<span class="post-author">submitted by '
-			. '<b>' . $post->user->username . '</b>'
+			. '<b>' . $post->user()->username . '</b>'
 			. '</span>';
 
 		$count = (empty($post->comment_count) ? 0 : $post->comment_count);

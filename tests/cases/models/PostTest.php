@@ -4,17 +4,18 @@ namespace app\tests\cases\models;
 
 use \app\models\Post;
 use \lithium\data\Connections;
+use \lithium\data\model\Query;
 
 class PostTest extends \lithium\test\Unit {
 
 	public function setUp() {
-		Connections::add('test', 'http', array('adapter' => 'CouchDb'));
+		Connections::add('test', 'http', array('adapter' => 'CouchDb', 'port' => '35984'));
 		Connections::get('test')->describe('test_posts');
 		Post::__init(array('connection' => 'test', 'source' => 'test_posts'));
 	}
 
 	public function tearDown() {
-
+		Connections::get('test')->delete(new Query(array('model' => '\app\models\Post')));
 	}
 
 	public function testSave() {
@@ -23,21 +24,129 @@ class PostTest extends \lithium\test\Unit {
 		$this->assertTrue($result);
 	}
 
-	public function testSaveComments() {
-		$post = Post::find('first');
-
-		$result = $post->save(array(
- 			'comments' => array(
-				'comment on the post'
+	public function testComment() {
+		$post = Post::create(array('title' => 'another title', 'content' => 'the content'));
+		$post->save();
+		$post = Post::find($post->id);
+		$data = array(
+			'content' => 'cool',
+			'user' => array(
+				'id' => 'gwoo@somewhere.com', 'username' => 'gwoo', 'email' => 'gwoo@somewhere.com'
 			)
-		));
-		$this->assertTrue($result);
+		);
+		$args = null;
+		$result = $post->comment(compact('data', 'args'));
 
 		$post = Post::find($post->id);
-
-		$expected = 'comment on the post';
-		$result = $post->comments[0];
+		$expected = 1;
+		$result = count($post->comments);
 		$this->assertEqual($expected, $result);
+
+		$comment = $post->comments->first();
+		$expected = 'cool';
+		$result = $comment['content'];
+		$this->assertEqual($expected, $result);
+
+		$data = array(
+			'content' => 'super cool',
+			'user' => array(
+				'id' => 'gwoo@somewhere.com', 'username' => 'gwoo', 'email' => 'gwoo@somewhere.com'
+			)
+		);
+		$args = array('0');
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+
+		$comment = $post->comments->first();
+		$expected = 1;
+		$result = $comment['comment_count'];
+		$this->assertEqual($expected, $result);
+
+		$post = Post::find($post->id);
+		$expected = 1;
+		$result = count($post->comments->first()->comments);
+		$this->assertEqual($expected, $result);
+
+		$comments = $post->comments->first()->comments->data();
+		$expected = 'super cool';
+		$result = $comments[0]['content'];
+		$this->assertEqual($expected, $result);
+
+		$data = array(
+			'content' => 'nice',
+			'user' => array(
+				'id' => 'gwoo@somewhere.com', 'username' => 'gwoo', 'email' => 'gwoo@somewhere.com'
+			)
+		);
+		$args = array('0');
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+
+		$comment = $post->comments->first();
+		$expected = 2;
+		$result = $comment['comment_count'];
+		$this->assertEqual($expected, $result);
+
+		$post = Post::find($post->id);
+		$expected = 2;
+		$result = count($post->comments->first()->comments);
+		$this->assertEqual($expected, $result);
+
+
+		$comments = $post->comments->first()->comments->data();
+		$expected = 'nice';
+		$result = $comments[1]['content'];
+		$this->assertEqual($expected, $result);
+
+		$expected = 'gwoo';
+		$result = $comments[1]['user']['username'];
+		$this->assertEqual($expected, $result);
+
+		$expected = 'gwoo@somewhere.com';
+		$result = $comments[1]['user']['email'];
+		$this->assertEqual($expected, $result);
+
+		$data = array(
+			'content' => 'super nice',
+			'user' => array(
+				'id' => 'gwoo@somewhere.com', 'username' => 'gwoo', 'email' => 'gwoo@somewhere.com'
+			)
+		);
+		$args = array('0', '0');
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+
+		$comment = $post->comments->first();
+		$expected = 3;
+		$result = $comment['comment_count'];
+		$this->assertEqual($expected, $result);
+
+		$post = Post::find($post->id);
+		$expected = 2;
+		$result = count($post->comments->first()->comments);
+		$this->assertEqual($expected, $result);
+
+
+		$comments = $post->comments->first()->comments->data();
+		$expected = 'super nice';
+		$result = $comments[0]['comments'][0]['content'];
+		$this->assertEqual($expected, $result);
+
+		$expected = 'gwoo';
+		$result = $comments[0]['comments'][0]['user']['username'];
+		$this->assertEqual($expected, $result);
+
+		$expected = 'gwoo@somewhere.com';
+		$result = $comments[0]['comments'][0]['user']['email'];
+		$this->assertEqual($expected, $result);
+	}
+
+	public function testEndorse() {
+
+	}
+
+	public function testEndorsements() {
+
 	}
 
 }

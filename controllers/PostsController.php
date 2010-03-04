@@ -10,7 +10,8 @@ class PostsController extends \lithium\action\Controller {
 
 	public function index() {
 		$posts = Post::all(array(
-			'conditions' => array('design' => 'all', 'view' => 'posts')
+			'conditions' => array('design' => 'all', 'view' => 'posts'),
+			'order' => array('descending' => 'true')
 		));
 		return compact('posts');
 	}
@@ -38,26 +39,27 @@ class PostsController extends \lithium\action\Controller {
 
 	public function comment() {
 		$post = Post::find($this->request->id);
-		$author = Session::read('user');
-
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
+		$user = Session::read('user');
+
 		if (!empty($this->request->data)) {
-			if (!$author) {
+			if (!$user) {
 				return $this->redirect(array(
 					'controller' => 'users', 'action' => 'login'
 				));
 			}
 			$data = $this->request->data;
 			$args = $this->request->args;
-			if (Post::comment(compact('post', 'data', 'author', 'args'))) {
+
+			if ($post->comment(compact('data', 'args'))) {
 				return $this->redirect(array(
 					'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
 				));
 			}
 		}
-		return compact('post', 'author');
+		return compact('post', 'user');
 	}
 
 	public function endorse($id = null) {

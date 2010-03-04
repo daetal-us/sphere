@@ -10,9 +10,9 @@ use \lithium\net\http\Router;
 		<?=$date;?>
 		<span class="timestamp"><?=strtotime($post->created);?></span>
 	</span>
-	<?php $gravatar = "http://gravatar.com/avatar/" . md5($post->user->email) . "?s=16"; ?>
+	<?php $gravatar = "http://gravatar.com/avatar/" . md5($post->user()->email) . "?s=16"; ?>
 	<span class="post-author" style="background-image:url(<?=$gravatar;?>);">
-		submitted by <b><?=$post->user->username;?></b>
+		submitted by <b><?=$post->user()->username;?></b>
 	</span>
 
 	<div class="post-content">
@@ -30,7 +30,7 @@ use \lithium\net\http\Router;
 			array('controller' => 'posts', 'action' => 'endorse',
 			'args' => array('id' => $post->id))
 		);
-		if (empty($author)) {
+		if (empty($user)) {
 			$commentClass .= ' inactive';
 			$commentUrl = array(
 				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($commentUrl)
@@ -56,10 +56,10 @@ use \lithium\net\http\Router;
 	<?php echo $comment;?>
 
 	<h3>comments</h3>
-	<?php if (!empty($author)) { ?>
+	<?php if (!empty($user)) { ?>
 	<div id="add-comment" style="display:none;">
 		<?php echo $this->form->create(); ?>
-		<?php echo $this->form->textarea("comment"); ?>
+		<?php echo $this->form->textarea("content"); ?>
 		<?php echo $this->form->submit('post comment'); ?>
 		<?php echo $this->form->end(); ?>
 	</div>

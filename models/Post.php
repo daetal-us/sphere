@@ -3,16 +3,17 @@
 namespace app\models;
 
 use \lithium\data\model\Document;
-use \lithium\util\Collection;
 use \lithium\util\Inflector;
-use \lithium\util\Set;
-use \lithium\util\String;
 use \lithium\storage\Session;
 use \app\models\User;
+use \app\models\Comment;
 
 class Post extends \lithium\data\Model {
 
-	public $validates = array();
+	public $validates = array(
+		'title' => array('notEmpty', 'message' => 'Please supply a title.'),
+		'content' => array('notEmpty', 'message' => 'Please supply some content.'),
+	);
 
 	protected $_meta = array('source' => 'lithosphere');
 
@@ -22,6 +23,13 @@ class Post extends \lithium\data\Model {
 		'comment_count' => array('type' => 'numeric', 'default' => 0),
 		'created' => array('type' => 'date'),
 	);
+
+	/**
+	 * The \app\models\User related to the post
+	 *
+	 * @var \app\models\User
+	 */
+	protected $_user = null;
 
 	public static function __init(array $options = array()) {
 		parent::__init($options);
@@ -36,102 +44,44 @@ class Post extends \lithium\data\Model {
 			}
 			return $chain->next($self, $params, $chain);
 		});
-		static::applyFilter('find', function ($self, $params, $chain) {
-			$result = $chain->next($self, $params, $chain);
-			if (!empty($params['options']['conditions']['id'])) {
-				$result->set(array('user' => User::find($result->user_id)));
-				$result = Post::commentCount($result);
-				$result = Post::endorsements($result);
-			} else {
-				$result->first();
-				while ($row = $result->current()) {
-					$row->set(array('user' => User::find($row->user_id)));
-					$row = Post::commentCount($row);
-					$row = Post::endorsements($row);
-					$result->next();
-				}
-			}
-			return $result;
-		});
 	}
 
-	public static function comment($params) {
-		$default = array(
-			'author' => Session::read('user'),
-			'args' => array(),
-			'post' => null
-		);
+	public function user($self) {
+		if (!empty($self->_user)) {
+			return $self->_user;
+		}
+		return $self->_user = User::find($self->user_id);
+	}
+
+	public function comment($self, $params = array()) {
+		$default = array('args' => array(), 'data' => array());
 		$params += $default;
 		extract($params);
 
-		if (!empty($data['comment'])) {
-			$data['content'] = $data['comment'];
-			unset($data['comment']);
-		}
+		$comment = Comment::create($data);
 
-		if (empty($post) || empty($data['content'])) {
+		if (empty($self->id) || !$comment->save()) {
 			return null;
 		}
+		$data = $comment->data();
+		$comments = !empty($self->comments) ? $self->comments->data() : array();
 
-		$data = static::commentMeta($data, $author);
-
-		if (empty($post->comments)) {
-			$post->comments = new Document();
-		}
-		$comments = $post->comments->data();
-
-		if (!empty($args)) {
-			$path = '/' . implode('/comments/', array_values($args));
-			$current = Set::extract($comments, $path);
-			$index = 0;
-			if (isset($current[0]['comments']) && count($current[0]['comments']) > 0) {
-				$keys = array_keys($current[0]['comments']);
-				$index = array_pop($keys) + 1;
+		$insert = function($comments, $args) use (&$insert, $data) {
+			while($args) {
+				$key = array_shift($args);
+				$result = isset($comments[$key]['comments'])
+					? $comments[$key]['comments'] : array();
+				$result = $insert($result, $args);
+				$comments[$key]['comments'] = $result;
+				$comments[$key]['comment_count']++;
+				return $comments;
 			}
-			$args[] = $index;
-
-			$comments = Set::insert($comments, implode('.comments.', $args), $data);
-
-		} else {
-			$comments[] = $data;
-		}
+			return array_merge((array) $comments, array($data));
+		};
+		$comments = $insert($comments, $args);
 		$data = compact('comments');
-		return $post->save($data);
-	}
-
-	/**
-	 * This method appends author (user) data, and created date to comment data.
-	 *
-	 * @param array $data
-	 * @param array $author data from user authenticated session.
-	 */
-	public static function commentMeta($data = array(), $author) {
-		if (!empty($data) && !empty($author)) {
-			$data['user'] = array(
-				'id' => $author['id'],
-				'username' => $author['username'],
-				'email' => md5($author['email'])
-			);
-			$data['created'] = date('Y-m-d H:i:s');
-		}
-		return $data;
-	}
-
-	public static function commentCount($data = array()) {
-		$count = 0;
-		if (!empty($data) && !empty($data->comments)) {
-			$count = $data->comments->count();
-			$data->comments->first();
-			while ($comment = $data->comments->current()) {
-				if (!empty($comment->comments)) {
-					$comment = static::commentCount($comment);
-					$count += $comment->comment_count;
-				}
-				$data->comments->next();
-			}
-		}
-		$data->set(array('comment_count' => $count));
-		return $data;
+		$data['comment_count'] = $self->comment_count + 1;
+		return $self->save($data);
 	}
 
 	public static function endorse($id, $options = array()) {
@@ -173,8 +123,6 @@ class Post extends \lithium\data\Model {
 			}
 		}
 		$result = $post->save($data);
-		///
-
 		return $result;
 	}
 
