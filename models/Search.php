@@ -17,9 +17,10 @@ class Search extends \lithium\data\Model {
     protected function _setupFinders() {
 		$finders = array('by_title', 'by_content');
         $self = static::_instance();
+		$classes = $self->_classes;
 
         foreach ($finders as $finder) {
-            $self->_finders[$finder] = function($self, $params, $chain) {
+            $self->_finders[$finder] = function($self, $params, $chain) use ($classes){
                 $query = (array) $params['options']['conditions'] + array('include_docs' => 'true');
                 $result = Connections::get($self::meta('connection'))->get(
                     $self::meta('source') . '/_fti/search/' . $params['type'],
@@ -28,9 +29,19 @@ class Search extends \lithium\data\Model {
                 if (empty($result->total_rows)) {
                     return 0;
                 }
-                return $result;
+                return new $classes['recordSet'](array(
+					'items' => $result,
+					'model' => __CLASS__
+				));;
             };
         }
     }
+
+	public function post($self) {
+		return new $this->_classes['recordSet'](array(
+			'items' => $self->doc->data(),
+			'model' => '\app\models\Post'
+		));
+	}
 }
 
