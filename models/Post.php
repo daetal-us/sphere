@@ -69,61 +69,59 @@ class Post extends \lithium\data\Model {
 		$insert = function($comments, $args) use (&$insert, $data) {
 			while($args) {
 				$key = array_shift($args);
-				$result = isset($comments[$key]['comments'])
-					? $comments[$key]['comments'] : array();
-				$result = $insert($result, $args);
-				$comments[$key]['comments'] = $result;
-				$comments[$key]['comment_count']++;
+				if (isset($comments[$key])) {
+					$result = (array) $comments[$key] + array('comments' => array());
+					$comments[$key]['comments'] = $insert($result['comments'], $args);
+					$comments[$key]['comment_count']++;
+				}
 				return $comments;
 			}
 			return array_merge((array) $comments, array($data));
 		};
-		$comments = $insert($comments, $args);
-		$data = compact('comments');
-		$data['comment_count'] = $self->comment_count + 1;
-		return $self->save($data);
+		$comments  = $insert($comments, $args);
+		$comment_count = $self->comment_count + 1;
+		return $self->save(compact('comments', 'comment_count'));
 	}
 
-	public static function endorse($id, $options = array()) {
+	public function endorse($self, $options = array()) {
 		$defaults = array(
-			'author' => Session::read('user'),
-			'args' => array(),
-			'post' => null
+			'author' => Session::read('user'), 'args' => array(),
 		);
 		$options += $defaults;
 		extract($options);
 
-		if ((empty($id) && empty($post)) && (!$post = Post::find($id)) && empty($author)) {
+		if (empty($self->id) || empty($author['id'])) {
 			return false;
 		}
+		$data = $self->data() + array('endorsements' => array());
 
-		$result = false;
-
-		if (empty($post->endorsements)) {
-			$post->endorsements = new Document();
-		}
-
-		$data = $post->data();
-
-		array_shift($args);
+		$endorse = function ($data) use ($author) {
+			if (array_search($author['id'], $data['endorsements']) !== false) {
+				return $data['endorsements'];
+			}
+			$data['endorsements'][] = $author['id'];
+			return $data['endorsements'];
+		};
 		if (!empty($args)) {
-			$path = '/comments/' . implode('/comments/', array_values($args));
-			$comment = Set::extract($data, $path);
-			$comment = array_shift($comment);
-			if (
-				!isset($comment['endorsements']) ||
-				(array_search($author['id'], $comment['endorsements']) === false)
-			) {
-				$comment['endorsements'][] = $author['id'];
-			}
-			$data = Set::insert($data, 'comments.' . implode('.comments.', $args), $comment);
-		} else {
-			if (array_search($author['id'], $data['endorsements']) === false) {
-				$data['endorsements'][] = $author['id'];
-			}
+			$insert = function($comments, $args) use (&$insert, &$endorse) {
+				while($args) {
+					$key = array_shift($args);
+
+					if (isset($comments[$key])) {
+						$result = (array) $comments[$key] + array(
+							'comments' => array(), 'endorsements' => array()
+						);
+						$comments[$key]['comments'] = $insert($result['comments'], $args);
+						$comments[$key]['endorsements'] = $endorse($result);
+					}
+				}
+				return $comments;
+			};
+			$comments = $insert($data['comments'], $args);
 		}
-		$result = $post->save($data);
-		return $result;
+
+		$endorsements = $endorse($data);
+		return $self->save(compact('comments', 'endorsements'));
 	}
 
 	public static function endorsements($data = array()) {

@@ -28,6 +28,10 @@ class PostTest extends \lithium\test\Unit {
 		$post = Post::create(array('title' => 'another title', 'content' => 'the content'));
 		$post->save();
 		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
 		$data = array(
 			'content' => 'cool',
 			'user' => array(
@@ -38,6 +42,10 @@ class PostTest extends \lithium\test\Unit {
 		$result = $post->comment(compact('data', 'args'));
 
 		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
 		$expected = 1;
 		$result = count($post->comments);
 		$this->assertEqual($expected, $result);
@@ -63,6 +71,10 @@ class PostTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
 		$expected = 1;
 		$result = count($post->comments->first()->comments);
 		$this->assertEqual($expected, $result);
@@ -88,6 +100,10 @@ class PostTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
 		$expected = 2;
 		$result = count($post->comments->first()->comments);
 		$this->assertEqual($expected, $result);
@@ -122,10 +138,13 @@ class PostTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
 		$expected = 2;
 		$result = count($post->comments->first()->comments);
 		$this->assertEqual($expected, $result);
-
 
 		$comments = $post->comments->first()->comments->data();
 		$expected = 'super nice';
@@ -142,7 +161,69 @@ class PostTest extends \lithium\test\Unit {
 	}
 
 	public function testEndorse() {
+		$post = Post::create(array('title' => 'another title', 'content' => 'the content'));
+		$post->save();
+		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
 
+		$author = array(
+			'id' => 'gwoo@somewhere.com', 'username' => 'gwoo', 'email' => 'gwoo@somewhere.com'
+		);
+		$args = null;
+		$data = array('content' => 'ok', 'user' => $author);
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+		
+		$post = Post::find($post->id);
+		$result = $post->endorse(compact('author', 'args'));		
+		$this->assertTrue($result);
+
+		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+		
+		$expected = 1;
+		$result = count($post->endorsements);
+		$this->assertEqual($expected, $result);
+
+		$args = array('0');
+		$data = array('content' => 'nice', 'user' => $author);
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+
+		$post = Post::find($post->id);
+		$result = $post->endorse(compact('author', 'args'));
+		$this->assertTrue($result);
+
+		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
+		$expected = 1;
+		$result = count($post->comments->first()->endorsements);
+		$this->assertEqual($expected, $result);
+
+		$args = array('0', '0');
+		$data = array('content' => 'super nice', 'user' => $author);
+		$result = $post->comment(compact('data', 'args'));
+		$this->assertTrue($result);
+		
+		$post = Post::find($post->id);
+		$result = $post->endorse(compact('author', 'args'));
+		$this->assertTrue($result);
+
+		$post = Post::find($post->id);
+		$expected = 'the content';
+		$result = $post->content;
+		$this->assertEqual($expected, $result);
+
+		$expected = 1;
+		$result = count($post->comments->first()->comments->first()->endorsements);
+		$this->assertEqual($expected, $result);
 	}
 
 	public function testEndorsements() {
