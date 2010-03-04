@@ -37,9 +37,10 @@ class Search extends \lithium\data\Model {
         }
     }
 
-	public function post($self) {
+	public function post($record) {
+		$record->doc->id = $record->doc->_id;
 		return new $this->_classes['recordSet'](array(
-			'items' => $self->doc->data(),
+			'items' => $record->doc->data(),
 			'model' => '\app\models\Post'
 		));
 	}
