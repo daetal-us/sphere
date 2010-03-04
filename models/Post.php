@@ -20,20 +20,14 @@ class Post extends \lithium\data\Model {
 	protected $_schema = array(
 		'title' => array('type' => 'string', 'length' => 250),
 		'content' => array('type' => 'text'),
+		'rating' => array('type' => 'numeric', 'default' => 0),
 		'comment_count' => array('type' => 'numeric', 'default' => 0),
 		'created' => array('type' => 'date'),
 	);
 
-	/**
-	 * The \app\models\User related to the post
-	 *
-	 * @var \app\models\User
-	 */
-	protected $_user = null;
-
 	public static function __init(array $options = array()) {
 		parent::__init($options);
-		static::applyFilter('save', function ($self, $params, $chain) {
+		static::applyFilter('save', function ($record, $params, $chain) {
 			$params['record']->type = 'post';
 			if (empty($params['record']->created)) {
 				$params['record']->id = Inflector::slug($params['record']->title);
@@ -42,29 +36,29 @@ class Post extends \lithium\data\Model {
 					$params['record']->user_id = $user['id'];
 				}
 			}
-			return $chain->next($self, $params, $chain);
+			return $chain->next($record, $params, $chain);
 		});
 	}
 
-	public function user($self) {
-		if (!empty($self->_user)) {
-			return $self->_user;
+	public function user($record) {
+		if (!empty($record->_user)) {
+			return $record->_user;
 		}
-		return $self->_user = User::find($self->user_id);
+		return $record->_user = User::find($record->user_id);
 	}
 
-	public function comment($self, $params = array()) {
+	public function comment($record, $params = array()) {
 		$default = array('args' => array(), 'data' => array());
 		$params += $default;
 		extract($params);
 
 		$comment = Comment::create($data);
 
-		if (empty($self->id) || !$comment->save()) {
+		if (empty($record->id) || !$comment->save()) {
 			return null;
 		}
 		$data = $comment->data();
-		$comments = !empty($self->comments) ? $self->comments->data() : array();
+		$comments = !empty($record->comments) ? $record->comments->data() : array();
 
 		$insert = function($comments, $args) use (&$insert, $data) {
 			while($args) {
@@ -79,21 +73,21 @@ class Post extends \lithium\data\Model {
 			return array_merge((array) $comments, array($data));
 		};
 		$comments  = $insert($comments, $args);
-		$comment_count = $self->comment_count + 1;
-		return $self->save(compact('comments', 'comment_count'));
+		$comment_count = $record->comment_count + 1;
+		return $record->save(compact('comments', 'comment_count'));
 	}
 
-	public function endorse($self, $options = array()) {
+	public function endorse($record, $options = array()) {
 		$defaults = array(
 			'author' => Session::read('user'), 'args' => array(),
 		);
 		$options += $defaults;
 		extract($options);
 
-		if (empty($self->id) || empty($author['id'])) {
+		if (empty($record->id) || empty($author['id'])) {
 			return false;
 		}
-		$data = $self->data() + array('endorsements' => array());
+		$data = $record->data() + array('endorsements' => array());
 
 		$endorse = function ($data) use ($author) {
 			if (array_search($author['id'], $data['endorsements']) !== false) {
@@ -119,30 +113,22 @@ class Post extends \lithium\data\Model {
 			};
 			$comments = $insert($data['comments'], $args);
 		}
-
 		$endorsements = $endorse($data);
-		return $self->save(compact('comments', 'endorsements'));
+		return $record->save(compact('comments', 'endorsements'));
 	}
 
-	public static function endorsements($data = array()) {
-		$rating = 0;
-		if (!empty($data)) {
-			if (!empty($data->endorsements)) {
-				$rating = count($data->endorsements);
-			}
-			if (!empty($data->comment_count)) {
-				$rating += ($data->comment_count * .5);
-			}
-			if (!empty($data->comments)) {
-				$data->comments->first();
-				while ($comment = $data->comments->current()) {
-					$comment = static::endorsements($comment);
-					$data->comments->next();
-				}
+	public function rating($record) {
+		$rating = (integer) count($record->endorsements);
+		$rating += ((integer) $record->comment_count * .5);
+		if (!empty($record->comments)) {
+			$record->comments->first();
+			while($comment = $record->comments->current()) {
+				$rating += (integer) $comment->rating();
+				$record->comments->next();
 			}
 		}
-		$data->set(array('rating' => round($rating)));
-		return $data;
+		$record->set(compact('rating'));
+		return $rating;
 	}
 }
 

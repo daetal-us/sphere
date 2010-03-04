@@ -69,7 +69,7 @@ class PostsController extends \lithium\action\Controller {
 		}
 		$author = Session::read('user');
 		$args = $this->request->args;
-		$endorsement = Post::endorse($id, compact('post', 'author', 'args'));
+		$endorsement = $post->endorse(compact('args'));
 		$this->redirect(array(
 			'controller' => 'posts', 'action' => 'comment', 'id' => $id
 		));

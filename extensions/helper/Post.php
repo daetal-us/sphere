@@ -34,14 +34,12 @@ class Post extends \lithium\template\Helper {
 		$options += $defaults;
 		extract($options);
 		$html = $this->_context->helper('html');
+		$post->rating();
 
-		$ratingClass = null;
-		if (empty($post->rating)) {
-			$ratingClass = ' empty';
-			$post->rating = null;
-		}
-		$rating = 	'<span class="post-rating' . $ratingClass .
-						'"><span>' . $post->rating . '</span></span>';
+		$ratingClass = ($post->rating == 0 ? ' empty' : null);
+		$rating = '<span class="post-rating' . $ratingClass .'">' .
+			'<span>' . $post->rating . '</span>' .
+		'</span>';
 		$image = $html->image(
 			'http://gravatar.com/avatar/'.md5($post->user()->email).'?s='.$gravatar['size'],
 			array('class' => 'gravatar')

@@ -37,12 +37,14 @@ class Thread extends \lithium\template\Helper {
 		$parts = array();
 
 		$user = Session::read('user');
+		$thread->rating();
 
 		foreach ($thread->comments as $key => $comment) {
 			$comment->id = $thread->id;
 			if (empty($comment->user)) {
 				continue;
 			}
+
 			$args = array_merge($parent, (array) $key);
 
 			$commentUrl = Router::match(array(
@@ -98,19 +100,19 @@ class Thread extends \lithium\template\Helper {
 			}
 			$style = 'style="background-image:url(http://gravatar.com/avatar/' .
 				md5($comment->user->email) . '?s=16);"';
-			$name = $comment->user->username;
 
 			$timestamp = strtotime($comment->created);
 			$date = date("F j, Y, g:i a T", $timestamp);
 			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">{$date}" .
 						"<span class=\"timestamp\">{$timestamp}</span></span>";
 
-			$author = "<b>{$name}</b>";
+			$author = "<b>{$comment->user->username}</b>";
 			$author = "<span class=\"post-comment-author\" $style>{$author}</span>";
 
-			$rating = 	"<span class=\"post-comment-rating " .
-							((empty($comment->rating) ? 'empty' : '' )) .
-							"\">{$comment->rating}</span>";
+			$ratingClass = ($comment->rating == 0 ? ' empty' : null);
+			$rating = '<span class="post-comment-rating' . $ratingClass .'">' .
+				$comment->rating .
+			'</span>';
 
 			$meta = 	'<span class="post-comment-source">posted ' . $time . ' by ' . $author .
 						'</span>' . $rating;

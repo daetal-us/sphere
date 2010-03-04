@@ -175,16 +175,16 @@ class PostTest extends \lithium\test\Unit {
 		$data = array('content' => 'ok', 'user' => $author);
 		$result = $post->comment(compact('data', 'args'));
 		$this->assertTrue($result);
-		
+
 		$post = Post::find($post->id);
-		$result = $post->endorse(compact('author', 'args'));		
+		$result = $post->endorse(compact('author', 'args'));
 		$this->assertTrue($result);
 
 		$post = Post::find($post->id);
 		$expected = 'the content';
 		$result = $post->content;
 		$this->assertEqual($expected, $result);
-		
+
 		$expected = 1;
 		$result = count($post->endorsements);
 		$this->assertEqual($expected, $result);
@@ -211,7 +211,7 @@ class PostTest extends \lithium\test\Unit {
 		$data = array('content' => 'super nice', 'user' => $author);
 		$result = $post->comment(compact('data', 'args'));
 		$this->assertTrue($result);
-		
+
 		$post = Post::find($post->id);
 		$result = $post->endorse(compact('author', 'args'));
 		$this->assertTrue($result);
@@ -226,8 +226,13 @@ class PostTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 	}
 
-	public function testEndorsements() {
+	public function testRating() {
+		$this->testEndorse();
+		$post = Post::find('another-title');
 
+		$expected = 5.5;
+		$result = $post->rating();
+		$this->assertEqual($expected, $result);
 	}
 
 }
