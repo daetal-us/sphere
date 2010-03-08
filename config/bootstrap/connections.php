@@ -8,9 +8,11 @@
 
 use \lithium\data\Connections;
 
-Connections::add('default', 'http', array(
+Connections::add('default', array(
+	'type' => 'Http',
 	'adapter' => 'CouchDb',
 	'host' => 'localhost',
+	'database' => 'lithosphere'
 ));
 
 ?>

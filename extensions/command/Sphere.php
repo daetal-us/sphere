@@ -17,9 +17,9 @@ class Sphere extends \lithium\console\Command {
 	 */
 	public function install() {
 		$this->header('Sphere');
-		foreach (array_keys(SphereView::$views) as $view) {
+		foreach (SphereView::$views as $key => $view) {
 			SphereView::create($view)->save();
-			$this->_check('\app\models\SphereView', $view);
+			$this->_check('\app\models\SphereView', $key);
 		}
 	}
 

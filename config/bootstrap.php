@@ -50,6 +50,11 @@ require __DIR__ . '/bootstrap/libraries.php';
 require __DIR__ . '/bootstrap/action.php';
 
 /**
+ * This file defines the available database connections for the appliction.
+ */
+require __DIR__ . '/bootstrap/connections.php';
+
+/**
  * This file contains your application's globalization rules, including inflections,
  * transliterations, localized validation, and how localized text should be loaded. Uncomment this
  * line if you plan to globalize your site.
@@ -79,7 +84,7 @@ Auth::config(array(
 ));
 
 // use \lithium\action\Dispatcher;
-// 
+//
 // Dispatcher::applyFilter('_call', function($self, $params, $chain) {
 // 	$result = Auth::check('user', $params['request']);
 // 	return $chain->next($self, $params, $chain);

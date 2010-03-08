@@ -3,6 +3,7 @@
 namespace app\tests\cases\extensions\helper;
 
 use \app\extensions\helper\Thread;
+use \lithium\data\collection\Document;
 use \lithium\net\http\Router;
 
 class ThreadTest extends \lithium\test\Unit {
@@ -33,37 +34,34 @@ class ThreadTest extends \lithium\test\Unit {
 							)
 						)
 					)
-				),
+				)
+			)
+		);
+
+		$document = new Document(array('items' => $data, 'model' => '\app\models\Post'));
+		$result = $thread->comments($document);
+		$this->assertNull($result);
+
+		$data->comments[] = (object) array(
+			'content' => 'two',
+			'user' => (object) array(
+				'id' => 'user@example.com',
+				'username' => 'user name',
+				'email' => 'user@example.com'
+			),
+			'comments' => array(
 				(object) array(
-					'content' => 'two',
+					'content' => 'two-one',
 					'comments' => array(
-						(object) array(
-							'content' => 'two-one',
-							'comments' => array(
-								(object) array('content' => 'two-one-one')
-							)
-						)
+						(object) array('content' => 'two-one-one')
 					)
 				)
 			)
 		);
-		$expected = '<ul><li>one : <a href="' . $this->_base . '/posts/comment/1/0">reply</a>'
-			. '<ul><li>one-one : <a href="' . $this->_base . '/posts/comment/1/0/0">reply</a>'
-			. '<ul><li>one-one-one : <a href="' . $this->_base . '/posts/comment/1/0/0/0">reply</a></li></ul>'
-			. '</li></ul></li>'
-			. '<li>two : <a href="' . $this->_base . '/posts/comment/1/1">reply</a>'
-			. '<form action="' . $this->_base . '" method="POST">'
-			. "\n"
-			. '<textarea name="comments[1][comments][1][content]"></textarea>'
-			. "\n"
-			. '<input type="submit" value="save" />'
-			. "\n"
-			. '</form>'
-			. '<ul><li>two-one : <a href="' . $this->_base . '/posts/comment/1/1/0">reply</a>'
-			. '<ul><li>two-one-one : <a href="' . $this->_base . '/posts/comment/1/1/0/0">reply</a>'
-			. '</li></ul></li></ul></li></ul>';
-		$result = $thread->comments($data, array('args' => array('0' => 1)));
-		$this->assertEqual($expected, $result);
+
+		$document = new Document(array('items' => $data, 'model' => '\app\models\Post'));
+		$result = $thread->comments($document);
+		$this->assertTrue(!empty($result));
 	}
 }
 class MockThreadRenderer extends \lithium\template\view\Renderer {
@@ -78,7 +76,7 @@ class MockThreadRenderer extends \lithium\template\view\Renderer {
 		return $this->_request;
 	}
 
-	public function render($template, $data = array(), $options = array()) {
+	public function render($template, $data = array(), array $options = array()) {
 	}
 }
 ?>

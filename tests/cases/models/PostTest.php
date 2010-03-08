@@ -9,7 +9,12 @@ use \lithium\data\model\Query;
 class PostTest extends \lithium\test\Unit {
 
 	public function setUp() {
-		Connections::add('test', 'http', array('adapter' => 'CouchDb', 'port' => '35984'));
+		Connections::add('test', array(
+			'type' => 'Http',
+			'adapter' => 'CouchDb',
+			'port' => '5984',
+			'database' => 'test_posts'
+		));
 		Connections::get('test')->describe('test_posts');
 		Post::__init(array('connection' => 'test', 'source' => 'test_posts'));
 	}

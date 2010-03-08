@@ -4,8 +4,6 @@ namespace app\models;
 
 class SphereView extends \lithium\data\Model {
 
-	protected $_meta = array('source' => 'lithosphere');
-
 	public static $views = array(
 		'all' => array(
 			'id' => '_design/all',
@@ -102,13 +100,6 @@ class SphereView extends \lithium\data\Model {
 			),
 		),
 	);
-
-	public static function create($data = 'latest') {
-		if (!isset(static::$views[$data])) {
-			return false;
-		}
-		return parent::create(static::$views[$data]);
-	}
 }
 
 ?>
