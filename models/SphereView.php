@@ -32,7 +32,7 @@ class SphereView extends \lithium\data\Model {
 			'language' => 'javascript',
 			'views' => array(
 				'by_username' => array(
-					'map' => 'function(doc) {   
+					'map' => 'function(doc) {
 						if(doc.type && doc.type == "user" && doc.username) {
 							emit(doc.username, doc);
 						}
@@ -40,68 +40,67 @@ class SphereView extends \lithium\data\Model {
 				)
 			)
 		),
-        /**
-         * For the search we are going to do a very simple
-         * saerch to start with a very simple search that
-         * will return all values from within the title and
-         * from the content of a post, for a searched term. 
-         */
-        'search' => array(
-            'id'       => '_design/search',
-            'fulltext' => array(
-                // Search by the post title
-                'by_title' => array(
-                    'index' => 'function(doc) {
-                        var ret = new Document();
-                        if (doc.type && doc.type == "post" && doc.title) {
-                            ret.add(doc.title);
-                        }
+		/**
+		 * For the search we are going to do a very simple search to start with a very simple search
+		 * that will return all values from within the title and from the content of a post, for a
+		 * searched term.
+		 */
+		'search' => array(
+			'id' => '_design/search',
+			'fulltext' => array(
+				// Search by the post title
+				'by_title' => array(
+					'index' => 'function(doc) {
+						var ret = new Document();
+						if (doc.type && doc.type == "post" && doc.title) {
+							ret.add(doc.title);
+						}
 
-                        return ret;
-                    }'
-                ),
+						return ret;
+					}'
+				 ),
 
-                // Search by the post content
-                'by_content' => array(
-                    'index' => 'function(doc) {
-                        var ret = new Document();
-                        if (doc.type && doc.type == "post" && doc.type) {
-                            ret.add(doc.content);
-                        }
+				// Search by the post content
+				'by_content' => array(
+					'index' => 'function(doc) {
+						var ret = new Document();
+						if (doc.type && doc.type == "post" && doc.type) {
+							ret.add(doc.content);
+						}
 
-                        return ret;
-                    }'
-                ),
+						return ret;
+					}'
+				 ),
 
-                // Search by user email
-                'by_email' => array(
-                    'index' => 'function(doc) {
-                        var ret = new Document();
-                        if (doc.type && doc.type == "user") {
-                            ret.add(doc.email);
-                        }
+				// Search by user email
+				'by_email' => array(
+					'index' => 'function(doc) {
+						var ret = new Document();
+						if (doc.type && doc.type == "user") {
+							ret.add(doc.email);
+						}
 
-                        return ret;
-                    }'
-                ),
+						return ret;
+					}'
+				 ),
 
-                // Search by comment
-                'by_comments' => array(
-                    'index' => 'function(doc) {
-                        var ret = new Document();
-                        if (doc.type && doc.type == "post" && doc.comments && doc.comments.length > 0) {
-                            for (var i = 0; i < doc.comments.length; i++) {
-                                if (doc.comments[i] && doc.comments[i].content) {
-                                    ret.add(doc.comments[i].content);
-                                }
-                            }
-                        }
+				// Search by comment
+				'by_comments' => array(
+					'index' => 'function(doc) {
+						var ret = new Document();
+						if (doc.type && doc.type == "post" && doc.comments && doc.comments.length > 0) {
+							for (var i = 0; i < doc.comments.length; i++) {
+								if (doc.comments[i] && doc.comments[i].content) {
+									ret.add(doc.comments[i].content);
+								}
+							}
+						}
 
-                        return ret;
-                    }'
-                ),
-            ),
-        ),
+						return ret;
+					}'
+				),
+			),
+		),
 	);
 
 	public static function create($data = 'latest') {
