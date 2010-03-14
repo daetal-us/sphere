@@ -26,12 +26,6 @@ Router::connect('/users/login/{:return}', array('controller' => 'users', 'action
 Router::connect('/search', array('controller' => 'search', 'action' => 'index'));
 
 /**
- * Connect the testing routes.
- */
-Router::connect('/test/{:args}', array('controller' => '\lithium\test\Controller'));
-Router::connect('/test', array('controller' => '\lithium\test\Controller'));
-
-/**
  * Finally, connect the default routes.
  */
 Router::connect('/{:controller}/{:action}/{:id:[0-9]+}.{:type}', array('id' => null));
