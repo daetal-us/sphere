@@ -6,8 +6,6 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-namespace lithium;
-
 /**
  * This is the path to the class libraries used by your application, and must contain a copy of the
  * Lithium core.  By default, this directory is named 'libraries', and resides in the same
@@ -43,6 +41,11 @@ if (!include LITHIUM_LIBRARY_PATH . '/lithium/core/Libraries.php') {
 require __DIR__ . '/bootstrap/libraries.php';
 
 /**
+ * This file defines the available database connections for the appliction.
+ */
+require __DIR__ . '/bootstrap/connections.php';
+
+/**
  * This file defines bindings between classes which are triggered during the request cycle, and
  * allow the framework to automatically configure its environmental settings. You can add your own
  * behavior and modify the dispatch cycle to suit your needs.
@@ -50,9 +53,16 @@ require __DIR__ . '/bootstrap/libraries.php';
 require __DIR__ . '/bootstrap/action.php';
 
 /**
- * This file defines the available database connections for the appliction.
+ * This file contains configurations for connecting to external caching resources, as well as
+ * default caching rules for various systems within your application
  */
-require __DIR__ . '/bootstrap/connections.php';
+require __DIR__ . '/bootstrap/cache.php';
+
+/**
+ * This file contains configuration for session (and/or cookie) storage, and user or web service
+ * authentication.
+ */
+require __DIR__ . '/bootstrap/session.php';
 
 /**
  * This file contains your application's globalization rules, including inflections,
@@ -62,38 +72,14 @@ require __DIR__ . '/bootstrap/connections.php';
 // require __DIR__ . '/bootstrap/g11n.php';
 
 /**
- * This file contains filters for the test suite to bypass having a controller and render test
- * templates directly through the test dispatcher.
+ * This file contains configurations for handling different content types within the framework,
+ * including converting data to and from different formats, and handling static media assets.
  */
-require __DIR__ . '/bootstrap/test.php';
+// require __DIR__ . '/bootstrap/media.php';
 
 /**
- * This configures your session storage. The Cookie storage adapter must be connected first, since
- * it intercepts any writes where the `'expires'` key is set in the options array.  When creating a
- * new application, it is suggested that you change the value of `'key'` below.
+ * This file configures console filters and settings, specifically output behavior and coloring.
  */
-use \lithium\storage\Session;
-
-Session::config(array(
-	'default' => array('adapter' => 'Php')
-));
-
-use \lithium\security\Auth;
-
-Auth::config(array(
-	'user' => array(
-		'adapter' => 'Form',
-		'model' => 'app\models\User',
-		'query' => 'login',
-		'fields' => array('username', 'password')
-	)
-));
-
-// use \lithium\action\Dispatcher;
-//
-// Dispatcher::applyFilter('_call', function($self, $params, $chain) {
-// 	$result = Auth::check('user', $params['request']);
-// 	return $chain->next($self, $params, $chain);
-// });
+require __DIR__ . '/bootstrap/console.php';
 
 ?>

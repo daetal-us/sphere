@@ -11,9 +11,9 @@
 
 body.test-dashboard {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 90%;
+	font-size: 16px;
 	margin: 0;
-	overflow-x: hidden;
+	min-width: 800px;
 }
 
 body.test-dashboard a {
@@ -40,10 +40,6 @@ body.test-dashboard .triangle:before {
 
 body.test-dashboard #header {
 	padding: 0;
-	background: #f6f6f6;
-	-moz-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	-webkit-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	box-shadow: 0 0 6px rgba(0,0,0,.25);
 }
 
 body.test-dashboard #header:after {
@@ -59,18 +55,19 @@ body.test-dashboard .article {
 body.test-dashboard .test-content {
 	float:left;
 	padding: 2em 2% 4em;
-	width: 75%;
+	width: 74%;
 }
 
 .test-content h2 {
 	font-weight: normal;
-	font-size: 1.5em;
+	font-size: 1.45em;
+	margin-bottom: .5em;
 	float: left;
 }
 .test-content h2 span {
-	color: #ccc;
+	color: #bbb;
 	display: block;
-	font-size: .65em;
+	font-size: .55em;
 }
 .test-content h3 {
 	font-weight: normal;
@@ -85,7 +82,7 @@ body.test-dashboard a.test-button:active {
 	display: block;
 	float: right;
 	font-weight: bold;
-	font-size: 1.25;
+	font-size: 1.25em;
 	background-color:#f5f5f5;
 	border-color: #e6e6e6;
 	color: #999;
@@ -112,26 +109,24 @@ body.test-dashboard a.test-button:active {
 }
 
 body.test-dashboard ul {
-	margin: .25em 0 0 0;
+	margin: .25em 0;
 	padding: 0.2em 0 0 0;
 }
 
-body.test-dashboard li {
+body.test-dashboard ul ul li {
 	display: block;
-	margin: 0 0 1px 0;
+	margin: 0 0 1px .5em;
 	padding: 0.25em 0 0 0.75em;
-	background: rgba(0,0,0,.03);
-	border: 1px solid rgba(0,0,0,0.02);
-	border-width: 0 0 1px 1px;
+	border: 1px solid rgba(0,0,0,0.05);
+	border-width: 0 0 0 1px;
 }
 
 body.test-dashboard .test-menu {
 	float: left;
-	padding: 0;
+	padding: .75em 0 1em 1%;
 	width: 20%;
-	background: white;
+	background: #f6f6f6;
 	font-size: .85em;
-	border-right: 1px solid rgba(0,0,0,0.02);
 }
 
 .test-dashboard .test-menu > ul {
@@ -142,7 +137,6 @@ body.test-dashboard .test-menu {
 	margin-top: .1em;
 }
 .test-dashboard .test-menu li:hover {
-	background: rgba(0,0,0,0.01);
 }
 .test-dashboard .test-menu li > ul {
 	display: block;
@@ -159,20 +153,17 @@ ul.menu a {
 	display: block;
 }
 
-ul.menu a:hover {
-
-}
-
-ul.menu a:hover, ul.menu a:active {
+ul.menu a:hover, ul.menu a:active, ul.menu a.menu-folder:hover {
 	color: black;
 }
 
-a.menu-folder {
-	color: #333 !important;
+ul.menu a.menu-folder {
+	color: #333;
 	font-weight: bold;
 	text-decoration: none;
 	font-size: 1.2em;
 }
+
 
 a.test-all {
 	display: block;
@@ -180,25 +171,18 @@ a.test-all {
 	font-size: 1.5em;
 	text-align: center;
 	text-decoration: none;
-	padding: .25em 0;
-	margin: .5em 4%;
-	width: 12%;
-	color: rgba(255,255,255,.25) !important;
-	background: #454545;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	-moz-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	-webkit-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	box-shadow: 0 0 6px rgba(0,0,0,.25);
-	border: 1px solid rgba(0,0,0,.05);
+	padding: .75em 0;
+	width: 21%;
+	color: #666;
+	background: #e6e6e6;
 }
 a.test-all:hover {
 	background: #60AF12;
+	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.25);
+	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.25);
+	box-shadow: inset 0 0 12px rgba(0,0,0,.25);
 	color: white !important;
-	-moz-box-shadow: inset 0 0 6px rgba(0,0,0,.25);
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.25);
-	box-shadow: inset 0 0 6px rgba(0,0,0,.25);
+	text-shadow: 0px 0px 6px rgba(0,0,0,.5);
 }
 
 ul.menu a {
@@ -206,19 +190,19 @@ ul.menu a {
 	padding: 0.1em 0;
 }
 
-ul.menu a:before, a.menu-folder:before {
+ul.menu a:before, a.menu-folder:before, ul.metrics li:before {
 	display: inline !important;
 	float: none !important;
 	padding: 0 0.5em 0 0;
 	content: '\25B4';
 	font-weight: normal;
-	color: rgba(0,0,0,.15)
+	color: rgba(0,0,0,.1);
 }
 a.menu-folder:before {
 	padding: 0 !important;
 	content: '\25B2' !important;
 }
-ul.menu a:hover:before, a.menu-folder:hover:before {
+ul.menu a:hover:before, a.menu-folder:hover:before, ul.metrics li:hover:before {
 	color: #60AF12;
 }
 
@@ -270,19 +254,29 @@ ul.classes, ul.files {
 	font-family: 'Andale Mono', Monaco, Courier, monospace !important;
 }
 
+ul.metrics {
+	list-style-type: none;
+	padding: .5em !important;
+}
+
+ul.metrics li {
+	padding: .25em;
+}
+
 /*--- Test Results ---*/
 div.test-result {
 	clear: both;
 	margin: 1em 0 .5em;
-	padding: 8px 10px;
+	padding: .75em 1em .55em;
 	color: #FFFFFF;
+	background: #666;
 	border: 1px solid #000000;
 	border-width: 0 0 4px 0;
-	font-weight: bold;
-	font-size: 16px;
-	-moz-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	-webkit-box-shadow: 0 0 6px rgba(0,0,0,.25);
-	box-shadow: 0 0 6px rgba(0,0,0,.25);
+	font-size: 1.15em;
+	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.25);
+	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.25);
+	box-shadow: inset 0 0 12px rgba(0,0,0,.25);
+	text-shadow: 0px 0px 6px rgba(0,0,0,.5);
 }
 
 div.test-result-success {
@@ -295,57 +289,92 @@ div.test-result-fail {
 	border-color: #7F0D0D;
 }
 
+div.test-result-exception {
+	background-color: #E58F16;
+	border-color: #995F0F;
+}
+div.test-result-notice {
+	background-color: #E5D416;
+	border-color: #B2A511;
+}
+
+div.test-result code {
+	background: rgba(0,0,0,.25);
+	color: rgba(255,255,255,.85);
+	border: none;
+	font-size: .75em;
+	padding: .1em .5em !important;
+	text-shadow: none;
+}
+
 div.test-assert, div.test-exception, div.test-skip {
 	margin: 1px 0 0 0;
-	padding: .5em 1em;
+	padding: .5em 0 .5em 1em;
 	color: #000000;
 	font-family: 'Andale Mono', Monaco, Courier, monospace !important;
-	font-size: .75em;
+	font-size: 1em;
 	line-height: 1.5em;
 	position: relative;
+	border: 1px solid rgba(0,0,0,.05);
+	border-width:0 0 1px 8px;
 }
 
 div.test-assert-passed {
-	background-color: #D0F9E0;
+	border-left-color: #D0F9E0;
 }
 
 div.test-assert-failed {
 	color: #7F0D0D;
-	border: 1px solid #CC1414;
-	border-width: 0 0 1px 4px;
+	border-left-color: #CC1414;
 }
 
 div.test-exception {
-	background: #CC1414;
-	color: white;
-}
-
-div.test-assert span.content, div.test-exception span.content, div.test-exception span.trace {
-	display: block;
-	clear: both;
-	white-space: pre;
-}
-
-div.test-exception span.content {
-	font-style: italic;
-}
-
-div.test-exception span.trace {
-	padding: 0 0 0 5px;
-	margin: 2px 0 2px 3px;
-	border-left: 1px solid #C09090;
+	color: #995F0F;
+	border-left-color: #E58F16;
 }
 
 div.test-skip {
 	background-color: #fafafa;
 	color: #666;
-	border: 1px solid rgba(0,0,0,.05);
-	border-width:0 0 1px 4px;
+}
+
+.test-assert span.content,
+.test-exception span.content,
+.test-skip span.content,
+.test-assert span.trace,
+.test-exception span.trace,
+.test-skip span.trace {
+	display: block;
+	clear: both;
+	white-space: pre;
+	color: #777;
+	font-size: .9em;
+	padding: .5em 1em;
+	margin: .5em 0;
+	background: #fafafa;
+	border: 1px solid rgba(0,0,0,.1);
+	-moz-box-shadow: inset 0 0 6px rgba(0,0,0,.15);
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.15);
+	box-shadow: inset 0 0 6px rgba(0,0,0,.15);
+}
+
+.test-assert span.trace {
+	padding: 0 .5em;
+	margin: .25em 0 .25em .5em;
+	background: #FAFAFA;
+}
+
+div.test-exception span.trace {
+	font-style: italic;
 }
 
 div.test-skip span.content {
-	display: block;
-	font-style: italic;
+	color: #999;
+	padding: 0 1em;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	border: none;
 }
 /*--- SQL Dumps ---*/
 .lithium-sql-log table {
@@ -367,8 +396,8 @@ pre {
 
 pre.lithium-debug {
 	background: #ffcc00;
-	font-size: 120%;
-	line-height: 140%;
+	font-size: 1.2em;
+	line-height: 1.5em;
 	margin-top: 1em;
 	overflow: auto;
 	position: relative;
@@ -380,8 +409,8 @@ div.lithium-stack-trace {
 	color: #333;
 	margin: 0px;
 	padding: 6px;
-	font-size: 120%;
-	line-height: 140%;
+	font-size: 1.2em;
+	line-height: 1.5em;
 	overflow: auto;
 	position: relative;
 }
@@ -402,8 +431,8 @@ div.lithium-stack-trace pre, div.lithium-code-dump pre {
 
 div.lithium-code-dump pre, div.lithium-code-dump pre code {
 	clear: both;
-	font-size: 12px;
-	line-height: 15px;
+	font-size: 1em;
+	line-height: 1.5em;
 	margin: 4px 2px;
 	padding: 4px;
 	overflow: auto;
@@ -423,7 +452,7 @@ span.filters {
 span.filters a {
 	display: block;
 	float: left;
-	padding: .5em;
+	padding: .5em 1em;
 	margin-left: .25em;
 	text-decoration:none;
 	-moz-border-radius: 4px;
@@ -441,14 +470,15 @@ span.filters a:hover, span.filters a.active {
 }
 
 span.filters a.active {
-	background: #454545;
+	background: #62B212;
+	text-shadow: 0px 0px 6px rgba(0,0,0,.5);
 	color: white;
 }
 
-div.code-coverage-results {
+div.code-coverage-results, h4.code-coverage-name {
 	clear: both;
 	color: #000000;
-	font-size: 11px;
+	font-size: .8em;
 	font-family: 'Andale Mono', Monaco, Courier, monospace !important;
 	background-color: #fafafa;
 	border: 1px solid #e6e6e6;
@@ -466,11 +496,11 @@ h4.coverage {
 }
 
 h4.code-coverage-name {
-	color: rgba(0,0,0,.25);
-	padding: 0.25em;
-	margin: 0;
-	font-family: 'Andale Mono', Monaco, Courier, monospace !important;
-	font-size: .85em;
+	color: #999;
+	background-color: #ECECEC;
+	border-top: none;
+	padding: 0.25em 0.5em;
+	margin: 0 1px 0 0;
 	font-weight: normal;
 	float: right;
 }
@@ -485,35 +515,41 @@ div.code-coverage-results span.content {
 	display: block;
 	clear: right;
 	white-space: pre;
-	line-height: 20px;
+	line-height: 1.5em;
+	min-height: 1.5em;
+	background: black;
 }
 
 div.code-coverage-results div.uncovered span.content {
-	color: #bd0b0b;
-	background-color: #ffe5e5;
+	color: #FFD8D8;
+	background-color: #260000;
 }
 
 div.code-coverage-results div.covered span.content {
-	color: #457D0D;
-	background-color: #e6f2da;
+	color: #DDFDCB;
+	background-color: #0C2600;
 }
 
 div.code-coverage-results div.ignored span.content {
-	color: rgba(0,0,0,.03);
+	color: rgba(255,255,255,.5);
 }
 
 div.code-coverage-results span.line-num {
 	display: block;
 	float: left;
 	width: 3em;
-	color: #A9A9A9;
-	color: rgba(0,0,0,.25);
-	text-align: right;
+	color: #999;
 	background-color: #ECECEC;
-	background: rgba(0,0,0,.05);
-	padding-right: 2px;
+	text-align: right;
+	border-right: 1px solid #ccc;
+	padding-right: 4px;
 	margin-right: 5px;
-	line-height: 20px;
+	line-height: 1.5em;
+}
+
+div.code-coverage-results .code-line:hover span.line-num {
+	background: #ddd;
+	color: #666;
 }
 
 div.code-coverage-results span.line-num strong {
@@ -542,7 +578,7 @@ div.code-coverage-results p.note {
 	color: #bbb;
 	padding: 5px;
 	margin: 5px 0 10px;
-	font-size: 10px;
+	font-size: .8em;
 }
 
 div.code-coverage-results span.result-bad {

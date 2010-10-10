@@ -10,8 +10,8 @@
 <html>
 <head>
 	<?php echo $this->html->charset();?>
-	<title>Sphere ❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('http://lithify.me/css/lithium.css', 'sphere'));?>
+	<title>▴❍ <?php echo $this->title?></title>
+	<?php echo $this->html->style(array('http://localhost/lithify_me/css/reset.css', 'http://localhost/lithify_me/css/base.css', 'http://localhost/lithify_me/css/forms.css', 'http://localhost/lithify_me/css/polish.css', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -29,9 +29,6 @@
 					echo $this->html->link('logout', array(
 						'controller' => 'users', 'action' => 'logout'
 					));
-					echo $this->html->link('search', array(
-						'controller' => 'search', 'action' => 'index'
-					));
 				} else {
 					echo $this->html->link('login', array(
 						'controller' => 'users', 'action' => 'login'
@@ -42,33 +39,53 @@
 					));
 				}
 			?>
+			| <?php echo $this->html->link('new post', array('controller' => 'posts', 'action' => 'add')); ?>
 		</div>
 	</div>
 	<div class="width-constraint">
 		<div class="nav timespan">
 			<nav>
 				<span id="timespan-icon" class="icon">Timespan</span>
+				<?php
+				$source = $date = null;
+				if (isset($filters['source'])) {
+					$source = $filters['source'][0];
+				}
+				if (isset($filters['date'])) {
+					$date = $filters['date'][0];
+				}
+				?>
 				<ul>
-					<li><a href="#">today</a></li>
-					<li><a href="#">yesterday</a></li>
-					<li><a href="#" title="1 week">1wk</a></li>
-					<li><a href="#" title="2 weeks">2wk</a></li>
-					<li><a href="#" title="1 month">1mo</a></li>
-					<li><a href="#" title="1 year">1yr</a></li>
-					<li><a href="#" class="active">all</a></li>
+					<li><?php echo $this->sphere->link('today', 'source/date', array('date' => 'today') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('yesterday', 'source/date', array('date' => 'yesterday') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('1wk', 'source/date', array('date' => '1wk') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('2wk', 'source/date', array('date' => '2wk') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('1mo', 'source/date', array('date' => '1mo') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('1yr', 'source/date', array('date' => '1yr') + compact('source','filters'));?></li>
+					<li><?php echo $this->sphere->link('all', 'source/date', array('date' => null) + compact('source','filters'));?></li>
 				</ul>
 			</nav>
 		</div>
-		<div class="nav sources">
+		<div class="nav search">
 			<nav>
-				<span id="sources-icon" class="icon">Sources</span>
+				<?php
+				echo $this->form->create(null, array('url' => array('controller' => 'search', 'action' => 'index'), 'method' => 'GET', 'class' => 'mini-search-form'));
+				echo $this->form->text('q', array('class' => 'search-query', 'value' => (isset($q) ? $q : null)));
+				echo $this->form->submit('Search', array('class' => 'search-submit'));
+				echo $this->form->end();
+				?>
+			</nav>
+		</div>
+		<div class="nav sources closed">
+			<nav>
+				<span id="sources-icon" class="icon" title="Click me to toggle the Sources drawer.">Sources</span>
 				<ul>
-					<li><a href="#" class="active">All</a></li>
-					<li><a href="#">Sphere</a></li>
+					<li><?php echo $this->sphere->link('<span>All</span>', 'source/date', array('escape' => false, 'class' => 'all', 'source' => null, 'title' => 'All sources') + compact('date','filters'));?></li>
+					<li><?php echo $this->sphere->link('<span>Sphere</span>', 'source/date', array('escape' => false, 'class' => 'sphere', 'source' => 'sphere', 'title' => 'Sphere') + compact('date','filters'));?></li>
+					<li><?php echo $this->sphere->link('<span>Lithium Network</span>', 'source/date', array('escape' => false, 'class' => 'lithium', 'source' => 'lithium', 'title' => 'Lithium') + compact('date','filters'));?></li>
 				</ul>
 			</nav>
 		</div>
-		<?php echo $this->html->link('contribute', array('controller' => 'posts', 'action' => 'add'), array('class' => 'new-post')); ?>
 		<div id="content">
 			<div class="article">
 				<article>
@@ -78,7 +95,7 @@
 		</div>
 	</div>
 	<?php echo $this->html->script(array(
-		'http://code.jquery.com/jquery-1.4.2.min.js',
+		'jquery-1.4.1.min',
 		"sphere",
 		"jquery.oembed",
 		"pretty.date",
@@ -96,5 +113,6 @@
 			RadCli.setup();
 		});
 	</script>
+	<?php if (isset($this->viewJs)) echo $this->viewJs; ?>
 </body>
 </html>

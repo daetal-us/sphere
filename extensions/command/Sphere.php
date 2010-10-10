@@ -3,6 +3,7 @@
 namespace app\extensions\command;
 
 use \app\models\SphereView;
+use \lithium\data\Connections;
 
 /**
  * Command to assist in setup and management of Sphere
@@ -16,11 +17,51 @@ class Sphere extends \lithium\console\Command {
 	 * @return boolean
 	 */
 	public function install() {
-		$this->header('Sphere');
-		foreach (SphereView::$views as $key => $view) {
-			SphereView::create($view)->save();
-			$this->_check('\app\models\SphereView', $key);
+		$this->header('Lithium Sphere Installer');
+		$this->hr();
+
+		if (!$this->_database()) {
+			$this->out('The database could not be created.');
+			return false;
 		}
+
+		foreach (SphereView::$views as $key => $view) {
+			if (!$existing = SphereView::first($view['id'])) {
+				$view = SphereView::create($view);
+				$view->save();
+				if ($this->_check($view->model(), $key)) {
+					$this->out("`{$view->id}` created.");
+				}
+			} else {
+				$this->out("View `{$existing->id}` already exists.");
+				$choice = $this->in('Would you like to update this view?', array(
+					'choices' => array('n', 'y')
+				));
+				if ($choice == 'y') {
+					$existing->set($view + $existing->to('array'));
+					$existing->save();
+					if ($this->_check($existing->model(), $key)) {
+						$this->out("`{$existing->id}` updated.");
+					}
+				} else {
+					$this->out("`{$existing->id}` skipped!");
+				}
+			}
+			$this->out();
+		}
+	}
+
+	protected function _database() {
+		$connection = SphereView::meta('connection');
+		if (!$config = Connections::config($connection)) {
+			$this->out("Database connection `{$connection}` is not configured.");
+			return false;
+		}
+		$database = $config['database'];
+		$this->out("Verifying database `{$database}`...");
+		$this->out();
+		Connections::get($connection)->describe($database);
+		return true;
 	}
 
 	protected function _check($model, $name = null) {

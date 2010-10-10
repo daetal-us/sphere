@@ -17,7 +17,7 @@ class PostsController extends \lithium\action\Controller {
 	}
 
 	public function add() {
-		if (!$user = Session::read('user')) {
+		if (!$user = Session::read('user', array('name' => 'li3_user'))) {
 			$this->redirect(array(
 				'controller' => 'users', 'action' => 'login'
 			));
@@ -42,7 +42,7 @@ class PostsController extends \lithium\action\Controller {
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
-		$user = Session::read('user');
+		$user = Session::read('user', array('name' => 'li3_user'));
 
 		if (!empty($this->request->data)) {
 			if (!$user) {
@@ -67,7 +67,7 @@ class PostsController extends \lithium\action\Controller {
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
-		$author = Session::read('user');
+		$author = Session::read('user', array('name' => 'li3_user'));
 		$args = $this->request->args;
 		$endorsement = $post->endorse(compact('args'));
 		$this->redirect(array(

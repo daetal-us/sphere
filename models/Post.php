@@ -2,10 +2,10 @@
 
 namespace app\models;
 
-use \lithium\data\model\Document;
+use \lithium\data\collection\DocumentSet;
 use \lithium\util\Inflector;
 use \lithium\storage\Session;
-use \app\models\User;
+use \li3_users\models\User;
 use \app\models\Comment;
 
 class Post extends \lithium\data\Model {
@@ -15,28 +15,60 @@ class Post extends \lithium\data\Model {
 		'content' => array('notEmpty', 'message' => 'Please supply some content.'),
 	);
 
-	protected $_meta = array('source' => 'lithosphere');
+	protected $_meta = array(
+		'source' => 'lithosphere',
+		'locked' => false
+	);
 
 	protected $_schema = array(
+		'id' => array('type' => 'string'),
+		'rev' => array('type' => 'string'),
 		'title' => array('type' => 'string', 'length' => 250),
 		'content' => array('type' => 'text'),
 		'rating' => array('type' => 'numeric', 'default' => 0),
+		'comments' => array('type' => 'array'),
 		'comment_count' => array('type' => 'numeric', 'default' => 0),
 		'created' => array('type' => 'date'),
+		'type' => array('type' => 'string', 'default' => 'post'),
+		'user_username' => array('type' => 'string'),
+		'user_id' => array('type' => 'string')
 	);
 
 	public static function __init(array $options = array()) {
 		parent::__init($options);
-		static::applyFilter('save', function ($record, $params, $chain) {
-			$params['record']->type = 'post';
-			if (empty($params['record']->created)) {
-				$params['record']->id = Inflector::slug($params['record']->title);
-				$params['record']->created = date('Y-m-d H:i:s');
-				if ($user = Session::read('user')) {
-					$params['record']->user_id = $user['id'];
+		static::applyFilter('save', function ($self, $params, $chain) {
+			if (empty($params['entity']->created)) {
+				$params['entity']->id = Inflector::slug($params['entity']->title);
+				$params['entity']->created = time();
+				if (!empty($params['entity']->tags) && is_string($params['entity']->tags)) {
+					$params['entity']->tags = explode(
+						",", str_replace(' ', '', $params['entity']->tags)
+					);
+				}
+				if ($user = Session::read('user', array('name' => 'li3_user'))) {
+					$params['entity']->user_username = $user['username'];
+					$params['entity']->user_id = $user['id'];
 				}
 			}
-			return $chain->next($record, $params, $chain);
+			return $chain->next($self, $params, $chain);
+		});
+
+		static::applyFilter('find', function ($self, $params, $chain) {
+			$result = $chain->next($self, $params, $chain);
+
+			if (empty($result)) {
+				return $result;
+			}
+
+			if (!empty($result->comments)) {
+				$comments = new DocumentSet(array(
+					'data' => $result->comments->data(),
+					'model' => 'app\models\Comment'
+				));
+				$result->set(compact('comments'));
+			}
+
+			return $result;
 		});
 	}
 
@@ -48,6 +80,7 @@ class Post extends \lithium\data\Model {
 	}
 
 	public function comment($record, $params = array()) {
+		$record = static::first($record->id);
 		$default = array('args' => array(), 'data' => array());
 		$params += $default;
 		extract($params);
@@ -72,14 +105,17 @@ class Post extends \lithium\data\Model {
 			}
 			return array_merge((array) $comments, array($data));
 		};
+		$record->comment_count++;
+
 		$comments  = $insert($comments, $args);
-		$comment_count = $record->comment_count + 1;
-		return $record->save(compact('comments', 'comment_count'));
+		$record->set(compact('comments'));
+
+		return $record->save();
 	}
 
 	public function endorse($record, $options = array()) {
 		$defaults = array(
-			'author' => Session::read('user'), 'args' => array(),
+			'author' => Session::read('user', array('name' => 'li3_user')), 'args' => array(),
 		);
 		$options += $defaults;
 		extract($options);
@@ -89,35 +125,19 @@ class Post extends \lithium\data\Model {
 		}
 		$data = $record->data() + array('endorsements' => array());
 
-		$endorse = function ($data) use ($author) {
+		$endorse = function ($data, $args) use ($author) {
 			if (array_search($author['id'], $data['endorsements']) !== false) {
 				return $data['endorsements'];
 			}
 			$data['endorsements'][] = $author['id'];
 			return $data['endorsements'];
 		};
-		if (!empty($args)) {
-			$insert = function($comments, $args) use (&$insert, &$endorse) {
-				while($args) {
-					$key = array_shift($args);
-
-					if (isset($comments[$key])) {
-						$result = (array) $comments[$key] + array(
-							'comments' => array(), 'endorsements' => array()
-						);
-						$comments[$key]['comments'] = $insert($result['comments'], $args);
-						$comments[$key]['endorsements'] = $endorse($result);
-					}
-				}
-				return $comments;
-			};
-			$comments = $insert($data['comments'], $args);
-		}
-		$endorsements = $endorse($data);
+		$endorsements = $endorse($data, $args);
 		return $record->save(compact('comments', 'endorsements'));
 	}
 
 	public function rating($record) {
+		return 0;
 		$rating = (integer) count($record->endorsements);
 		$rating += ((integer) $record->comment_count * .5);
 		if (!empty($record->comments)) {

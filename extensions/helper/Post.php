@@ -13,7 +13,6 @@ class Post extends \lithium\template\Helper {
 		}
 		$defaults = array(
 			'class' => 'posts',
-			'gravatar' => array('size' => '64', 'link' => false)
 		);
 		$options += $defaults;
 		extract($options);
@@ -28,33 +27,43 @@ class Post extends \lithium\template\Helper {
 	}
 
 	public function row($post, $options = array()) {
-		$defaults = array(
-			'gravatar' => array('size' => '64', 'link' => false)
-		);
-		$options += $defaults;
 		extract($options);
+
 		$html = $this->_context->helper('html');
+		$gravatar = $this->_context->helper('gravatar');
+
 		$post->rating();
 
 		$ratingClass = ($post->rating == 0 ? ' empty' : null);
 		$rating = '<span class="post-rating' . $ratingClass .'">' .
 			'<span>' . $post->rating . '</span>' .
 		'</span>';
-		$image = $html->image(
-			'http://gravatar.com/avatar/'.md5($post->user()->email).'?s='.$gravatar['size'],
-			array('class' => 'gravatar')
-		);
-		if ($gravatar['link']) {
-			$image = $html->link($img, $gravatar['link'], array('escape' => false));
-		}
+		$image = $html->image($gravatar->url($post->user()->email), array('class' => 'gravatar'));
+
+		$image = $html->link($image, array(
+			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
+		), array('escape' => false));
 
 		$heading = '<h2>' . $html->link($post->title, array(
 			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
 		)) . '</h2>';
 
-		$author = 	'<span class="post-author">submitted by '
-			. '<b>' . $post->user()->username . '</b>'
-			. '</span>';
+		$author = $html->link($post->user()->username, array(
+			'controller' => 'search',
+			'action' => 'index',
+			'args' => '?q=author:'.$post->user()->username
+		), array(
+			'class' => 'post-author',
+			'title' => 'Search for more posts by this author',
+			'style' => 'background-image:url(' . $gravatar->url(array(
+				'email' => $post->user()->email, 'params' => array('size' => 16)
+			)) . ')'
+		));
+
+		$timestamp = $post->created;
+		$date = $date = date("F j, Y, g:i a T", $timestamp);
+		$time = "<span class=\"post-created pretty-date\" title=\"{$date}\">{$date}" .
+					"<span class=\"timestamp\">{$timestamp}</span></span>";
 
 		$count = (empty($post->comment_count) ? 0 : $post->comment_count);
 		$commentsClass = ($count > 0) ? (($count > 1) ? 'many' : 'one') : 'none';
@@ -66,7 +75,7 @@ class Post extends \lithium\template\Helper {
 			),
 			array('class' => 'comments ' . $commentsClass)
 		);
-		return '<li class="post">' . $image . $rating . $heading . $author . $comments .'</li>';
+		return '<li class="post">' . $image . $rating . $heading . $comments . $author . $time . '</li>';
 	}
 }
 

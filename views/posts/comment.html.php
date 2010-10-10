@@ -5,15 +5,17 @@ use \lithium\net\http\Router;
 
 	<h1><?=$this->title($post->title);?></h1>
 
-	<?php $date = date("F j, Y, g:i a T", strtotime($post->created)); ?>
-	<span class="post-date pretty-date" title="<?=$date;?>">
-		<?=$date;?>
-		<span class="timestamp"><?=strtotime($post->created);?></span>
-	</span>
-	<?php $gravatar = "http://gravatar.com/avatar/" . md5($post->user()->email) . "?s=16"; ?>
-	<span class="post-author" style="background-image:url(<?=$gravatar;?>);">
-		submitted by <b><?=$post->user()->username;?></b>
-	</span>
+	<div class="post-meta">
+		<?php $date = date("F j, Y, g:i a T", $post->created); ?>
+		<span class="post-date pretty-date" title="<?=$date;?>">
+			<?=$date;?>
+			<span class="timestamp"><?=$post->created;?></span>
+		</span>
+		<?php $gravatar = $this->gravatar->url(array('email' => $post->user()->email, 'params' => array('size' => 16))); ?>
+		<span class="post-author" style="background-image:url(<?=$gravatar;?>);">
+			<?=$this->html->link($post->user()->username, array('controller' => 'search', 'action' => 'index', 'args' => '?q=author:'.$post->user()->username), array('title' => 'Search for more posts by this author'));?>
+		</span>
+	</div>
 
 	<div class="post-content">
 		<pre class="markdown"><?php
@@ -21,11 +23,11 @@ use \lithium\net\http\Router;
 		?></pre>
 	</div>
 	<?php
-		$commentClass = 'post-comment';
+		$commentClass = 'button post-comment';
 		$commentUrl = Router::match(
 			array('controller' => 'posts', 'action' => 'comment', 'id' => $post->id)
 		);
-		$endorseClass = 'endorse-post';
+		$endorseClass = 'button endorse-post';
 		$endorseUrl = Router::match(
 			array('controller' => 'posts', 'action' => 'endorse',
 			'args' => array('id' => $post->id))
@@ -55,9 +57,9 @@ use \lithium\net\http\Router;
 	<?php echo $endorse;?>
 	<?php echo $comment;?>
 
-	<h3>comments</h3>
 	<?php if (!empty($user)) { ?>
 	<div id="add-comment" style="display:none;">
+		<h3>add a comment</h3>
 		<?php echo $this->form->create(); ?>
 		<?php echo $this->form->textarea("content"); ?>
 		<?php echo $this->form->submit('post comment'); ?>
@@ -65,9 +67,14 @@ use \lithium\net\http\Router;
 	</div>
 	<?php } ?>
 
+	<h3 class="comments">comments</h3>
+
 	<?php
 	$args = $this->request()->args;
 	if (!empty($post->comments)) {
+		if ($post->comments->count() != $post->comment_count) {
+				echo $this->html->link('open all comments', '#', array('class' => 'view-all-comments button'));
+			}
 		echo $this->thread->comments($post, compact('args'));
 	}
 	?>

@@ -3,7 +3,7 @@
 namespace app\models;
 
 use \lithium\data\Connections;
-use \lithium\data\collection\Document;
+use \lithium\data\collection\DocumentSet;
 
 class Search extends \lithium\data\Model {
 
@@ -11,43 +11,45 @@ class Search extends \lithium\data\Model {
 
 	public static function __init(array $options = array()) {
 		parent::__init($options);
-		$self = static::_instance();
+		$self = static::_object();
 		$self->_setupFinders();
 	}
 
 	protected function _setupFinders() {
 		$finders = array(
-			'by_title',
-			'by_subject',
-			'by_email',
-			'by_comments'
+			'posts'
 		);
-		$self = static::_instance();
+		$self = static::_object();
 		foreach ($finders as $finder) {
 			$self->_finders[$finder] = function($self, $params, $chain) {
 				$query = (array) $params['options']['conditions'] + array('include_docs' => 'true');
 				$connection = Connections::get($self::meta('connection'));
 				$result = $connection->get(
-					$self::meta('source') . '/_fti/search/' . $params['type'],
+					$self::meta('source') . '/_fti/_design/search/' . $params['type'],
 					$query, array('type' => null)
 				);
 				if (empty($result->total_rows)) {
 					return 0;
 				}
-				return new Document(array(
-					'items' => $result,
+				return new DocumentSet(array(
+					'data' => $result->rows,
 					'model' => __CLASS__
 				));
 			};
 		}
 	 }
 
-	public function post($record) {
-		$record->doc->id = $record->doc->_id;
-		return new Document(array(
-			'items' => $record->doc->data(),
-			'model' => '\app\models\Post'
-		));
+	/**
+	 * Extract post data from a search result row and return as a Post model
+	 *
+	 * @param object $result
+	 * @return object Post data
+	 * @see \app\models\Post
+	 */
+	public function post($result) {
+		$result->doc->id = $result->doc->_id;
+		$data = $result->data();
+		return \app\models\Post::create($data['doc']);
 	}
 
 }

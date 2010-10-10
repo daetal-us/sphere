@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Anologue: anonymous, linear dialogue
  *
  * @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -17,31 +17,40 @@
  * @see lithium\util\collection\Filters
  */
 
-use \lithium\net\http\Router;
-use \lithium\core\Environment;
-use \lithium\action\Dispatcher;
+use lithium\core\Libraries;
+use lithium\net\http\Router;
+use lithium\core\Environment;
+use lithium\action\Dispatcher;
 
 /**
- * Loads application routes before the request is dispatched.  Change this to `include_once` if
- * more than one request cycle is executed per HTTP request.
+ * This filter intercepts the `run()` method of the `Dispatcher`, and first passes the `'request'`
+ * parameter (an instance of the `Request` object) to the `Environment` class to detect which
+ * environment the application is running in. Then, loads all application routes in all plugins,
+ * loading the default application routes last.
  *
- * @see lithium\net\http\Router
- */
-Dispatcher::applyFilter('run', function($self, $params, $chain) {
-	include __DIR__ . '/../routes.php';
-	return $chain->next($self, $params, $chain);
-});
-
-/**
- * Intercepts the `Dispatcher` as it finds a controller object, and passes the `'request'` parameter
- * to the `Environment` class to detect which environment the application is running in.
+ * Change this code if plugin routes must be loaded in a specific order (i.e. not the same order as
+ * the plugins are added in your bootstrap configuration), or if application routes must be loaded
+ * first (in which case the default catch-all routes should be removed).
+ *
+ * If `Dispatcher::run()` is called multiple times in the course of a single request, change the
+ * `include`s to `include_once`.
  *
  * @see lithium\action\Request
  * @see lithium\core\Environment
+ * @see lithium\net\http\Router
  */
-Dispatcher::applyFilter('_callable', function($self, $params, $chain) {
+Dispatcher::applyFilter('run', function($self, $params, $chain) {
 	Environment::set($params['request']);
+
+	foreach (array_reverse(Libraries::get()) as $name => $config) {
+		if ($name === 'lithium') {
+			continue;
+		}
+		$file = "{$config['path']}/config/routes.php";
+		file_exists($file) ? include $file : null;
+	}
 	return $chain->next($self, $params, $chain);
 });
+
 
 ?>

@@ -61,8 +61,13 @@ var li3Sphere = {
 						"![image text](http://example.com/image.jpg) &nbsp; &nbsp; " +
 						"<code>`code`</code> &nbsp; &nbsp; " +
 						"<pre><code>{{{ code }}}</code></pre>";
-			var html = $("<div class=\"markdown-help\"><h4>markdown help:</h4>"+help+"</div>");
+			var html = $("<a class=\"icon toggle-markdown-help\" href=\"#\">markdown help</a><div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>"+help+"</div>");
 			$(e).append(html);
+			$(e).find('.toggle-markdown-help').toggle(function() {
+				$(this).siblings('.markdown-help').show('normal');
+			}, function() {
+				$(this).siblings('.markdown-help').hide('normal');
+			});
 		});
 	},
 
@@ -84,10 +89,17 @@ var li3Sphere = {
 		var width = '2em';
 		var leftMargin = '7em';
 		var timespanLM = '12em';
+		var showText = false;
 		if (menu.hasClass('closed')) {
 			width = '15em';
 			leftMargin = '0';
 			timespanLM = '18em';
+			showText = true;
+		}
+		if (showText) {
+			menu.find('ul li a span').fadeIn('fast');
+		} else {
+			menu.find('ul li a span').fadeOut('fast');
 		}
 		$('.nav.timespan').animate({
 			marginLeft: timespanLM
@@ -97,7 +109,7 @@ var li3Sphere = {
 			marginLeft: leftMargin
 		}, 250, function() {
 			$('.nav.sources').toggleClass('closed');
-		})
+		});
 	},
 
 	setupComments: function() {
@@ -115,12 +127,12 @@ var li3Sphere = {
 
 		//Comment Reply Links
 		$('a.post-comment-reply:not(.inactive)').click(function() {
-			var form = $(this).siblings('form');
+			var form = $(this).siblings('.post-comment-author-content').find('form');
 			if (form.length == 0) {
 				form = $("#add-comment form").clone().attr({
 					action: $(this).attr('href')
 				}).hide();
-				$(this).siblings('.post-comment-content').after(form);
+				$(this).siblings('.post-comment-author-content').find('.post-comment-content').after(form);
 			}
 			$(form).animate({
 				opacity: "toggle"
@@ -130,13 +142,30 @@ var li3Sphere = {
 
 		//Thread View Links
 		$('a.view-post-comment-replies').click(function() {
-			$(this).toggleClass("open");
-			var comments = [$(this).siblings('ul.comments'), $(this).siblings('ul.comments').find('ul.comments')];
-			$(comments).each(function(i,e) {
-				$(e).animate({
-					opacity: "toggle"
-				});
+			var comments = $(this).siblings('ul.comments');
+			if ($(this).hasClass('open')) {
+				comments.fadeOut();
+				$(this).removeClass('open');
+				$(this).text($(this).data('original.text'));
+			} else {
+				comments.fadeIn();
+				$(this).addClass('open');
+				$(this).data('original.text', $(this).text());
+				$(this).text('hide replies');
+			}
+			return false;
+		});
+
+		$('a.view-all-comments').click(function() {
+			$('a.view-post-comment-replies').each(function(i,e) {
+				if (!$(this).hasClass('open')) {
+					$(this).siblings('ul.comments').fadeIn();
+					$(this).addClass('open');
+					$(this).data('original.text', $(this).text());
+					$(this).text('hide replies');
+				}
 			});
+			$(this).fadeOut('fast');
 			return false;
 		});
 	},

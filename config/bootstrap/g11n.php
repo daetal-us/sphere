@@ -6,67 +6,41 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
+namespace lithium;
+
+use \lithium\core\Environment;
+use \lithium\g11n\Locale;
+use \lithium\g11n\Catalog;
 use \lithium\g11n\Message;
-use \lithium\util\String;
+use \lithium\util\Inflector;
+use \lithium\util\Validator;
 use \lithium\net\http\Media;
+use \lithium\action\Dispatcher as ActionDispatcher;
+use \lithium\console\Dispatcher as ConsoleDispatcher;
 
 /**
- * Implements logic for handling cases where `Message::translate()` returns without a result.
- * The  message specified for the `'default'` option will be used as a fall back. By
- * default the value for the options is the message passed to the method.
+ * Sets the default timezone used by all date/time functions.
  */
-Message::applyFilter('translate', function($self, $params, $chain) {
-	$params['options'] += array('default' => $params['id']);
-	return $chain->next($self, $params, $chain) ?: $params['options']['default'];
-});
+date_default_timezone_set('UTC');
 
 /**
- * Placeholders in translated messages.  Adds support for `String::insert()`-style placeholders
- * to translated messages.  Placeholders may be used within the message and replacements provided
- * directly within the `options` argument.
+ * Adds globalization specific settings to the environment.
  *
- * Usage:
- * {{{
- * Message::translate('Your {:color} paintings are looking just great.', array(
- * 	'color' => 'silver',
- * 	'locale' => 'fr'
- * ));
- * }}}
+ * The settings for the current locale, time zone and currency are kept as environment
+ * settings. This allows for _centrally_ switching, _transparently_ setting and retrieving
+ * globalization related settings.
  *
- * @see lithium\util\String::insert()
+ * The environment settings are:
+ * - `'locale'` The effective locale.
+ * - `'locales'` Application locales available mapped to names. The available locales are used
+ *               to negotiate he effective locale, the names can be used i.e. when displaying
+ *               a menu for choosing the locale to users.
  */
-Message::applyFilter('translate', function($self, $params, $chain) {
-	return String::insert($chain->next($self, $params, $chain), $params['options']);
-});
-
-/**
- * Embeds message translation content filters into the `View` class (or other content handler,
- * if specified) when content is rendered. This enables short-hand translation functions, i.e.
- * `<?=$t("Translated content"); ?>`.
- */
-Media::applyFilter('_handle', function($self, $params, $chain) {
-	$params['handler'] += array('outputFilters' => array());
-	$params['handler']['outputFilters'] += Message::contentFilters();
-	return $chain->next($self, $params, $chain);
-});
-
-/*
- * Inflector configuration examples.  If your application has custom singular or plural rules, or
- * extra non-ASCII characters to transliterate, you can configure that by uncommenting the lines
- * below.
- */
-// use lithium\util\Inflector;
-//
-// Inflector::rules('singular', array('rules' => array('/rata/' => '\1ratus')));
-// Inflector::rules('singular', array('irregular' => array('foo' => 'bar')));
-//
-// Inflector::rules('plural', array('rules' => array('/rata/' => '\1ratum')));
-// Inflector::rules('plural', array('irregular' => array('bar' => 'foo')));
-//
-// Inflector::rules('transliteration', array('/É|Ê/' => 'E'));
-//
-// Inflector::rules('uninflected', 'bord');
-// Inflector::rules('uninflected', array('bord', 'baird'));
+$locale = 'en';
+$locales = array('en' => 'English');
+Environment::set('production', compact('locale', 'locales'));
+Environment::set('development', compact('locale', 'locales'));
+Environment::set('test', array('locale' => 'en', 'locales' => array('en' => 'English')));
 
 /**
  * Globalization (g11n) catalog configuration.  The catalog allows for obtaining and
@@ -84,38 +58,85 @@ Media::applyFilter('_handle', function($self, $params, $chain) {
  *     need to specify a scope for each configuration, except for those using the _memory_,
  *     _php_ or _gettext_ adapter which handle this internally.
  */
-// use lithium\g11n\Catalog;
-//
-// Catalog::config(array(
-// 	'runtime' => array(
-// 		'adapter' => 'Memory'
-// 	),
+Catalog::config(array(
+	'runtime' => array(
+		'adapter' => 'Memory'
+	),
 // 	'app' => array(
 // 		'adapter' => 'Gettext',
 // 		'path' => LITHIUM_APP_PATH . '/resources/g11n'
 // 	),
-// 	'lithium' => array(
-// 		'adapter' => 'Php',
-// 		'path' => LITHIUM_LIBRARY_PATH . '/lithium/g11n/resources/php'
-// 	)
-// ));
+	'lithium' => array(
+		'adapter' => 'Php',
+		'path' => LITHIUM_LIBRARY_PATH . '/lithium/g11n/resources/php'
+	)
+) + Catalog::config());
 
 /**
- * Globalization runtime data.  You can add globalized data during runtime utilizing a
- * configuration set up to use the _memory_ adapter.
+ * Integration with `Inflector`.
  */
-// $data = function($n) { return $n != 1 ? 1 : 0; };
-// Catalog::write('message.plural', 'root', $data, array('name' => 'runtime'));
+// Inflector::rules('transliteration', Catalog::read(true, 'inflection.transliteration', 'en'));
 
-/**
- * Enabling globalization integration.  Classes in the framework are designed with
- * globalization in mind. To enable globalization for these classes we just need to pass
- * the needed data into them.
+/*
+ * Inflector configuration examples.  If your application has custom singular or plural rules, or
+ * extra non-ASCII characters to transliterate, you can configure that by uncommenting the lines
+ * below.
  */
-// use lithium\util\Validator;
-// use lithium\util\Inflector;
+// Inflector::rules('singular', array('rules' => array('/rata/' => '\1ratus')));
+// Inflector::rules('singular', array('irregular' => array('foo' => 'bar')));
 //
-// Validator::add('phone', Catalog::read('validation.phone', 'en_US'));
-// Inflector::rules('transliteration', Catalog::read('inflection.transliteration', 'en'));
+// Inflector::rules('plural', array('rules' => array('/rata/' => '\1ratum')));
+// Inflector::rules('plural', array('irregular' => array('bar' => 'foo')));
+//
+// Inflector::rules('transliteration', array('/É|Ê/' => 'E'));
+//
+// Inflector::rules('uninflected', 'bord');
+// Inflector::rules('uninflected', array('bord', 'baird'));
+
+
+/**
+ * Integration with `View`. Embeds message translation aliases into the `View`
+ * class (or other content handler, if specified) when content is rendered. This
+ * enables translation functions, i.e. `<?=$t("Translated content"); ?>`.
+ */
+Media::applyFilter('_handle', function($self, $params, $chain) {
+	$params['handler'] += array('outputFilters' => array());
+	$params['handler']['outputFilters'] += Message::aliases();
+	return $chain->next($self, $params, $chain);
+});
+
+/**
+ * Integration with `Validator`. You can load locale dependent rules into the `Validator`
+ * by specifying them manually or retrieving them with the `Catalog` class.
+ */
+foreach (array('phone', 'postalCode', 'ssn') as $name) {
+	Validator::add($name, Catalog::read(true, "validation.{$name}", 'en_US'));
+}
+
+/**
+ * Intercepts dispatching processes in order to set the effective locale by using
+ * the locale of the request or if that is not available retrieving a locale preferred
+ * by the client.
+ */
+ActionDispatcher::applyFilter('_callable', function($self, $params, $chain) {
+	$request = $params['request'];
+	$controller = $chain->next($self, $params, $chain);
+
+	if (!$request->locale) {
+		$request->params['locale'] = Locale::preferred($request);
+	}
+	Environment::set(Environment::get(), array('locale' => $request->locale));
+	return $controller;
+});
+ConsoleDispatcher::applyFilter('_callable', function($self, $params, $chain) {
+	$request = $params['request'];
+	$command = $chain->next($self, $params, $chain);
+
+	if (!$request->locale) {
+		$request->params['locale'] = Locale::preferred($request);
+	}
+	Environment::set(Environment::get(), array('locale' => $request->locale));
+	return $command;
+});
 
 ?>

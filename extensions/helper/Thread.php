@@ -32,11 +32,12 @@ class Thread extends \lithium\template\Helper {
 		}
 		$html = $this->_context->helper('html');
 		$oembed = $this->_context->helper('oembed');
+		$gravatar = $this->_context->helper('gravatar');
 		$defaults = array('args' => null);
 		$options += $defaults;
 		$parts = array();
 
-		$user = Session::read('user');
+		$user = Session::read('user', array('name' => 'li3_user'));
 		$thread->rating();
 
 		foreach ($thread->comments as $key => $comment) {
@@ -71,7 +72,7 @@ class Thread extends \lithium\template\Helper {
 				'<span>reply</span>',
 				$commentUrl,
 				array(
-					'class' => 'post-comment-reply' . ((empty($user)) ? ' inactive' : ''),
+					'class' => 'button post-comment-reply' . ((empty($user)) ? ' inactive' : ''),
 					'title' => 'reply to this comment',
 					'escape' => false
 				)
@@ -80,7 +81,7 @@ class Thread extends \lithium\template\Helper {
 				'<span>endorse</span>',
 				$endorseUrl,
 				array(
-					'class' => 'endorse-post-comment',
+					'class' => 'button endorse-post-comment',
 					'title' => 'endorse this comment',
 					'escape' => false
 				)
@@ -91,34 +92,38 @@ class Thread extends \lithium\template\Helper {
 			'</pre>';
 
 			$replies = null;
-			if (empty($parent) && !empty($comment->comment_count)) {
+			if (!empty($comment->comment_count)) {
 				$replies = $html->link(
 					"view replies ({$comment->comment_count})",
 					'#',
 					array('class' => 'view-post-comment-replies')
 				);
 			}
-			$style = 'style="background-image:url(http://gravatar.com/avatar/' .
-				md5($comment->user->email) . '?s=16);"';
 
-			$timestamp = strtotime($comment->created);
+			$timestamp = $comment->created;
 			$date = date("F j, Y, g:i a T", $timestamp);
 			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">{$date}" .
 						"<span class=\"timestamp\">{$timestamp}</span></span>";
 
-			$author = "<b>{$comment->user->username}</b>";
-			$author = "<span class=\"post-comment-author\" $style>{$author}</span>";
+			$size = $this->threadedIconSize(count($args));
+			$style = 'style="padding:' . $size . 'px 0 0 0; width:' . $size . 'px; background-image:url('.$gravatar->url(array(
+				'email' => $comment->user->email, 'params' => compact('size')
+			)).');"';
+			$author = "<span $style title=" . $comment->user->username . "></span>";
 
 			$ratingClass = ($comment->rating == 0 ? ' empty' : null);
 			$rating = '<span class="post-comment-rating' . $ratingClass .'">' .
 				$comment->rating .
 			'</span>';
 
-			$meta = 	'<span class="post-comment-source">posted ' . $time . ' by ' . $author .
-						'</span>' . $rating;
+			$meta = 	$time . $rating;
 
-			$row = 	"<div class=\"meta aside\"><aside>{$meta}<aside></div> {$reply} {$endorsement}" .
-						"<div class=\"post-comment-content\">{$comment->content}</div> {$replies}";
+			$row = 	"<div class=\"meta aside\"><aside>{$rating}<aside></div> {$endorsement} {$reply}" .
+						"<div class=\"post-comment-author-icon\">{$author} </div>" .
+						"<div class=\"post-comment-author-content\" style=\"padding-left:" . $size . "px;\"><div class=\"post-comment-author\">" .
+						$html->link($comment->user->username, array('controller' => 'search', 'action' => 'index', 'args' => '?q=author:'.$comment->user->username), array('title' => 'Search for more posts by this author')) .
+						" {$time}</div>" .
+						"<div class=\"post-comment-content\">{$comment->content}</div></div> {$replies}";
 
 			// if (isset($options['args']) && $options['args'] == $args) {
 			// 	$next = (!empty($comment->comments) ? count($comment->comments) : 0);
@@ -133,6 +138,14 @@ class Thread extends \lithium\template\Helper {
 		}
 		$list = join("", $parts);
 		return "<ul class=\"comments\">{$list}</ul>";
+	}
+
+	protected function threadedIconSize($factor) {
+		$result = 64;
+		if ($factor > 1) {
+			$result = floor($result * (1.61803399 / $factor));
+		}
+		return ($result > 16) ? $result : 16;
 	}
 }
 ?>

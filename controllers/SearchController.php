@@ -8,13 +8,45 @@ use \lithium\storage\Session;
 
 class SearchController extends \lithium\action\Controller {
 
+
 	public function index() {
-		if (isset($this->request->query) && isset($this->request->query['term'])) {
-			$term = $this->request->query['term'];
-			$results = Search::find('by_title', array('conditions' => array('q' => $term)));
-			return compact('results');
+		$q = $results = null;
+		if (isset($this->request->query) && isset($this->request->query['q'])) {
+			$q = $this->request->query['q'];
+			$results = Search::find('posts', array('conditions' => compact('q')));
 		}
-		return true;
+		return compact('q','results');
+	}
+
+	/**
+	 * Filter posts by common rules as defined in application routes.
+	 *
+	 * @see /app/config/routes.php
+	 */
+	public function filter() {
+		$filters = $this->request->params['filter'];
+
+		$q = array();
+		foreach ($filters as $filter => $options) {
+			$q[] = "{$filter}:{$options[2]}";
+		}
+		$q = implode(' && ', $q);
+
+		$results = Search::find('posts', array('conditions' => compact('q')));
+
+		$title = '';
+
+		if (!empty($filters['source'])) {
+			$title = $filters['source'][1];
+		}
+
+		$title .= ' posts';
+
+		if (!empty($filters['date'])) {
+			$title .= $filters['date'][1];
+		}
+
+		return compact('title','filters','results');
 	}
 
 }

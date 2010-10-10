@@ -4,6 +4,24 @@ namespace app\models;
 
 class SphereView extends \lithium\data\Model {
 
+	protected $_meta = array(
+		'key' => 'id',
+		'name' => null,
+		'title' => null,
+		'class' => null,
+		'locked' => false,
+		'source' => null,
+		'connection' => 'default',
+		'initialized' => false
+	);
+
+	public $_schema = array(
+		'id' => array('type' => 'string', 'primary' => true),
+		'language' => array('type' => 'string', 'default' => 'javascript'),
+		'views' => array('type' => 'array'),
+		'fulltext' => array('type' => 'array')
+	);
+
 	public static $views = array(
 		'all' => array(
 			'id' => '_design/all',
@@ -15,90 +33,81 @@ class SphereView extends \lithium\data\Model {
 							emit(doc.created, doc);
 						}
 					}'
-				),
-				'users' => array(
-					'map' => 'function(doc) {
-						if (doc.type && doc.type == "user" && doc.created) {
-							emit(doc.created, doc);
-						}
-					}'
-				),
-			),
-		),
-		'user' => array(
-			'id' => '_design/user',
-			'language' => 'javascript',
-			'views' => array(
-				'by_username' => array(
-					'map' => 'function(doc) {
-						if(doc.type && doc.type == "user" && doc.username) {
-							emit(doc.username, doc);
-						}
-					}'
 				)
 			)
 		),
-		/**
-		 * For the search we are going to do a very simple search to start with a very simple search
-		 * that will return all values from within the title and from the content of a post, for a
-		 * searched term.
-		 */
 		'search' => array(
 			'id' => '_design/search',
 			'fulltext' => array(
-				// Search by the post title
-				'by_title' => array(
+				'posts' => array(
+					/**
+					 * CouchDB-Lucene indexing
+					 */
 					'index' => 'function(doc) {
-						var ret = new Document();
-						if (doc.type && doc.type == "post" && doc.title) {
-							ret.add(doc.title);
-						}
+						var ret = null;
+						if (doc.type && doc.type == "post") {
+							ret = new Document();
+							ret.add(doc.content + \' \' + doc.title);
+							ret.add(doc.content, {field: "content"});
+							ret.add(doc.title, {field: "title"});
+							ret.add(doc.user_username, {field: "author", index:"not_analyzed"});
+							ret.add(doc.user_id, {field: "user_id", index:"not_analyzed"});
 
-						return ret;
-					}'
-				 ),
-
-				// Search by the post content
-				'by_content' => array(
-					'index' => 'function(doc) {
-						var ret = new Document();
-						if (doc.type && doc.type == "post" && doc.type) {
-							ret.add(doc.content);
-						}
-
-						return ret;
-					}'
-				 ),
-
-				// Search by user email
-				'by_email' => array(
-					'index' => 'function(doc) {
-						var ret = new Document();
-						if (doc.type && doc.type == "user") {
-							ret.add(doc.email);
-						}
-
-						return ret;
-					}'
-				 ),
-
-				// Search by comment
-				'by_comments' => array(
-					'index' => 'function(doc) {
-						var ret = new Document();
-						if (doc.type && doc.type == "post" && doc.comments && doc.comments.length > 0) {
-							for (var i = 0; i < doc.comments.length; i++) {
-								if (doc.comments[i] && doc.comments[i].content) {
-									ret.add(doc.comments[i].content);
+							if (doc.tags && typeof doc.tags == "object") {
+								for (tag in doc.tags) {
+									ret.add(doc.tags[tag], {field: "tag"});
 								}
 							}
-						}
 
+							var date = new Date(doc.created * 1000);
+
+							var d = {
+								month: date.getMonth() + 1,
+								day: date.getDate(),
+								hour: date.getHours(),
+								minute: date.getMinutes()
+							};
+
+							var altDate = date.getFullYear() + "-" + d.month + "-" + d.day;
+
+							for (piece in d) {
+								if (d[piece] < 10) {
+									// Add invididual piece without padded zero for friendlier searching
+									ret.add(d[piece] + "", {field: piece, type: "string", index: "not_analyzed"});
+									d[piece] = "0" + d[piece];
+								}
+							}
+
+							d["year"] = date.getFullYear();
+
+							var date = d.year + "-" + d.month + "-" + d.day;
+							ret.add(date, {field: "date", type: "string", index: "not_analyzed"});
+							ret.add(altDate, {field: "date", type: "string", index: "not_analyzed"});
+
+							// Time (HH:MM)
+							ret.add(d.hour + ":" + d.minute, {field: "time", type: "string", index: "not_analyzed"});
+
+							// Add individual time pieces
+							for (i in d) {
+								ret.add(d[i] + "", {field: i, type: "string", index: "not_analyzed"});
+							}
+
+							var source = "sphere";
+							// Add domain as source if content is simply a url
+							var reg = /^https?\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})(:[a-zA-Z0-9]*)?\/?(\S)*$/;
+							if (reg.test(doc.content)) {
+								var match = reg.exec(doc.content);
+								if (match[1]) {
+									source = match[1];
+								}
+							}
+							ret.add(source, {field: "source", index: "not_analyzed"});
+						}
 						return ret;
 					}'
-				),
-			),
-		),
+				)
+			)
+		)
 	);
 }
 
