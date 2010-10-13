@@ -34,7 +34,8 @@ class PostsController extends \lithium\action\Controller {
 		if (empty($post)) {
 			$post = Post::create();
 		}
-		return compact('post');
+		$tags = Post::$tags;
+		return compact('post','tags');
 	}
 
 	public function comment() {

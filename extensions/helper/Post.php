@@ -2,6 +2,9 @@
 
 namespace app\extensions\helper;
 
+use \lithium\net\http\Router;
+use \lithium\util\String;
+
 /**
  * This helper provides tools to uniformly render posts across views.
  */
@@ -75,7 +78,109 @@ class Post extends \lithium\template\Helper {
 			),
 			array('class' => 'comments ' . $commentsClass)
 		);
-		return '<li class="post">' . $image . $rating . $heading . $comments . $author . $time . '</li>';
+
+		foreach ($post->tags as $tag) {
+			if (!in_array($tag, \app\models\Post::$tags)) {
+				$tag = '';
+				continue;
+			}
+			$tag = $this->tag($tag, array('class' => "icon tag {$tag}"));
+			break;
+		}
+
+		$content = implode('', compact('image','rating','heading','tag','comments','author','time'));
+
+		return '<li class="post">' . $content . '</li>';
+	}
+
+	/**
+	 * Generate a link to tags
+	 *
+	 * @param string $tag
+	 * @return string
+	 */
+	public function tag($tag, $options = array()) {
+		$defaults = array(
+			'text' => $tag,
+			'class' => '',
+			'title' => 'View all posts tagged `{:tag}`'
+		);
+		if (is_array($tag)) {
+			$options = $tag;
+			if (!isset($options['tag'])) {
+				throw new BadMethodCallException('A tag must be specified in order to link to it.');
+			}
+		}
+		extract($options + $defaults);
+
+		$title = String::insert($title, compact('tag'));
+		$url = array('controller' => 'search', 'action' => 'tag') + compact('tag');
+		if (in_array($tag, \app\models\Post::$tags)) {
+			$url = $tag;
+		}
+		$html = $this->_context->helper('html');
+		return $html->link($text, $url, compact('title') + $options);
+	}
+
+	public function link($type, $options = array()) {
+		$defaults = array(
+			'id' => null,
+			'user' => array(),
+			'url' => null,
+			'text' => null,
+			'options' => array(
+				'class' => 'button',
+				'title' => null,
+				'escape' => false
+			)
+		);
+		if (is_array($type)) {
+			$options = $type;
+		}
+		extract($options + $defaults);
+
+		switch ($type) {
+			case 'tag':
+				return $this->tag($options);
+			break;
+			case 'endorse':
+				$options['class'] .= ' endorse-post';
+				if (empty($options['title'])) {
+					$options['title'] = 'endorse this post';
+				}
+				if (empty($text)) {
+					$text = '<span>endorse</span>';
+				}
+				$url = Router::match(
+					array('controller' => 'posts', 'action' => 'endorse',
+					'args' => array('id' => $id))
+				);
+			break;
+			case 'comment':
+				$options['class'] .= ' post-comment';
+				if (empty($options['title'])) {
+					$options['title'] = 'comment on this post';
+				}
+				if (empty($text)) {
+					$text = '<span>comment</span>';
+				}
+				$url = Router::match(
+					array('controller' => 'posts', 'action' => 'comment', 'id' => $id)
+				);
+			break;
+			default:
+				return null;
+			break;
+		}
+
+		if (empty($user)) {
+			$options['class'] .= ' inactive';
+			$url = array(
+				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($url)
+			);
+		}
+		$html = $this->_context->helper('html');
+		return $html->link($text, $url, $options);
 	}
 }
 

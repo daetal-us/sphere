@@ -34,6 +34,10 @@ class Post extends \lithium\data\Model {
 		'user_id' => array('type' => 'string')
 	);
 
+	public static $tags = array(
+		'apps','questions','press','tutorials','code','videos','podcasts','slides','events','docs'
+	);
+
 	public static function __init(array $options = array()) {
 		parent::__init($options);
 		static::applyFilter('save', function ($self, $params, $chain) {
@@ -41,9 +45,9 @@ class Post extends \lithium\data\Model {
 				$params['entity']->id = Inflector::slug($params['entity']->title);
 				$params['entity']->created = time();
 				if (!empty($params['entity']->tags) && is_string($params['entity']->tags)) {
-					$params['entity']->tags = explode(
+					$params['entity']->tags = array_unique(array_filter(explode(
 						",", str_replace(' ', '', $params['entity']->tags)
-					);
+					)));
 				}
 				if ($user = Session::read('user', array('name' => 'li3_user'))) {
 					$params['entity']->user_username = $user['username'];

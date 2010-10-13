@@ -13,7 +13,9 @@ class Sphere extends \lithium\template\Helper {
 		'1yr' => '1yr',
 		'today' => 'today',
 		'yesterday' => 'yesterday',
-		'source/date' => '{:source}/{:date}'
+		'source/date' => '{:source}/{:date}',
+		'tag/date' => '{:tag}/{:date}',
+		'source/tag/date' => '{:source}{:tag}/{:date}'
 	);
 
 	/**

@@ -55,6 +55,7 @@ $timespans = array(
 		'['.date('Y-m-d', strtotime('-1 year')).' TO '.date('Y-m-d').']',
 	)
 );
+
 $sources = array(
 	'sphere' => array(
 		'Sphere',
@@ -64,6 +65,49 @@ $sources = array(
 		'Lithium Network',
 		'(lithify.me OR rad-dev.org)'
 	),
+);
+
+$tags = array(
+	'questions' => array(
+		'Questions...',
+		'questions'
+	),
+	'apps' => array(
+		'Lithium powered applications',
+		'apps'
+	),
+	'press' => array(
+		'Press',
+		'press'
+	),
+	'tutorials' => array(
+		'Tutorials',
+		'tutorials'
+	),
+	'code' => array(
+		'Code',
+		'code'
+	),
+	'videos' => array(
+		'Video',
+		'videos'
+	),
+	'podcasts' => array(
+		'Podcasts',
+		'podcasts'
+	),
+	'slides' => array(
+		'Slides',
+		'slides'
+	),
+	'events' => array(
+		'Events',
+		'events'
+	),
+	'docs' => array(
+		'Documentation',
+		'docs'
+	)
 );
 
 foreach ($timespans as $key => $options) {
@@ -86,6 +130,25 @@ foreach ($sources as $key => $options) {
 		));
 	}
 }
+
+foreach ($tags as $key => $options) {
+	array_unshift($options, $key);
+	Router::connect("/{$key}", array(
+		'controller' => 'search', 'action' => 'filter', 'filter' => array('tag' => $options)
+	));
+	foreach ($timespans as $timeKey => $timeOptions) {
+		array_unshift($timeOptions, $timeKey);
+		Router::connect("/{$key}/{$timeKey}", array(
+			'controller' => 'search', 'action' => 'filter', 'filter' => array(
+				'tag' => $options, 'date' => $timeOptions
+			)
+		));
+	}
+}
+
+Router::connect('/t/{:tag}', array(
+	'controller' => 'search', 'action' => 'tag'
+));
 
 /**
  * Connect the testing routes.

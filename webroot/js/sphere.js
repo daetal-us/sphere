@@ -50,7 +50,7 @@ var li3Sphere = {
 	},
 
 	setupShowdownHelp: function() {
-		$("#add-comment form, li.comment form").each(function(i,e) {
+		$("#add-post form textarea, #add-comment form textarea, li.comment form textarea").each(function(i,e) {
 			var help = 	"# header &nbsp; &nbsp; " +
 						"<em>*italic*</em> &nbsp; &nbsp; " +
 						"<strong>**bold**</strong> &nbsp; &nbsp; " +
@@ -61,12 +61,12 @@ var li3Sphere = {
 						"![image text](http://example.com/image.jpg) &nbsp; &nbsp; " +
 						"<code>`code`</code> &nbsp; &nbsp; " +
 						"<pre><code>{{{ code }}}</code></pre>";
-			var html = $("<a class=\"icon toggle-markdown-help\" href=\"#\">markdown help</a><div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>"+help+"</div>");
-			$(e).append(html);
-			$(e).find('.toggle-markdown-help').toggle(function() {
+			var html = $("<a class=\"icon show-text toggle-markdown-help\" href=\"#\">markdown help</a><div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>"+help+"</div>");
+			$(e).after(html);
+			$(e).siblings('.toggle-markdown-help').click(function() {
 				$(this).siblings('.markdown-help').show('normal');
-			}, function() {
-				$(this).siblings('.markdown-help').hide('normal');
+				$(this).hide();
+				return false;
 			});
 		});
 	},
@@ -171,6 +171,7 @@ var li3Sphere = {
 	},
 
 	setupPost: function() {
+		this.Post.setup();
 		// Post Comment Links
 		$("a.post-comment:not(.inactive)").click(function() {
 			$("#add-comment").animate({
@@ -198,5 +199,119 @@ var li3Sphere = {
 			$(e).html(time).append(timestamp);
 		});
 		window.setTimeout(li3Sphere.cleanDates, 15000);
+	},
+
+	Post: {
+		tags: [
+			'apps','questions','press','tutorials','code','videos','podcasts','slides','events',
+			'docs'
+		],
+		baseTag: null,
+		timeout: null,
+		setup: function() {
+			$('#add-post .base-tags a').click(function() {
+				if ($(this).hasClass('selected')) {
+					li3Sphere.Post.deselect(this);
+				} else {
+					li3Sphere.Post.select(this);
+				}
+				return false;
+			});
+			$('#add-post #PostContent').keyup(function() {
+				clearTimeout(li3Sphere.Post.timeout);
+				if ($('#add-post #PostTitle').val() == '') {
+					li3Sphere.Post.timeout = setTimeout(function() {
+						if ($('#add-post #PostTitle').val() == '') {
+							var content = $('#add-post #PostContent').val();
+							if (li3Sphere.Post.isUrl(content)) {
+								li3Sphere.Post.getUrlTitle(content);
+							}
+						}
+					}, 2000);
+				}
+			});
+			$('#add-post #PostTags').keyup(function() {
+				li3Sphere.Post.validateTags();
+			});
+		},
+		validateTags: function() {
+			// check for one of the base tags
+			var tags = this.getTags();
+			for (i in tags) {
+				var tag = tags[i];
+				if ($.inArray(tag, li3Sphere.Post.tags) != -1) {
+					this.select('.base-tags a[data-tag='+tag+']');
+				}
+			}
+
+			if (this.baseTag && $.inArray(this.baseTag, tags) === -1) {
+				this.deselect('.base-tags a[data-tag='+this.baseTag+']');
+			}
+		},
+		tag: function(tag) {
+			var tags = this.getTags();
+			// check current tags to see if its in there already, or another is
+			if (!$.inArray(tag, tags)) {
+				// new
+			} else {
+				// present already
+			}
+		},
+		/**
+		 * Get current post tags input, convert to array, and return unique tags
+		 */
+		getTags: function() {
+			var tags = $('#PostTags').val();
+			if (tags != '') {
+				tags = tags.replace(/\,\s/g, ',').split(',');
+			} else {
+				tags = [];
+			}
+			return $.grep(tags, function(v, k) {
+				return $.inArray(v, tags) === k;
+			});
+		},
+		select: function(e) {
+			var tag = $(e).attr('data-tag');
+			if (this.baseTag && this.baseTag != tag) {
+				this.deselect('.base-tags a[data-tag='+this.baseTag+']');
+			}
+			this.baseTag = tag;
+			if ($.inArray(tag, this.getTags()) === -1) {
+				$('#PostTags').val(tag + ',' + $('#PostTags').val());
+			}
+			$(e).addClass('selected');
+			$('.base-tags a:not(.selected)').hide(1000);
+		},
+		deselect: function(e) {
+			var tag = $(e).attr('data-tag');
+			var tags = this.getTags();
+			this.baseTag = null;
+
+			for (i in tags) {
+				if (tags[i] == tag) {
+					tags.splice(i, 1);
+				}
+			}
+
+			$('#PostTags').val(tags.toString());
+			$(e).removeClass('selected');
+			$('.base-tags a:not(.selected)').show(1000);
+		},
+		isUrl: function(string) {
+			return true;
+		},
+		getUrlTitle: function(url) {
+			$.get(url, function(response) {
+				var html = response.responseText.replace(/\n/g, ' ');
+				var reg = new RegExp(/<title>(.*)<\/title>/i);
+				var match = reg.exec(html);
+				if (match && match[1]) {
+					if ($('#add-post #PostTitle').val() == '') {
+						$('#add-post #PostTitle').val($('<div/>').html(match[1]).text());
+					}
+				}
+			});
+		}
 	}
 }

@@ -1,6 +1,3 @@
-<?php
-use \lithium\net\http\Router;
-?>
 <div class="post">
 
 	<h1><?=$this->title($post->title);?></h1>
@@ -22,40 +19,8 @@ use \lithium\net\http\Router;
 			echo $h($this->oembed->classify($post->content, array('markdown' => true)));
 		?></pre>
 	</div>
-	<?php
-		$commentClass = 'button post-comment';
-		$commentUrl = Router::match(
-			array('controller' => 'posts', 'action' => 'comment', 'id' => $post->id)
-		);
-		$endorseClass = 'button endorse-post';
-		$endorseUrl = Router::match(
-			array('controller' => 'posts', 'action' => 'endorse',
-			'args' => array('id' => $post->id))
-		);
-		if (empty($user)) {
-			$commentClass .= ' inactive';
-			$commentUrl = array(
-				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($commentUrl)
-			);
-			$endorseClass .= ' inactive';
-			$endorseUrl = array(
-				'controller' => 'users', 'action' => 'login', 'return' => base64_encode($endorseUrl)
-			);
-		}
-		$comment = $this->html->link(
-			'<span>comment</span>',
-			$commentUrl,
-			array('class' => $commentClass, 'escape' => false, 'title' => 'comment on this post')
-		);
-		$endorse = $this->html->link(
-			'<span>endorse</span>',
-			$endorseUrl,
-			array('class' => $endorseClass, 'escape' => false, 'title' => 'endorse this post')
-		);
-	?>
-
-	<?php echo $endorse;?>
-	<?php echo $comment;?>
+	<?php echo $this->Post->link('endorse', compact('user') + array('id' => $post->id)); ?>
+	<?php echo $this->Post->link('comment', compact('user') + array('id' => $post->id)); ?>
 
 	<?php if (!empty($user)) { ?>
 	<div id="add-comment" style="display:none;">

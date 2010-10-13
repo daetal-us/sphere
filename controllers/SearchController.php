@@ -18,6 +18,16 @@ class SearchController extends \lithium\action\Controller {
 		return compact('q','results');
 	}
 
+	public function tag() {
+		$tag = $this->request->params['tag'];
+		$this->request->params['filter'] = array(
+			'tag' => array(null, null, $tag)
+		);
+		$render = $this->filter();
+		$this->set(array('title' => "Posts tagged `{$tag}`") + $render);
+		$this->render(array('template' => 'filter'));
+	}
+
 	/**
 	 * Filter posts by common rules as defined in application routes.
 	 *
@@ -25,7 +35,6 @@ class SearchController extends \lithium\action\Controller {
 	 */
 	public function filter() {
 		$filters = $this->request->params['filter'];
-
 		$q = array();
 		foreach ($filters as $filter => $options) {
 			$q[] = "{$filter}:{$options[2]}";
@@ -34,13 +43,14 @@ class SearchController extends \lithium\action\Controller {
 
 		$results = Search::find('posts', array('conditions' => compact('q')));
 
-		$title = '';
+		$title = 'Posts';
 
 		if (!empty($filters['source'])) {
-			$title = $filters['source'][1];
+			$title = $filters['source'][1] . ' posts';
 		}
-
-		$title .= ' posts';
+		if (!empty($filters['tag'])) {
+			$title = $filters['tag'][1];
+		}
 
 		if (!empty($filters['date'])) {
 			$title .= $filters['date'][1];

@@ -59,10 +59,4 @@ Libraries::add('li3_users');
  */
 Libraries::add('li3_commands');
 
-/**
- * Docs
- *
- */
-Libraries::add('li3_docs');
-
 ?>
