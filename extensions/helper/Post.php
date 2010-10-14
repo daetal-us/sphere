@@ -35,19 +35,26 @@ class Post extends \lithium\template\Helper {
 		$html = $this->_context->helper('html');
 		$gravatar = $this->_context->helper('gravatar');
 
-		$post->rating();
-
 		$ratingClass = ($post->rating == 0 ? ' empty' : null);
 		$rating = '<span class="post-rating' . $ratingClass .'">' .
 			'<span>' . $post->rating . '</span>' .
 		'</span>';
-		$image = $html->image($gravatar->url($post->user()->email), array('class' => 'gravatar'));
 
-		$image = $html->link($image, array(
-			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
-		), array('escape' => false));
+		// $image = $html->image($gravatar->url($post->user()->email), array('class' => 'gravatar'));
+		// $image = $html->link($image, array(
+		// 	'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
+		// ), array('escape' => false));
 
-		$heading = '<h2>' . $html->link($post->title, array(
+		$category = null;
+		foreach ($post->tags as $tag) {
+			if (!in_array($tag, \app\models\Post::$tags)) {
+				continue;
+			}
+			$category = $tag;
+			break;
+		}
+
+		$heading = '<h2 class="'.$category.'">' . $html->link($post->title, array(
 			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
 		)) . '</h2>';
 
@@ -79,16 +86,7 @@ class Post extends \lithium\template\Helper {
 			array('class' => 'comments ' . $commentsClass)
 		);
 
-		foreach ($post->tags as $tag) {
-			if (!in_array($tag, \app\models\Post::$tags)) {
-				$tag = '';
-				continue;
-			}
-			$tag = $this->tag($tag, array('class' => "icon tag {$tag}"));
-			break;
-		}
-
-		$content = implode('', compact('image','rating','heading','tag','comments','author','time'));
+		$content = implode('', compact('heading','comments','author','time'));
 
 		return '<li class="post">' . $content . '</li>';
 	}

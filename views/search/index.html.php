@@ -1,8 +1,8 @@
 <h1>search results</h1>
-<?php if (!empty($q) && empty($results)) { ?>
+<?php if (!empty($q) && empty($results->total_rows)) { ?>
 	<p>No posts matched your query. Need <?php echo $this->html->link('help', '#', array('class' => 'toggle-search-help')); ?>?</p>
-<?php } elseif (!empty($results)) { ?>
-	<p><?php echo $results->count(); ?> post<?php echo ($results->count() > 1) ? 's' : null; ?> matched your query. Need <?php echo $this->html->link('help', '#', array('class' => 'toggle-search-help')); ?> finding better results?</p>
+<?php } elseif (!empty($results->total_rows)) { ?>
+	<p><?php echo $results->total_rows; ?> post<?php echo ($results->total_rows > 1) ? 's' : null; ?> matched your query. Need <?php echo $this->html->link('help', '#', array('class' => 'toggle-search-help')); ?> finding better results?</p>
 <?php } else { ?>
 	<p>Try typing in your search query in the input to the top right. Need <?php echo $this->html->link('help', '#', array('class' => 'toggle-search-help')); ?>?</p>
 <?php } ?>
@@ -48,24 +48,40 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td>content</td>
+				<td><code>content</code></td>
 				<td>the main body of the post</td>
 			</tr>
 			<tr>
-				<td>title</td>
+				<td><code>title</code></td>
 				<td>the post title</td>
 			</tr>
 			<tr>
-				<td>author</td>
+				<td><code>author</code></td>
 				<td>the post author's username</td>
 			</tr>
 			<tr>
-				<td>tag</td>
+				<td><code>tag</code></td>
 				<td>tags that have been associated with the post</td>
 			</tr>
 			<tr>
-				<td>date</td>
-				<td>numeric timestamp of post creation date</td>
+				<td><code>date</code></td>
+				<td><code>Y-m-d</code> post creation date</td>
+			</tr>
+			<tr>
+				<td><code>year</code>, <code>month</code>, <code>day</code>, <code>hour</code>, <code>minute</code></td>
+				<td>individual post creation date/time pieces - self explanatory</td>
+			</tr>
+			<tr>
+				<td><code>time</code></td>
+				<td>post creation time <code>HH:MM</code></td>
+			</tr>
+			<tr>
+				<td><code>source</code></td>
+				<td><code>sphere</code> unless content is only a url; then, it is the domain name, e.g. <code>lithify.me</code></td>
+			</tr>
+			<tr>
+				<td><code>default</code></td>
+				<td>a combination of the <code>title</code> and <code>content</code> fields (also used when no field is specified)</td>
 			</tr>
 		</tbody>
 	</table>
@@ -192,15 +208,16 @@
 </div>
 </aside>
 
-<?php if (!empty($results)) { ?>
+<?php if (!empty($results->rows)) { ?>
 	<ul class="posts">
 	<?php
-		while ($item = $results->current()) {
+		while ($item = $results->rows->current()) {
 			echo $this->post->row($item->post());
-			$results->next();
+			$results->rows->next();
 		}
 	?>
 	</ul>
+	<?php echo $this->search->pagination($results, $url); ?>
 <?php } ?>
 
 <?php $this->viewJs = "

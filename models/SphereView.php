@@ -53,43 +53,53 @@ class SphereView extends \lithium\data\Model {
 							ret.add(doc.user_username, {field: "author", index:"not_analyzed"});
 							ret.add(doc.user_id, {field: "user_id", index:"not_analyzed"});
 
+							var rating = 0;
+							if (doc.rating) {
+								rating = doc.rating * 1;
+							}
+							ret.add(rating, {field: "rating", store:"yes", index:"not_analyzed"});
+
 							if (doc.tags && typeof doc.tags == "object") {
 								for (tag in doc.tags) {
 									ret.add(doc.tags[tag], {field: "tag"});
 								}
 							}
 
-							var date = new Date(doc.created * 1000);
+							if (doc.created) {
+								ret.add(doc.created, {field: "timestamp", type: "string", store:"yes", index: "not_analyzed"});
 
-							var d = {
-								month: date.getMonth() + 1,
-								day: date.getDate(),
-								hour: date.getHours(),
-								minute: date.getMinutes()
-							};
+								var date = new Date(doc.created * 1000);
 
-							var altDate = date.getFullYear() + "-" + d.month + "-" + d.day;
+								var d = {
+									month: date.getMonth() + 1,
+									day: date.getDate(),
+									hour: date.getHours(),
+									minute: date.getMinutes()
+								};
 
-							for (piece in d) {
-								if (d[piece] < 10) {
-									// Add invididual piece without padded zero for friendlier searching
-									ret.add(d[piece] + "", {field: piece, type: "string", index: "not_analyzed"});
-									d[piece] = "0" + d[piece];
+								var altDate = date.getFullYear() + "-" + d.month + "-" + d.day;
+
+								for (piece in d) {
+									if (d[piece] < 10) {
+										// Add invididual piece without padded zero for friendlier searching
+										ret.add(d[piece] + "", {field: piece, type: "string", index: "not_analyzed"});
+										d[piece] = "0" + d[piece];
+									}
 								}
-							}
 
-							d["year"] = date.getFullYear();
+								d["year"] = date.getFullYear();
 
-							var date = d.year + "-" + d.month + "-" + d.day;
-							ret.add(date, {field: "date", type: "string", index: "not_analyzed"});
-							ret.add(altDate, {field: "date", type: "string", index: "not_analyzed"});
+								var date = d.year + "-" + d.month + "-" + d.day;
+								ret.add(date, {field: "date", type: "string", index: "not_analyzed"});
+								ret.add(altDate, {field: "date", type: "string", index: "not_analyzed"});
 
-							// Time (HH:MM)
-							ret.add(d.hour + ":" + d.minute, {field: "time", type: "string", index: "not_analyzed"});
+								// Time (HH:MM)
+								ret.add(d.hour + ":" + d.minute, {field: "time", type: "string", index: "not_analyzed"});
 
-							// Add individual time pieces
-							for (i in d) {
-								ret.add(d[i] + "", {field: i, type: "string", index: "not_analyzed"});
+								// Add individual time pieces
+								for (i in d) {
+									ret.add(d[i] + "", {field: i, type: "string", index: "not_analyzed"});
+								}
 							}
 
 							var source = "sphere";

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use \lithium\data\Connections;
+use \lithium\data\entity\Document;
 use \lithium\data\collection\DocumentSet;
 
 class Search extends \lithium\data\Model {
@@ -22,19 +23,38 @@ class Search extends \lithium\data\Model {
 		$self = static::_object();
 		foreach ($finders as $finder) {
 			$self->_finders[$finder] = function($self, $params, $chain) {
-				$query = (array) $params['options']['conditions'] + array('include_docs' => 'true');
+				$defaults = array(
+					'include_docs' => 'true',
+					'limit' => 10,
+					'skip' => 0
+				);
+				$query = (array) $params['options']['conditions'] + $defaults;
+
+				if (isset($query['page']) && $query['page'] > 1) {
+					$query['skip'] = ($query['page'] - 1) * $query['limit'];
+				}
+				unset($query['page']);
+
 				$connection = Connections::get($self::meta('connection'));
 				$result = $connection->get(
 					$self::meta('source') . '/_fti/_design/search/' . $params['type'],
 					$query, array('type' => null)
 				);
+
 				if (empty($result->total_rows)) {
 					return 0;
 				}
-				return new DocumentSet(array(
-					'data' => $result->rows,
+				$result = new Document(array(
+					'data' => (array) $result,
 					'model' => __CLASS__
 				));
+
+				$result->rows = new DocumentSet(array(
+					'data' => $result->rows->data(),
+					'model' => __CLASS__
+				));
+
+				return $result;
 			};
 		}
 	 }

@@ -26,6 +26,7 @@ class Post extends \lithium\data\Model {
 		'title' => array('type' => 'string', 'length' => 250),
 		'content' => array('type' => 'text'),
 		'rating' => array('type' => 'numeric', 'default' => 0),
+		'endorsements' => array('type' => 'array'),
 		'comments' => array('type' => 'array'),
 		'comment_count' => array('type' => 'numeric', 'default' => 0),
 		'created' => array('type' => 'date'),
@@ -54,6 +55,7 @@ class Post extends \lithium\data\Model {
 					$params['entity']->user_id = $user['id'];
 				}
 			}
+			$params['entity']->rating = $params['entity']->rating();
 			return $chain->next($self, $params, $chain);
 		});
 
@@ -140,20 +142,26 @@ class Post extends \lithium\data\Model {
 		return $record->save(compact('comments', 'endorsements'));
 	}
 
-	public function rating($record) {
-		return 0;
-		$rating = (integer) count($record->endorsements);
-		$rating += ((integer) $record->comment_count * .5);
-		if (!empty($record->comments)) {
-			$record->comments->first();
-			while($comment = $record->comments->current()) {
-				$rating += (integer) $comment->rating();
-				$record->comments->next();
+	public static function rating($record) {
+		$rating = 0;
+		if (is_object($record)) {
+			if (get_class($record) == 'lithium\data\entity\Document') {
+				$record = $record->data();
+			}
+			$record = (array) $record;
+		}
+		if (!empty($record['endorsements'])) {
+			$rating += count($record['endorsements']);
+		}
+		if (!empty($record['comments'])) {
+			$rating += count($record['comments'])  * .5;
+			foreach ($record['comments'] as $comment) {
+				$rating += (static::rating($comment) * .5);
 			}
 		}
-		$record->set(compact('rating'));
-		return $rating;
+		return ceil($rating);
 	}
+
 }
 
 ?>

@@ -160,6 +160,7 @@ span.timestamp {
 	color: #404040;
 }
 .nav.timespan {
+	border-radius: 6px 6px 0 0;
 	padding: .65em;
 	height: 1.5em;
 	min-width: 300px;
@@ -183,11 +184,13 @@ span.timestamp {
 }
 
 .nav.search {
+	border-radius: 6px 6px 0 0;
 	float: left;
 	margin-left: 12em;
 }
 
 .nav.sources {
+	border-radius: 6px 0 0 6px;
 	float: left;
 	clear: both;
 	width: 2em;
@@ -219,42 +222,42 @@ span.timestamp {
 	background-image: url(../img/icons/lithium.png);
 }
 
-.nav.sources a.questions, .icon.tag.tag.questions {
+.nav.sources a.questions, .icon.tag.tag.questions, .posts .post .questions a {
 	background-image: url(../img/icons/question.png);
 }
 
-.nav.sources a.code, .icon.tag.code {
+.nav.sources a.code, .icon.tag.code, .posts .post .code a {
 	background-image: url(../img/icons/document-code.png);
 }
 
-.nav.sources a.press, .icon.tag.press {
+.nav.sources a.press, .icon.tag.press, .posts .post .press a {
 	background-image: url(../img/icons/newspapers.png);
 }
 
-.nav.sources a.videos, .icon.tag.videos {
+.nav.sources a.videos, .icon.tag.videos, .posts .post .videos a {
 	background-image: url(../img/icons/clapperboard.png);
 }
 
-.nav.sources a.podcasts, .icon.tag.podcasts {
+.nav.sources a.podcasts, .icon.tag.podcasts, .posts .post .podcasts a {
 	background-image: url(../img/icons/microphone.png);
 }
-.nav.sources a.slides, .icon.tag.slides {
+.nav.sources a.slides, .icon.tag.slides, .posts .post .slides a {
 	background-image: url(../img/icons/projection-screen-presentation.png);
 }
 
-.nav.sources a.tutorials, .icon.tag.tutorials {
+.nav.sources a.tutorials, .icon.tag.tutorials, .posts .post .tutorials a {
 	background-image: url(../img/icons/block-share.png);
 }
 
-.nav.sources a.events, .icon.tag.events {
+.nav.sources a.events, .icon.tag.events, .posts .post .events a {
 	background-image: url(../img/icons/calendar-blue.png);
 }
 
-.nav.sources a.apps, .icon.tag.apps {
+.nav.sources a.apps, .icon.tag.apps, .posts .post .apps a {
 	background-image: url(../img/icons/apps.png);
 }
 
-.nav.sources a.docs, .icon.tag.docs {
+.nav.sources a.docs, .icon.tag.docs, .posts .post .docs a {
 	background-image: url(../img/icons/docs.png);
 }
 
@@ -263,12 +266,14 @@ span.timestamp {
 }
 
 .nav.account {
+	border-radius: 0 0 0 6px;
 	display: block;
 	position: absolute;
 	top: 36px;
 	right: 0;
 	font-size: 0.75em;
 	color:#e6e6e6;
+	padding-left: 1em ;
 }
 .nav.account img {
 	padding: 2px;
@@ -319,10 +324,14 @@ ul.posts li:before, ul.comments li:before {
 
 ul.posts li.post {
 	display: block;
-	padding: 1em 0 0.5em 0;
-	margin: 0.5em 0;
+	padding: .5em 1em;
+	margin: 0;
 	clear: both;
 	border-top: 1px solid rgba(0,0,0,.05);
+}
+
+ul.posts li.post:nth-child(2n+0) {
+	background: rgba(0,0,0,.03);
 }
 
 ul.posts li.post:first-child {
@@ -379,12 +388,15 @@ li.post .post-rating.empty span {
 
 
 li.post h2 {
-	margin: 0 0 .25em 0;
-	padding-top: 0.65em;
+	margin: .25em 0;
+	padding-top: 0;
 	font-size: 1.75em;
 }
 li.post h2 a {
 	border-bottom: none;
+	display: block;
+	padding-left: 1.25em;
+	background: transparent url(../img/icons/sphere.png) no-repeat center left;
 }
 
 li.post .post-author, li.post .post-created, li.post .comments, li.post .tag {
@@ -394,6 +406,10 @@ li.post .post-author, li.post .post-created, li.post .comments, li.post .tag {
 	background: url(../img/icons/dummy.png) no-repeat center left;
 	display: inline;
 	border-bottom-width: 0;
+	display: none;
+}
+li.post:hover .post-author, li.post:hover .post-created, li.post:hover .comments, li.post:hover .tag {
+	display: inline;
 }
 li.post .post-created {
 	background: none;
@@ -832,6 +848,42 @@ input.search-submit {
 }
 .close-search-help {
 	float: right;
+}
+
+.pagination {
+	border-top: 1px solid #fafafa;
+	border-top-color: rgba(0,0,0,.05);
+	background: rgba(0,0,0,.03);
+	padding: .5em;
+}
+
+.pagination:after {
+	content: ' ';
+	display: block;
+	height: 1px;
+	overflow: hidden;
+	clear:both;
+}
+
+.pagination .total {
+	float: right;
+	font-size: .75em;
+	color: #999;
+}
+
+.pagination .pages {
+	float: left;
+}
+.pagination .pages a {
+	border-bottom: none !important;
+	display: block;
+	float: left;
+	padding: .25em;
+	font-size: 1.75em;
+}
+.pagination .pages .first, .pagination .pages .last {
+	padding: .65em .25em;
+	font-size: .75em;
 }
 
 /* CLI */

@@ -8,14 +8,6 @@ use \lithium\storage\Session;
 
 class PostsController extends \lithium\action\Controller {
 
-	public function index() {
-		$posts = Post::all(array(
-			'conditions' => array('design' => 'all', 'view' => 'posts'),
-			'order' => array('descending' => 'true')
-		));
-		return compact('posts');
-	}
-
 	public function add() {
 		if (!$user = Session::read('user', array('name' => 'li3_user'))) {
 			$this->redirect(array(
@@ -26,8 +18,8 @@ class PostsController extends \lithium\action\Controller {
 			$post = Post::create($this->request->data);
 			if ($post->save()) {
 				return $this->redirect(array(
-					'controller' => 'posts', 'action' => 'index',
-					//'args' => array($post->id)
+					'controller' => 'posts', 'action' => 'comment',
+					'id' => $post->id
 				));
 			}
 		}
@@ -68,9 +60,17 @@ class PostsController extends \lithium\action\Controller {
 		if (empty($post)) {
 			return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
 		}
-		$author = Session::read('user', array('name' => 'li3_user'));
+
+		$user = Session::read('user', array('name' => 'li3_user'));
+		if (!$user) {
+			return $this->redirect(array(
+				'controller' => 'users', 'action' => 'login'
+			));
+		}
+
 		$args = $this->request->args;
 		$endorsement = $post->endorse(compact('args'));
+
 		$this->redirect(array(
 			'controller' => 'posts', 'action' => 'comment', 'id' => $id
 		));

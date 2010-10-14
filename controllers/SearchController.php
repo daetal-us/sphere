@@ -10,11 +10,16 @@ class SearchController extends \lithium\action\Controller {
 
 
 	public function index() {
-		$q = $results = null;
-		if (isset($this->request->query) && isset($this->request->query['q'])) {
-			$q = $this->request->query['q'];
-			$results = Search::find('posts', array('conditions' => compact('q')));
+		$q = $page = $results = null;
+		if (isset($this->request->query)) {
+			$keys = array_flip(array('q','page'));
+			$get = array_intersect_key($this->request->query, $keys);
+			$post = array_intersect_key($this->request->params, $keys);
+			$data = $post + $get;
+			extract($data);
 		}
+		$results = Search::find('posts', array('conditions' => compact('q','page')));
+
 		return compact('q','results');
 	}
 
@@ -34,29 +39,48 @@ class SearchController extends \lithium\action\Controller {
 	 * @see /app/config/routes.php
 	 */
 	public function filter() {
-		$filters = $this->request->params['filter'];
+		$defaults = array(
+			'tag' => null,
+			'date' => null,
+			'title' => null,
+			'page' => null
+		);
+		extract($this->request->params + $defaults);
+
 		$q = array();
-		foreach ($filters as $filter => $options) {
-			$q[] = "{$filter}:{$options[2]}";
-		}
-		$q = implode(' && ', $q);
-
-		$results = Search::find('posts', array('conditions' => compact('q')));
-
-		$title = 'Posts';
-
-		if (!empty($filters['source'])) {
-			$title = $filters['source'][1] . ' posts';
-		}
-		if (!empty($filters['tag'])) {
-			$title = $filters['tag'][1];
+		if (!empty($tag)) {
+			$q[] = "tag:{$tag}";
 		}
 
-		if (!empty($filters['date'])) {
-			$title .= $filters['date'][1];
+		if (!empty($date)) {
+			$q[] = "date:{$date}";
 		}
 
-		return compact('title','filters','results');
+		$q = implode($q, " && ");
+
+		$results = Search::find('posts', array('conditions' => compact('q','page')));
+
+		$url = $this->request->params;
+
+		return compact('title','results','url');
+	}
+
+	public function latest() {
+		$page = 0;
+		// if (!isset($this->request->params['page'])) {
+		// 	 $page = $this->request->params['page'];
+		// }
+
+		$start = strtotime("last week");
+		$end = time();
+		$q = "timestamp:[{$start} TO {$end}]";
+		$sort = "\\rating";
+
+		$url = $this->request->params;
+
+		$results = Search::find('posts', array('conditions' => compact('q','sort')));
+
+		return compact('results','page','url');
 	}
 
 }

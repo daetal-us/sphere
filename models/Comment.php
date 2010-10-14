@@ -49,20 +49,6 @@ class Comment extends \lithium\data\Model {
 
 	public function replies($comment) {}
 
-	public function rating($record) {
-		return 0;
-		$rating = (integer) count($record->endorsements);
-		$rating += ((integer) $record->comment_count * .5);
-		if (!empty($record->comments)) {
-			$record->comments->first();
-			while($comment = $record->comments->current()) {
-				$rating += (integer) $comment->rating();
-				$record->comments->next();
-			}
-		}
-		$record->set(compact('rating'));
-		return $rating;
-	}
 }
 
 ?>

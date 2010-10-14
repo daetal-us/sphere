@@ -20,7 +20,8 @@ use \lithium\core\Environment;
  * its action called 'view', and we pass a param to select the view file
  * to use (in this case, /app/views/pages/home.html.php)...
  */
-Router::connect('/', array('controller' => 'posts', 'action' => 'index'));
+Router::connect('/', array('controller' => 'search', 'action' => 'latest'));
+Router::connect('/page:{:page}', array('controller' => 'search', 'action' => 'latest'));
 Router::connect('/p/{:id}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/p/{:id}/{:args}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/users/login/{:return}', array('controller' => 'users', 'action' => 'login'));
@@ -53,99 +54,62 @@ $timespans = array(
 	'1yr' => array(
 		' in the last year',
 		'['.date('Y-m-d', strtotime('-1 year')).' TO '.date('Y-m-d').']',
+	),
+	'all' => array(
+		' since the big bang',
+		'[2010-02-09 TO '.date('Y-m-d').']',
 	)
-);
-
-$sources = array(
-	'sphere' => array(
-		'Sphere',
-		'sphere'
-	),
-	'lithium' => array(
-		'Lithium Network',
-		'(lithify.me OR rad-dev.org)'
-	),
 );
 
 $tags = array(
-	'questions' => array(
-		'Questions...',
-		'questions'
-	),
-	'apps' => array(
-		'Lithium powered applications',
-		'apps'
-	),
-	'press' => array(
-		'Press',
-		'press'
-	),
-	'tutorials' => array(
-		'Tutorials',
-		'tutorials'
-	),
-	'code' => array(
-		'Code',
-		'code'
-	),
-	'videos' => array(
-		'Video',
-		'videos'
-	),
-	'podcasts' => array(
-		'Podcasts',
-		'podcasts'
-	),
-	'slides' => array(
-		'Slides',
-		'slides'
-	),
-	'events' => array(
-		'Events',
-		'events'
-	),
-	'docs' => array(
-		'Documentation',
-		'docs'
-	)
+	'questions' => 'Questions...',
+	'apps' => 'Lithium powered applications',
+	'press' => 'Press',
+	'tutorials' => 'Tutorials',
+	'code' => 'Code',
+	'videos' => 'Videos',
+	'podcasts' => 'Podcasts',
+	'slides' => 'Slides',
+	'events' => 'Events',
+	'docs' => 'Documentation',
 );
 
 foreach ($timespans as $key => $options) {
-	array_unshift($options, $key);
+	$title = "Posts" . $options[0];
+	$date = $options[1];
+	Router::connect("/{$key}/{:page}", array(
+		'controller' => 'search', 'action' => 'filter'
+	) + compact('date','title'));
 	Router::connect("/{$key}", array(
-		'controller' => 'search', 'action' => 'filter', 'filter' => array('date' => $options)
-	));
-}
-foreach ($sources as $key => $options) {
-	array_unshift($options, $key);
-	Router::connect("/{$key}", array(
-		'controller' => 'search', 'action' => 'filter', 'filter' => array('source' => $options)
-	));
-	foreach ($timespans as $timeKey => $timeOptions) {
-		array_unshift($timeOptions, $timeKey);
-		Router::connect("/{$key}/{$timeKey}", array(
-			'controller' => 'search', 'action' => 'filter', 'filter' => array(
-				'source' => $options, 'date' => $timeOptions
-			)
-		));
-	}
+		'controller' => 'search', 'action' => 'filter'
+	) + compact('date','title'));
 }
 
-foreach ($tags as $key => $options) {
-	array_unshift($options, $key);
-	Router::connect("/{$key}", array(
-		'controller' => 'search', 'action' => 'filter', 'filter' => array('tag' => $options)
-	));
-	foreach ($timespans as $timeKey => $timeOptions) {
-		array_unshift($timeOptions, $timeKey);
-		Router::connect("/{$key}/{$timeKey}", array(
-			'controller' => 'search', 'action' => 'filter', 'filter' => array(
-				'tag' => $options, 'date' => $timeOptions
-			)
-		));
+foreach ($tags as $tag => $title) {
+	foreach ($timespans as $key => $options) {
+		$date = $options[1];
+		Router::connect("/{$tag}/{$key}/{:page}", array(
+			'controller' => 'search', 'action' => 'filter', 'title' => $title . $options[0]
+		) + compact('tag','date','page'));
+		Router::connect("/{$tag}/{$key}", array(
+			'controller' => 'search', 'action' => 'filter', 'title' => $title . $options[0]
+		) + compact('tag','title','date'));
 	}
+	Router::connect("/{$tag}/{:page}", array(
+		'controller' => 'search', 'action' => 'filter'
+	) + compact('tag','title'));
+	Router::connect("/{$tag}", array(
+		'controller' => 'search', 'action' => 'filter'
+	) + compact('tag','title'));
 }
 
+Router::connect('/s/{:q}/{:page}', array(
+	'controller' => 'search', 'action' => 'index'
+));
+
+Router::connect('/t/{:tag}/{:page}', array(
+	'controller' => 'search', 'action' => 'tag'
+));
 Router::connect('/t/{:tag}', array(
 	'controller' => 'search', 'action' => 'tag'
 ));
@@ -157,11 +121,6 @@ if (!Environment::is('production')) {
 	Router::connect('/test/{:args}', array('controller' => '\lithium\test\Controller'));
 	Router::connect('/test', array('controller' => '\lithium\test\Controller'));
 }
-
-Router::connect('/docs', array('library' => 'li3_docs', 'controller' => 'browser'));
-Router::connect('/docs/{:lib}/{:args}', array(
-	'library' => 'li3_docs', 'controller' => 'browser', 'action' => 'view'
-));
 
 /**
  * Finally, connect the default routes.

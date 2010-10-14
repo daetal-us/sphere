@@ -38,9 +38,9 @@ class Thread extends \lithium\template\Helper {
 		$parts = array();
 
 		$user = Session::read('user', array('name' => 'li3_user'));
-		$thread->rating();
 
 		foreach ($thread->comments as $key => $comment) {
+
 			$comment->id = $thread->id;
 			if (empty($comment->user)) {
 				continue;
