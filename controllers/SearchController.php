@@ -19,8 +19,9 @@ class SearchController extends \lithium\action\Controller {
 			extract($data);
 		}
 		$results = Search::find('posts', array('conditions' => compact('q','page')));
+		$url = $this->request->params + $data;
 
-		return compact('q','results');
+		return compact('q','results', 'url');
 	}
 
 	public function tag() {
@@ -40,25 +41,36 @@ class SearchController extends \lithium\action\Controller {
 	 */
 	public function filter() {
 		$defaults = array(
+			'author' => null,
 			'tag' => null,
 			'date' => null,
 			'title' => null,
-			'page' => null
+			'page' => null,
+			'sort' => '\rating',
 		);
 		extract($this->request->params + $defaults);
 
 		$q = array();
 		if (!empty($tag)) {
+			if (empty($title)) {
+				$title = "Posts tagged `{$tag}`";
+			}
 			$q[] = "tag:{$tag}";
 		}
-
 		if (!empty($date)) {
 			$q[] = "date:{$date}";
+		}
+		if (!empty($username)) {
+			$title = "Posts by {$username}";
+			$q[] = "author:{$username}";
+			if (empty($sort)) {
+				$sort = '\timestamp';
+			}
 		}
 
 		$q = implode($q, " && ");
 
-		$results = Search::find('posts', array('conditions' => compact('q','page')));
+		$results = Search::find('posts', array('conditions' => compact('q','page','sort')));
 
 		$url = $this->request->params;
 

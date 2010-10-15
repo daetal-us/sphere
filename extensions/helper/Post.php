@@ -60,8 +60,8 @@ class Post extends \lithium\template\Helper {
 
 		$author = $html->link($post->user()->username, array(
 			'controller' => 'search',
-			'action' => 'index',
-			'args' => '?q=author:'.$post->user()->username
+			'action' => 'filter',
+			'username' => $post->user()->username
 		), array(
 			'class' => 'post-author',
 			'title' => 'Search for more posts by this author',
@@ -86,7 +86,9 @@ class Post extends \lithium\template\Helper {
 			array('class' => 'comments ' . $commentsClass)
 		);
 
-		$content = implode('', compact('heading','comments','author','time'));
+		$meta = "<div class=\"meta\">".implode('', compact('comments','author','time'))."</div>";
+
+		$content = implode('', compact('heading','meta'));
 
 		return '<li class="post">' . $content . '</li>';
 	}
@@ -112,7 +114,7 @@ class Post extends \lithium\template\Helper {
 		extract($options + $defaults);
 
 		$title = String::insert($title, compact('tag'));
-		$url = array('controller' => 'search', 'action' => 'tag') + compact('tag');
+		$url = array('controller' => 'search', 'action' => 'filter') + compact('tag');
 		if (in_array($tag, \app\models\Post::$tags)) {
 			$url = $tag;
 		}

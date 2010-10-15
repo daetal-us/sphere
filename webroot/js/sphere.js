@@ -29,6 +29,7 @@ var li3Sphere = {
 		this.setupSourcesMenu();
 		this.setupShowdownHelp();
 		this.setupShowdown();
+		this.setupPosts();
 		this.setupPost();
 		this.setupComments();
 		this.cleanDates();
@@ -42,9 +43,11 @@ var li3Sphere = {
 	setupShowdown: function() {
 		this.Showdown = new Showdown.converter();
 		$('pre.markdown').each(function(i,e) {
-			$(e).replaceWith(
-				li3Sphere.Showdown.makeHtml($(e).text())
-			);
+			var html = li3Sphere.Showdown.makeHtml($(e).text());
+			html = html.replace(/<script>(.*)<\/script>/g, function(str) {
+				return $('<div/>').text(str).html();
+			});
+			$(e).replaceWith(html);
 		});
 		return this;
 	},
@@ -168,6 +171,23 @@ var li3Sphere = {
 			$(this).fadeOut('fast');
 			return false;
 		});
+	},
+
+	setupPosts: function() {
+		$('.posts .post .meta').hide();
+		$('.posts .post').bind({
+			mouseenter: function() {
+				clearTimeout($.data(this, "timeout"));
+				var meta = $(this).find('.meta');
+				$.data(this, "timeout", setTimeout(function() {
+					meta.stop(true, true).show(250);
+				}, 200));
+			},
+			mouseleave: function() {
+				clearTimeout($.data(this, "timeout"));
+				$(this).find('.meta').stop(true, true).hide(250);
+			}
+		})
 	},
 
 	setupPost: function() {

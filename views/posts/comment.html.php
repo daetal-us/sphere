@@ -1,6 +1,6 @@
 <div class="post">
 
-	<h1><?=$this->title($post->title);?></h1>
+	<h1><?php echo $this->title($h($post->title));?></h1>
 
 	<div class="post-meta">
 		<?php $date = date("F j, Y, g:i a T", $post->created); ?>
@@ -10,8 +10,18 @@
 		</span>
 		<?php $gravatar = $this->gravatar->url(array('email' => $post->user()->email, 'params' => array('size' => 16))); ?>
 		<span class="post-author" style="background-image:url(<?=$gravatar;?>);">
-			<?=$this->html->link($post->user()->username, array('controller' => 'search', 'action' => 'index', 'args' => '?q=author:'.$post->user()->username), array('title' => 'Search for more posts by this author'));?>
+			<?=$this->html->link($post->user()->username, array('controller' => 'search', 'action' => 'filter', 'username' => $post->user()->username), array('title' => 'Search for more posts by this author'));?>
 		</span>
+		<?php if (!empty($post->tags)) { ?>
+		<span class="tags">
+		<?php
+			$tags = array();
+		 	foreach ($post->tags as $tag) {
+				$tags[] = $this->post->tag($tag);
+			} ?>
+			<?php echo implode(", \n", $tags); ?>
+		</span>
+		<?php } ?>
 	</div>
 
 	<div class="post-content">
@@ -37,10 +47,12 @@
 	<?php
 	$args = $this->request()->args;
 	if (!empty($post->comments)) {
-		if ($post->comments->count() != $post->comment_count) {
+		$comments = $post->comments();
+		if ($comments->count() != $post->comment_count) {
 				echo $this->html->link('open all comments', '#', array('class' => 'view-all-comments button'));
 			}
-		echo $this->thread->comments($post, compact('args'));
+
+		echo $this->thread->comments($post->data(), compact('args'));
 	}
 	?>
 

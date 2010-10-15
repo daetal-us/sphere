@@ -43,12 +43,27 @@ class Post extends \lithium\data\Model {
 		parent::__init($options);
 		static::applyFilter('save', function ($self, $params, $chain) {
 			if (empty($params['entity']->created)) {
-				$params['entity']->id = Inflector::slug($params['entity']->title);
+
+				$id = Inflector::slug($params['entity']->title);
+				if (strlen($id) < 5) {
+					$id = $id . '-' . substr(md5($id . time()), 0, 5);
+				}
+				$slug = $id;
+				while ($existing = $self::first($id)) {
+					$id = "$slug-" .  substr(md5($slug . time()), 0, 4);
+				}
+				$params['entity']->id = $id;
+
 				$params['entity']->created = time();
 				if (!empty($params['entity']->tags) && is_string($params['entity']->tags)) {
 					$params['entity']->tags = array_unique(array_filter(explode(
 						",", str_replace(' ', '', $params['entity']->tags)
 					)));
+					if (!empty($params['entity']->tags)) {
+						foreach ($params['entity']->tags as $key => $tag) {
+							$params['entity']->tags[$key] = Inflector::slug($tag);
+						}
+					}
 				}
 				if ($user = Session::read('user', array('name' => 'li3_user'))) {
 					$params['entity']->user_username = $user['username'];
@@ -61,10 +76,6 @@ class Post extends \lithium\data\Model {
 
 		static::applyFilter('find', function ($self, $params, $chain) {
 			$result = $chain->next($self, $params, $chain);
-
-			if (empty($result)) {
-				return $result;
-			}
 
 			if (!empty($result->comments)) {
 				$comments = new DocumentSet(array(
@@ -103,8 +114,9 @@ class Post extends \lithium\data\Model {
 			while($args) {
 				$key = array_shift($args);
 				if (isset($comments[$key])) {
+					$comments[$key] = (array) $comments[$key];
 					$result = (array) $comments[$key] + array('comments' => array());
-					$comments[$key]['comments'] = $insert($result['comments'], $args);
+					$comments[$key]['comments'] = $insert((array) $result['comments'], $args);
 					$comments[$key]['comment_count']++;
 				}
 				return $comments;
@@ -160,6 +172,17 @@ class Post extends \lithium\data\Model {
 			}
 		}
 		return ceil($rating);
+	}
+
+	public function comments($record) {
+		$comments = null;
+		if (!empty($record->comments)) {
+			$comments = new DocumentSet(array(
+				'data' => $record->comments->data(),
+				'model' => 'app\models\Comment',
+			));
+		}
+		return $comments;
 	}
 
 }

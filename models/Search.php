@@ -69,7 +69,10 @@ class Search extends \lithium\data\Model {
 	public function post($result) {
 		$result->doc->id = $result->doc->_id;
 		$data = $result->data();
-		return \app\models\Post::create($data['doc']);
+		return new Document(array(
+			'data' => $data['doc'],
+			'model' => 'app\models\Post'
+		));
 	}
 
 }

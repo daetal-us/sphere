@@ -11,7 +11,7 @@
 <head>
 	<?php echo $this->html->charset();?>
 	<title>▴❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('http://localhost/lithify_me/css/reset.css', 'http://localhost/lithify_me/css/base.css', 'http://localhost/lithify_me/css/forms.css', 'http://localhost/lithify_me/css/polish.css', 'sphere'));?>
+	<?php echo $this->html->style(array('http://daetal.us/css/reset.css', 'http://daetal.us/css/base.css', 'http://daetal.us/css/forms.css', 'http://daetal.us/css/polish.css', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -64,7 +64,7 @@
 		<div class="nav search">
 			<nav>
 				<?php
-				echo $this->form->create(null, array('url' => array('controller' => 'search', 'action' => 'index'), 'method' => 'GET', 'class' => 'mini-search-form'));
+				echo $this->form->create(null, array('url' => array('controller' => 'search', 'action' => 'index', 'q' => null), 'method' => 'GET', 'class' => 'mini-search-form'));
 				echo $this->form->text('q', array('class' => 'search-query', 'value' => (isset($q) ? $q : null)));
 				echo $this->form->submit('Search', array('class' => 'search-submit'));
 				echo $this->form->end();

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use \lithium\storage\Session;
+use \lithium\data\collection\DocumentSet;
 use \app\models\Post;
 
 class Comment extends \lithium\data\Model {
@@ -47,7 +48,15 @@ class Comment extends \lithium\data\Model {
 		});
 	}
 
-	public function replies($comment) {}
+	public function comments($comment) {
+		if ($comment->comments) {
+			return new DocumentSet(array(
+				'data' => $comment->comments,
+				'model' => __CLASS__
+			));
+		}
+		return null;
+	}
 
 }
 

@@ -26,10 +26,12 @@ class Thread extends \lithium\template\Helper {
 		));
 	}
 
-	public function comments($thread, $options = array(), $parent = array()) {
-		if (empty($thread->comments)) {
+	public function comments($data, $options = array(), $parent = array()) {
+
+		if (!isset($data['comments'])) {
 			return null;
 		}
+		$comments = $data['comments'];
 		$html = $this->_context->helper('html');
 		$oembed = $this->_context->helper('oembed');
 		$gravatar = $this->_context->helper('gravatar');
@@ -39,22 +41,26 @@ class Thread extends \lithium\template\Helper {
 
 		$user = Session::read('user', array('name' => 'li3_user'));
 
-		foreach ($thread->comments as $key => $comment) {
 
-			$comment->id = $thread->id;
-			if (empty($comment->user)) {
+
+		foreach ($comments as $key => $comment) {
+			$comment = (array) $comment;
+
+			$comment['user'] = (array) $comment['user'];
+			$comment['id'] = $data['id'];
+			if (empty($comment['user'])) {
 				continue;
 			}
 
 			$args = array_merge($parent, (array) $key);
 
 			$commentUrl = Router::match(array(
-				'controller' => 'posts', 'action' => 'comment', 'id' => $thread->id,
+				'controller' => 'posts', 'action' => 'comment', 'id' => $comment['id'],
 				'args' => $args
 			));
 			$endorseUrl = Router::match(array(
 				'controller' => 'posts', 'action' => 'endorse',
-				'args' => array_merge(array($thread->id), $args)
+				'args' => array_merge(array($comment['id']), $args)
 			));
 			if (empty($user)) {
 				$commentUrl = array(
@@ -87,33 +93,33 @@ class Thread extends \lithium\template\Helper {
 				)
 			);
 
-			$comment->content = '<pre class="markdown">' .
-				$oembed->classify($comment->content, array('markdown' => true)) .
+			$comment['content'] = '<pre class="markdown">' .
+				$oembed->classify($comment['content'], array('markdown' => true)) .
 			'</pre>';
 
 			$replies = null;
-			if (!empty($comment->comment_count)) {
+			if (!empty($comment['comment_count'])) {
 				$replies = $html->link(
-					"view replies ({$comment->comment_count})",
+					"view replies ({$comment['comment_count']})",
 					'#',
 					array('class' => 'view-post-comment-replies')
 				);
 			}
 
-			$timestamp = $comment->created;
+			$timestamp = $comment['created'];
 			$date = date("F j, Y, g:i a T", $timestamp);
 			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">{$date}" .
 						"<span class=\"timestamp\">{$timestamp}</span></span>";
 
 			$size = $this->threadedIconSize(count($args));
 			$style = 'style="padding:' . $size . 'px 0 0 0; width:' . $size . 'px; background-image:url('.$gravatar->url(array(
-				'email' => $comment->user->email, 'params' => compact('size')
+				'email' => $comment['user']['email'], 'params' => compact('size')
 			)).');"';
-			$author = "<span $style title=" . $comment->user->username . "></span>";
+			$author = "<span $style title=" . $comment['user']['username'] . "></span>";
 
-			$ratingClass = ($comment->rating == 0 ? ' empty' : null);
+			$ratingClass = ($comment['rating'] == 0 ? ' empty' : null);
 			$rating = '<span class="post-comment-rating' . $ratingClass .'">' .
-				$comment->rating .
+				$comment['rating'] .
 			'</span>';
 
 			$meta = 	$time . $rating;
@@ -121,9 +127,9 @@ class Thread extends \lithium\template\Helper {
 			$row = 	"<div class=\"meta aside\"><aside>{$rating}<aside></div> {$endorsement} {$reply}" .
 						"<div class=\"post-comment-author-icon\">{$author} </div>" .
 						"<div class=\"post-comment-author-content\" style=\"padding-left:" . $size . "px;\"><div class=\"post-comment-author\">" .
-						$html->link($comment->user->username, array('controller' => 'search', 'action' => 'index', 'args' => '?q=author:'.$comment->user->username), array('title' => 'Search for more posts by this author')) .
+						$html->link($comment['user']['username'], array('controller' => 'search', 'action' => 'filter', 'username' => $comment['user']['username']), array('title' => 'Search for more posts by this author')) .
 						" {$time}</div>" .
-						"<div class=\"post-comment-content\">{$comment->content}</div></div> {$replies}";
+						"<div class=\"post-comment-content\">{$comment['content']}</div></div> {$replies}";
 
 			// if (isset($options['args']) && $options['args'] == $args) {
 			// 	$next = (!empty($comment->comments) ? count($comment->comments) : 0);

@@ -25,7 +25,6 @@ Router::connect('/page:{:page}', array('controller' => 'search', 'action' => 'la
 Router::connect('/p/{:id}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/p/{:id}/{:args}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/users/login/{:return}', array('controller' => 'users', 'action' => 'login'));
-Router::connect('/search', array('controller' => 'search', 'action' => 'index'));
 
 /**
  * Timespans and Sources are shortcuts to searches, basically
@@ -103,15 +102,29 @@ foreach ($tags as $tag => $title) {
 	) + compact('tag','title'));
 }
 
+Router::connect('/u/{:username}/{:page}', array(
+	'controller' => 'search', 'action' => 'filter'
+));
+
+Router::connect('/u/{:username}', array(
+	'controller' => 'search', 'action' => 'filter'
+));
+
 Router::connect('/s/{:q}/{:page}', array(
+	'controller' => 'search', 'action' => 'index'
+));
+Router::connect('/s/{:q}', array(
+	'controller' => 'search', 'action' => 'index'
+));
+Router::connect('/s', array(
 	'controller' => 'search', 'action' => 'index'
 ));
 
 Router::connect('/t/{:tag}/{:page}', array(
-	'controller' => 'search', 'action' => 'tag'
+	'controller' => 'search', 'action' => 'filter'
 ));
 Router::connect('/t/{:tag}', array(
-	'controller' => 'search', 'action' => 'tag'
+	'controller' => 'search', 'action' => 'filter'
 ));
 
 /**

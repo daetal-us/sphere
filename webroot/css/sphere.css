@@ -1,3 +1,11 @@
+a:visited {
+	color: #666;
+}
+
+a:visited:hover {
+	color:#0BF;
+}
+
 .width-constraint {
 	width: 1002px;
 	margin: 0 auto;
@@ -63,7 +71,7 @@
 .markdown-help {
 	margin: 0 .35em 1em 0;
 	padding: 2em 2em 1em;
-	background: #f2f2f2;
+	background: #e0e0e0;
 	font-size: 0.85em;
 }
 .markdown-help h4 {
@@ -406,17 +414,10 @@ li.post .post-author, li.post .post-created, li.post .comments, li.post .tag {
 	background: url(../img/icons/dummy.png) no-repeat center left;
 	display: inline;
 	border-bottom-width: 0;
-	display: none;
-}
-li.post:hover .post-author, li.post:hover .post-created, li.post:hover .comments, li.post:hover .tag {
-	display: inline;
 }
 li.post .post-created {
 	background: none;
 	padding-left: 0;
-}
-li.post .post-author:hover, li.post .comments:hover, li.post .tag:hover {
-	color: #00A8E6;
 }
 li.post .post-author {
 	font-weight: bold;
@@ -454,7 +455,7 @@ div.post .post-meta {
 	top: -2em;
 	right: -2em;
 }
-div.post .post-author, div.post .post-date {
+div.post .post-author, div.post .post-date, div.post .tags {
 	display: block;
 	float: right;
 	color: #b2b2b2;
@@ -467,7 +468,7 @@ div.post .post-author {
 	font-weight: bold;
 	padding-right: 1em;
 }
-div.post .post-author a {
+div.post .post-author a, div.post .tags a {
 	color: #00A8E6;
 	border-bottom-width: 0;
 }
@@ -478,6 +479,13 @@ div.post .post-date {
 	background: none;
 	padding-left: 0;
 }
+
+div.post .tags {
+	background-image: url(../img/icons/tag-medium.png);
+	clear: right;
+}
+
+
 .post .post-content {
 	clear: both;
 	padding-top: 1em;
@@ -487,10 +495,11 @@ div.post .post-date {
 	float: right;
 	color: #999;
 	font-weight: bold;
-	padding: 0 1.5em 0 0;
+	padding: 0 0 0 1em;
+	background-color: #f2f2f2;
 }
 .post .post-comment:hover, .post .endorse-post:hover {
-	color: #7FDCFF;
+	background-color: transparent;
 }
 .post .post-comment {
 	border-right: 0;
@@ -500,8 +509,8 @@ div.post .post-date {
 }
 .post .post-comment span, .post .endorse-post span {
 	display: block;
-	padding: 0.5em 1.5em;
-	background: url(../img/icons/balloon.png) no-repeat center right;
+	padding: 0.5em 1em .5em 1.5em;
+	background: url(../img/icons/balloon.png) no-repeat center left;
 }
 .post .endorse-post span {
 	background-image: url(../img/icons/star.png);
@@ -705,7 +714,7 @@ li.comment .post-comment-content {
 	padding: 1em 1em 1em 0;
 	border-top: 1px solid rgba(0,0,0,.03);
 }
-#add-post form, #add-comment form, li.comment form {
+form  {
 	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
 	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
 	box-shadow: inset 0 0 12px rgba(0,0,0,.15);
