@@ -71,6 +71,8 @@ $tags = array(
 	'slides' => 'Slides',
 	'events' => 'Events',
 	'docs' => 'Documentation',
+	'jobs' => 'Jobs',
+	'misc' => 'Misc.'
 );
 
 foreach ($timespans as $key => $options) {

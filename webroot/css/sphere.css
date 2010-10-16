@@ -48,7 +48,7 @@
 	margin-bottom: 2em;
 	float: left;
 	width: 50em;
-	min-height: 350px;
+	min-height: 410px;
 }
 
 
@@ -265,6 +265,14 @@ span.timestamp {
 
 .nav.sources a.docs, .icon.tag.docs, .posts .post .docs a {
 	background-image: url(../img/icons/docs.png);
+}
+
+.nav.sources a.misc, .icon.tag.misc, .posts .post .misc a {
+	background-image: url(../img/icons/other.png);
+}
+
+.nav.sources a.jobs, .icon.tag.jobs, .posts .post .misc a {
+	background-image: url(../img/icons/jobs.png);
 }
 
 .nav.sources.closed ul li a span {

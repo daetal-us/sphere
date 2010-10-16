@@ -36,7 +36,8 @@ class Post extends \lithium\data\Model {
 	);
 
 	public static $tags = array(
-		'apps','questions','press','tutorials','code','videos','podcasts','slides','events','docs'
+		'apps','questions','press','tutorials','code','videos','podcasts','slides','events','docs',
+		'jobs','misc'
 	);
 
 	public static function __init(array $options = array()) {

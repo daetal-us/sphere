@@ -86,6 +86,8 @@
 					<li><?php echo $this->sphere->link('<span>Slides</span>', array('tag' => 'slides'), array('escape' => false, 'class' => 'slides', 'title' => 'Slides'));?></li>
 					<li><?php echo $this->sphere->link('<span>Events</span>', array('tag' => 'events'), array('escape' => false, 'class' => 'events', 'title' => 'Events'));?></li>
 					<li><?php echo $this->sphere->link('<span>Documentation</span>', array('tag' => 'docs'), array('escape' => false, 'class' => 'docs', 'title' => 'Documentation'));?></li>
+					<li><?php echo $this->sphere->link('<span>Jobs</span>', array('tag' => 'jobs'), array('escape' => false, 'class' => 'jobs', 'title' => 'Jobs'));?></li>
+					<li><?php echo $this->sphere->link('<span>Misc.</span>', array('tag' => 'misc'), array('escape' => false, 'class' => 'misc', 'title' => 'Misc.'));?></li>
 				</ul>
 			</nav>
 		</div>
