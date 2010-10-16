@@ -51,6 +51,9 @@
 	min-height: 410px;
 }
 
+ul li:before {
+	color: black;
+}
 
 .article {
 	padding-bottom: 1em;

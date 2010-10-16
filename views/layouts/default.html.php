@@ -11,7 +11,7 @@
 <head>
 	<?php echo $this->html->charset();?>
 	<title>▴❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('http://localhost/lithify_me/css/reset.css', 'http://localhost/lithify_me/css/base.css', 'http://localhost/lithify_me/css/forms.css', 'http://localhost/lithify_me/css/polish.css', 'sphere'));?>
+	<?php echo $this->html->style(array('http://daetal.us/css/reset.css', 'http://daetal.us/css/base.css', 'http://daetal.us/css/forms.css', 'http://daetal.us/css/polish.css', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
