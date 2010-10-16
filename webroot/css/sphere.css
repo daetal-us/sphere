@@ -932,6 +932,7 @@ input.search-submit {
 ::-webkit-scrollbar {
     width: 10px;
     height: 1px;
+	background: #fff;
 }
 ::-webkit-scrollbar-button:start:decrement,
 ::-webkit-scrollbar-button:end:increment {
