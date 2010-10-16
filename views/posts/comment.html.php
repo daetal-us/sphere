@@ -36,7 +36,7 @@
 
 	<?php if (!empty($user)) { ?>
 	<div id="add-comment" style="display:none;">
-		<h3>add a comment</h3>asdf
+		<h3>add a comment</h3>
 		<?php echo $this->form->create(); ?>
 		<?php echo $this->form->textarea("content", array('class' => 'custom-vertical-scroll')); ?>
 		<?php echo $this->form->submit('post comment'); ?>
