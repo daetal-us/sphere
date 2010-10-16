@@ -11,7 +11,7 @@
 <head>
 	<?php echo $this->html->charset();?>
 	<title>▴❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('http://daetal.us/css/reset.css', 'http://daetal.us/css/base.css', 'http://daetal.us/css/forms.css', 'http://daetal.us/css/polish.css', 'sphere'));?>
+	<?php echo $this->html->style(array('http://localhost/lithify_me/css/reset.css', 'http://localhost/lithify_me/css/base.css', 'http://localhost/lithify_me/css/forms.css', 'http://localhost/lithify_me/css/polish.css', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
@@ -98,7 +98,7 @@
 		</div>
 	</div>
 	<div class="footer">
-		<p class="copyright">this badapp &copy; 2010 and beyond, <?php echo $this->html->link('the Union of Rad', 'http://union-of-rad.org/'); ?>.</p>
+		<p class="copyright">this badapp &copy; 2010 and beyond, <?php echo $this->html->link('the Union of Rad', 'http://union-of-rad.org/'); ?> &nbsp; ▴ &nbsp; hosting by <a href="http://www.rackspacecloud.com/519.html" title="Learn more about cloud computing from The Rackspace Cloud at rackspacecloud.com"><img src="http://cdn.cloudfiles.rackspacecloud.com/c110782/the-rackspace-cloud-125-wide.png" border="0" alt="The Rackspace Cloud" width="125" height="35" /></a></p>
 	</div>
 	<?php echo $this->html->script(array(
 		"jquery-1.4.1.min",

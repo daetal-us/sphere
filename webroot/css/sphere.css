@@ -96,6 +96,12 @@ a:visited:hover {
 	border-bottom: none;
 }
 
+.footer img {
+	vertical-align: middle;
+	position: relative;
+	top: -3px;
+}
+
 blockquote {
 	font-size: 0.85em;
 	color: rgba(0,0,0,.5);
