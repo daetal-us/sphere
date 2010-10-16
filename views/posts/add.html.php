@@ -5,7 +5,7 @@
 	<label for="PostTitle">Title:</label>
 	<?php echo $this->form->text('title', array('id' => 'PostTitle')); ?>
 	<label for="PostContent">Content:</label>
-	<?php echo $this->form->textarea('content', array('id' => 'PostContent')); ?>
+	<?php echo $this->form->textarea('content', array('id' => 'PostContent', 'class' => 'custom-vertical-scroll')); ?>
 	<div class="base-tags">
 		<label class="label">Category Tag:</label>
 		<?php foreach ($tags as $tag) { ?>

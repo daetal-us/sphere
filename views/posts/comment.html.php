@@ -1,8 +1,7 @@
 <div class="post">
 
-	<h1><?php echo $this->title($h($post->title));?></h1>
-
 	<div class="post-meta">
+		<aside>
 		<?php $date = date("F j, Y, g:i a T", $post->created); ?>
 		<span class="post-date pretty-date" title="<?=$date;?>">
 			<?=$date;?>
@@ -22,7 +21,10 @@
 			<?php echo implode(", \n", $tags); ?>
 		</span>
 		<?php } ?>
+		</aside>
 	</div>
+
+	<h1><?php echo $this->title($h($post->title));?></h1>
 
 	<div class="post-content">
 		<pre class="markdown"><?php
@@ -34,19 +36,19 @@
 
 	<?php if (!empty($user)) { ?>
 	<div id="add-comment" style="display:none;">
-		<h3>add a comment</h3>
+		<h3>add a comment</h3>asdf
 		<?php echo $this->form->create(); ?>
-		<?php echo $this->form->textarea("content"); ?>
+		<?php echo $this->form->textarea("content", array('class' => 'custom-vertical-scroll')); ?>
 		<?php echo $this->form->submit('post comment'); ?>
 		<?php echo $this->form->end(); ?>
 	</div>
 	<?php } ?>
 
-	<h3 class="comments">comments</h3>
-
 	<?php
 	$args = $this->request()->args;
-	if (!empty($post->comments)) {
+	if (!empty($post->comments)) { ?>
+		<h3 class="comments">comments</h3>
+		<?php
 		$comments = $post->comments();
 		if ($comments->count() != $post->comment_count) {
 				echo $this->html->link('open all comments', '#', array('class' => 'view-all-comments button'));

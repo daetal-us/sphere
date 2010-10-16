@@ -1,11 +1,3 @@
-a:visited {
-	color: #666;
-}
-
-a:visited:hover {
-	color:#0BF;
-}
-
 .width-constraint {
 	width: 1002px;
 	margin: 0 auto;
@@ -332,6 +324,14 @@ ul.posts {
 	list-style: none !important;
 }
 
+ul.posts a:visited {
+	color: #666;
+}
+
+ul.posts a:visited:hover {
+	color:#0BF;
+}
+
 ul.posts li:before, ul.comments li:before {
 	display: none !important;
 }
@@ -452,16 +452,18 @@ li.post .tag {
 .post h1, h1:first-child {
 	margin: 0 0 .5em 0;
 }
+
 .post h3 {
 	clear: both;
 }
 div.post .post-meta {
 	display: block;
-	position: absolute;
+	float: right;
+	position: relative;
 	top: -2em;
 	right: -2em;
 }
-div.post .post-author, div.post .post-date, div.post .tags {
+div.post .post-author, div.post .post-date, div.post .post-meta .tags {
 	display: block;
 	float: right;
 	color: #b2b2b2;
@@ -486,7 +488,7 @@ div.post .post-date {
 	padding-left: 0;
 }
 
-div.post .tags {
+div.post .post-meta .tags {
 	background-image: url(../img/icons/tag-medium.png);
 	clear: right;
 }
@@ -605,6 +607,7 @@ li.comment .endorse-post-comment {
 	display: none;
 	padding: 0 1em;
 	font-size: .9em;
+	background: #f5f5f5;
 }
 li.comment .post-comment-reply:hover,
 li.comment .post-comment-thread:hover,
@@ -615,11 +618,11 @@ li.comment .post-comment-reply span,
 li.comment .post-comment-thread span,
 li.comment .endorse-post-comment span {
 	display: block;
-	padding: 0.35em 2em 0.35em 0;
-	background: url(../img/icons/balloon-plus.png) no-repeat center right;
+	padding: 0;
+/*	background: url(../img/icons/balloon-plus.png) no-repeat center right;*/
 }
 li.comment .endorse-post-comment span {
-	background-image: url(../img/icons/star.png);
+/*	background-image: url(../img/icons/star.png);*/
 }
 li.comment .post-comment-reply, li.comment .endorse-post-comment {
 	margin-top: .5em;
@@ -728,8 +731,10 @@ form  {
 	background: rgba(0,0,0,.03);
 	position: relative;
 }
-#add-post textarea, #add-comment textarea {
+#add-post textarea, #add-comment textarea, #Content {
 	margin-bottom: 0;
+	height: 8em;
+	overflow-y: auto;
 }
 li.comment form {
 	margin: 1em;
@@ -907,4 +912,33 @@ input.search-submit {
 }
 #cli, #git-shortcuts, .nav.account {
 	position: fixed !important;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 1px;
+}
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+    display: block;
+}
+::-webkit-scrollbar:horizontal,
+::-webkit-scrollbar-button:vertical:start:increment,
+::-webkit-scrollbar-button:vertical:end:decrement,
+::-webkit-scrollbar-button:vertical:increment,
+::-webkit-scrollbar-button:vertical:decrement {
+    display: none;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: rgba(0,0,0,.1);
+}
+::-webkit-scrollbar-thumb:vertical {
+    height: 10px;
+    background-color: rgba(0,0,0,.15);
+}
+::-webkit-scrollbar-corner:vertical {
+    background-color: black;
+}
+::-webkit-scrollbar-resizer:vertical {
+    background-color: gray;
 }
