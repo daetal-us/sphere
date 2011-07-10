@@ -12,13 +12,6 @@ var li3Sphere = {
 	options: {},
 
 	/**
-	 * Reserved for Showdown object
-	 * @param object Showdown
-	 * @see http://attacklab.net/showdown/
-	 */
-	Showdown: {},
-
-	/**
 	 * Setup method assigns `options` and performs some other tasks needed to startup.
 	 *
 	 * @param object options
@@ -27,8 +20,7 @@ var li3Sphere = {
 	setup: function(options) {
 		$.extend(this.options, options);
 		this.setupSourcesMenu();
-		this.setupShowdownHelp();
-		this.setupShowdown();
+		this.setupMarkdownHelp();
 		this.setupPosts();
 		this.setupPost();
 		this.setupComments();
@@ -36,34 +28,19 @@ var li3Sphere = {
 		return this;
 	},
 
-	/**
-	 * Setup Showdown and convert applicable element contents.
-	 * @return object this
-	 */
-	setupShowdown: function() {
-		this.Showdown = new Showdown.converter();
-		$('pre.markdown').each(function(i,e) {
-			var html = li3Sphere.Showdown.makeHtml($(e).text());
-			html = html.replace(/<script>(.*)<\/script>/g, function(str) {
-				return $('<div/>').text(str).html();
-			});
-			$(e).replaceWith(html);
-		});
-		return this;
-	},
-
-	setupShowdownHelp: function() {
+	setupMarkdownHelp: function() {
 		$("#add-post form textarea, #add-comment form textarea, li.comment form textarea").each(function(i,e) {
-			var help = 	"# header &nbsp; &nbsp; " +
-						"<em>*italic*</em> &nbsp; &nbsp; " +
-						"<strong>**bold**</strong> &nbsp; &nbsp; " +
-						"- unordered list &nbsp; &nbsp; " +
-						"1. ordered list &nbsp; &nbsp; " +
-						"> blockquote &nbsp; &nbsp; " +
-						"[a link](http://example.com) &nbsp; &nbsp; " +
-						"![image text](http://example.com/image.jpg) &nbsp; &nbsp; " +
-						"<code>`code`</code> &nbsp; &nbsp; " +
-						"<pre><code>{{{ code }}}</code></pre>";
+			var help = 	"<span title=\"headings!\"># header</span> " +
+						"<span title=\"create italic text!\"><em>*italic*</em></span> " +
+						"<span title=\"bold text - a classic!\"><strong>**bold**</strong></span> " +
+						"<span title=\"render an arbitrary list of stuff!\">- unordered list</span> " +
+						"<span title=\"create numerically ordered lists!\">1. ordered list</span> " +
+						"<span title=\"render text as block-quotes!\"> blockquote</span> " +
+						"<span title=\"create hyperlinks!\">[a link](http://example.com)</span> " +
+						"<span title=\"render images!\">![image text](http://example.com/image.jpg)</span> " +
+						"<span title=\"inline code!\"><code>`inline code`</code></span> " +
+						"<pre title=\"share your awesome code!\"><code>\t// precede with `tabs` to render code</code></pre>" +
+						"<aside>we attempt to convert stand-alone urls into links and leverage oEmbed linked content when possible.</aside>";
 			var html = $("<a class=\"icon show-text toggle-markdown-help\" href=\"#\">markdown help</a><div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>"+help+"</div>");
 			$(e).after(html);
 			$(e).siblings('.toggle-markdown-help').click(function() {
@@ -132,7 +109,7 @@ var li3Sphere = {
 		$('a.post-comment-reply:not(.inactive)').click(function() {
 			var form = $(this).siblings('.post-comment-author-content').find('form');
 			if (form.length == 0) {
-				form = $("#add-comment form").clone().attr({
+				form = $("#add-comment form").clone(true).attr({
 					action: $(this).attr('href')
 				}).hide();
 				$(this).siblings('.post-comment-author-content').find('.post-comment-content').after(form);
@@ -194,9 +171,8 @@ var li3Sphere = {
 		this.Post.setup();
 		// Post Comment Links
 		$("a.post-comment:not(.inactive)").click(function() {
-			$("#add-comment").animate({
-				opacity: "toggle"
-			});
+			$("#add-comment").fadeIn('fast');
+			$(this).hide();
 			return false;
 		});
 	},
@@ -239,6 +215,7 @@ var li3Sphere = {
 			});
 			$('#add-post #PostContent').keyup(function() {
 				clearTimeout(li3Sphere.Post.timeout);
+				$('#add-post #PostTitle').removeClass('loading');
 				if ($('#add-post #PostTitle').val() == '') {
 					li3Sphere.Post.timeout = setTimeout(function() {
 						if ($('#add-post #PostTitle').val() == '') {
@@ -247,7 +224,7 @@ var li3Sphere = {
 								li3Sphere.Post.getUrlTitle(content);
 							}
 						}
-					}, 2000);
+					}, 1500);
 				}
 			});
 			$('#add-post #PostTags').keyup(function() {
@@ -319,9 +296,12 @@ var li3Sphere = {
 			$('.base-tags a:not(.selected)').show(1000);
 		},
 		isUrl: function(string) {
-			return true;
+			var pattern = new RegExp();
+			pattern.compile("^[A-Za-z]+://[A-Za-z0-9-_]+\\.[A-Za-z0-9-_%&\?\/.=]+$");
+			return pattern.test(string);
 		},
 		getUrlTitle: function(url) {
+			$('#add-post #PostTitle').addClass('loading');
 			$.get(url, function(response) {
 				var html = response.responseText.replace(/\n/g, ' ');
 				var reg = new RegExp(/<title>(.*)<\/title>/i);
@@ -331,6 +311,7 @@ var li3Sphere = {
 						$('#add-post #PostTitle').val($('<div/>').html(match[1]).text());
 					}
 				}
+				$('#add-post #PostTitle').removeClass('loading');
 			});
 		}
 	}
