@@ -9,19 +9,15 @@
 use \lithium\data\Connections;
 
 Connections::add('default', array(
-	'type' => 'http',
-	'adapter' => 'CouchDb',
+	'adapter' => 'MongoDb',
 	'host' => 'localhost',
 	'database' => 'lithosphere',
-	'version' => '1.0'
 ));
 
 Connections::add('test', array(
-	'type' => 'http',
-	'adapter' => 'CouchDb',
+	'adapter' => 'MongoDb',
 	'host' => 'localhost',
 	'database' => 'lithosphere_test',
-	'version' => '1.0'
 ));
 
 ?>

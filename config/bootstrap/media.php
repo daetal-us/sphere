@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2011, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -21,9 +21,9 @@
  * return $posts->to('json');
  * }}}
  */
-use \lithium\util\Collection;
+use lithium\util\Collection;
 
-Collection::formats('\lithium\net\http\Media');
+Collection::formats('lithium\net\http\Media');
 
 /**
  * This filter is a convenience method which allows you to automatically route requests for static
@@ -34,23 +34,24 @@ Collection::formats('\lithium\net\http\Media');
  * plugin's `webroot` directory into your main application's `webroot` directory, or adding routing
  * rules in your web server's configuration.
  */
-use \lithium\action\Dispatcher;
-use \lithium\core\Libraries;
-use \lithium\net\http\Media;
+use lithium\action\Dispatcher;
+use lithium\action\Response;
+use lithium\net\http\Media;
 
 Dispatcher::applyFilter('_callable', function($self, $params, $chain) {
-	list($plugin, $asset) = explode('/', $params['request']->url, 2) + array("", "");
-	if ($asset && $library = Libraries::get($plugin)) {
-		$asset = "{$library['path']}/webroot/{$asset}";
+	list($library, $asset) = explode('/', $params['request']->url, 2) + array("", "");
 
-		if (file_exists($asset)) {
-			return function () use ($asset) {
-				$info = pathinfo($asset);
-				$type = Media::type($info['extension']);
-				header("Content-type: {$type['content']}");
-				return file_get_contents($asset);
-			};
-		}
+	if ($asset && ($path = Media::webroot($library)) && file_exists($file = "{$path}/{$asset}")) {
+		return function() use ($file) {
+			$info = pathinfo($file);
+			$media = Media::type($info['extension']);
+			$content = (array) $media['content'];
+
+			return new Response(array(
+				'headers' => array('Content-type' => reset($content)),
+				'body' => file_get_contents($file)
+			));
+		};
 	}
 	return $chain->next($self, $params, $chain);
 });

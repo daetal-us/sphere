@@ -1,0 +1,9 @@
+[submodule "libraries/li3_users"]
+	path = libraries/li3_users
+	url = code@dev.lithify.me:li3_users.git
+[submodule "libraries/lithium"]
+	path = libraries/lithium
+	url = https://github.com/UnionOfRAD/lithium.git
+[submodule "libraries/markdown"]
+	path = libraries/markdown
+	url = git@github.com:pointlessjon/markdown.git
