@@ -42,26 +42,28 @@ class Post extends \lithium\template\Helper {
 
 		// $image = $html->image($gravatar->url($post->user()->email), array('class' => 'gravatar'));
 		// $image = $html->link($image, array(
-		// 	'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
+		// 	'controller' => 'posts', 'action' => 'comment', '_id' => $post->_id
 		// ), array('escape' => false));
 
 		$category = null;
-		foreach ($post->tags as $tag) {
-			if (!in_array($tag, \app\models\Post::$tags)) {
-				continue;
+		if (!empty($post->tags)) {
+			foreach ($post->tags as $tag) {
+				if (!in_array($tag, \app\models\Post::$tags)) {
+					continue;
+				}
+				$category = $tag;
+				break;
 			}
-			$category = $tag;
-			break;
 		}
 
 		$heading = '<h2 class="'.$category.'">' . $html->link($post->title, array(
-			'controller' => 'posts', 'action' => 'comment', 'id' => $post->id
+			'controller' => 'posts', 'action' => 'comment', '_id' => $post->_id
 		)) . '</h2>';
 
-		$author = $html->link($post->user()->username, array(
+		$author = $html->link($post->user()->_id, array(
 			'controller' => 'search',
 			'action' => 'filter',
-			'username' => $post->user()->username
+			'_id' => $post->user()->_id
 		), array(
 			'class' => 'post-author',
 			'title' => 'Search for more posts by this author',
@@ -70,7 +72,7 @@ class Post extends \lithium\template\Helper {
 			)) . ')'
 		));
 
-		$timestamp = $post->created;
+		$timestamp = $post->created->sec;
 		$date = $date = date("F j, Y, g:i a T", $timestamp);
 		$time = "<span class=\"post-created pretty-date\" title=\"{$date}\">{$date}" .
 					"<span class=\"timestamp\">{$timestamp}</span></span>";
@@ -81,7 +83,7 @@ class Post extends \lithium\template\Helper {
 			. ' comment' . (($count !== 1) ? 's' : '');
 		$comments = $html->link($commentsText,
 			array(
-				'controller' => 'posts', 'action' => 'comment', 'id' => $post->id,
+				'controller' => 'posts', 'action' => 'comment', '_id' => $post->_id,
 			),
 			array('class' => 'comments ' . $commentsClass)
 		);
@@ -124,7 +126,7 @@ class Post extends \lithium\template\Helper {
 
 	public function link($type, $options = array()) {
 		$defaults = array(
-			'id' => null,
+			'_id' => null,
 			'user' => array(),
 			'url' => null,
 			'text' => null,
@@ -153,7 +155,7 @@ class Post extends \lithium\template\Helper {
 				}
 				$url = Router::match(
 					array('controller' => 'posts', 'action' => 'endorse',
-					'args' => array('id' => $id))
+					'args' => array('_id' => $_id))
 				);
 			break;
 			case 'comment':
@@ -162,10 +164,10 @@ class Post extends \lithium\template\Helper {
 					$options['title'] = 'comment on this post';
 				}
 				if (empty($text)) {
-					$text = '<span>comment</span>';
+					$text = '<span>add comment</span>';
 				}
 				$url = Router::match(
-					array('controller' => 'posts', 'action' => 'comment', 'id' => $id)
+					array('controller' => 'posts', 'action' => 'comment', '_id' => $_id)
 				);
 			break;
 			default:

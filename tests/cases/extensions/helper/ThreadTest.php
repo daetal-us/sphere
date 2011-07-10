@@ -22,7 +22,7 @@ class ThreadTest extends \lithium\test\Unit {
 		$thread = new Thread(array('context' => $this->_context));
 
 		$data = (object) array(
-			'id' => 1,
+			'_id' => 1,
 			'comments' => array(
 				(object) array(
 					'content' => 'one',
@@ -45,8 +45,8 @@ class ThreadTest extends \lithium\test\Unit {
 		$data->comments[] = (object) array(
 			'content' => 'two',
 			'user' => (object) array(
-				'id' => 'user@example.com',
-				'username' => 'user name',
+				'_id' => 'user@example.com',
+				'_id' => 'user name',
 				'email' => 'user@example.com'
 			),
 			'comments' => array(

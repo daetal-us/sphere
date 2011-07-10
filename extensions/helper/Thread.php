@@ -4,6 +4,7 @@ namespace app\extensions\helper;
 
 use \lithium\storage\Session;
 use \lithium\net\http\Router;
+use \markdown\Markdown;
 
 class Thread extends \lithium\template\Helper {
 
@@ -27,27 +28,27 @@ class Thread extends \lithium\template\Helper {
 	}
 
 	public function comments($data, $options = array(), $parent = array()) {
-
 		if (!isset($data['comments'])) {
 			return null;
 		}
+
+		$defaults = array('args' => null);
+		$options += $defaults;
+
 		$comments = $data['comments'];
 		$html = $this->_context->helper('html');
 		$oembed = $this->_context->helper('oembed');
 		$gravatar = $this->_context->helper('gravatar');
-		$defaults = array('args' => null);
-		$options += $defaults;
+
 		$parts = array();
 
 		$user = Session::read('user', array('name' => 'li3_user'));
-
-
 
 		foreach ($comments as $key => $comment) {
 			$comment = (array) $comment;
 
 			$comment['user'] = (array) $comment['user'];
-			$comment['id'] = $data['id'];
+			$comment['_id'] = $data['_id'];
 			if (empty($comment['user'])) {
 				continue;
 			}
@@ -55,12 +56,12 @@ class Thread extends \lithium\template\Helper {
 			$args = array_merge($parent, (array) $key);
 
 			$commentUrl = Router::match(array(
-				'controller' => 'posts', 'action' => 'comment', 'id' => $comment['id'],
+				'controller' => 'posts', 'action' => 'comment', '_id' => $comment['_id'],
 				'args' => $args
 			));
 			$endorseUrl = Router::match(array(
 				'controller' => 'posts', 'action' => 'endorse',
-				'args' => array_merge(array($comment['id']), $args)
+				'args' => array_merge(array($comment['_id']), $args)
 			));
 			if (empty($user)) {
 				$commentUrl = array(
@@ -92,15 +93,26 @@ class Thread extends \lithium\template\Helper {
 					'escape' => false
 				)
 			);
+			if (!empty($user)) {
+				if (
+					($comment['user']['_id'] == $user['_id']) ||
+					(!empty($comment['endorsements']) && in_array($user['_id'], $comment['endorsements']))
+				) {
+					$endorsement = null;
+				}
+			}
 
-			$comment['content'] = '<pre class="markdown">' .
-				$oembed->classify($comment['content'], array('markdown' => true)) .
-			'</pre>';
+			$comment['content'] = $oembed->classify($html->escape($comment['content']), array('markdown' => true));
+			$comment['content'] = Markdown::parse($comment['content']);
 
 			$replies = null;
 			if (!empty($comment['comment_count'])) {
+				$count = count($comment['comments']);
+				if ($comment['comment_count'] > $count) {
+					$count .= "+";
+				}
 				$replies = $html->link(
-					"view replies ({$comment['comment_count']})",
+					"view replies ({$count})",
 					'#',
 					array('class' => 'view-post-comment-replies')
 				);
@@ -115,19 +127,23 @@ class Thread extends \lithium\template\Helper {
 			$style = 'style="padding:' . $size . 'px 0 0 0; width:' . $size . 'px; background-image:url('.$gravatar->url(array(
 				'email' => $comment['user']['email'], 'params' => compact('size')
 			)).');"';
-			$author = "<span $style title=" . $comment['user']['username'] . "></span>";
+			$author = "<span $style title=" . $html->escape($comment['user']['_id']) . "></span>";
 
 			$ratingClass = ($comment['rating'] == 0 ? ' empty' : null);
 			$rating = '<span class="post-comment-rating' . $ratingClass .'">' .
 				$comment['rating'] .
 			'</span>';
 
-			$meta = 	$time . $rating;
+			if ($comment['rating']) {
+				$rating = "<div class=\"meta aside\"><aside>{$rating}<aside></div>";
+			} else {
+				$rating = null;
+			}
 
-			$row = 	"<div class=\"meta aside\"><aside>{$rating}<aside></div> {$endorsement} {$reply}" .
+			$row = 	"{$rating} {$reply} {$endorsement}" .
 						"<div class=\"post-comment-author-icon\">{$author} </div>" .
-						"<div class=\"post-comment-author-content\" style=\"padding-left:" . $size . "px;\"><div class=\"post-comment-author\">" .
-						$html->link($comment['user']['username'], array('controller' => 'search', 'action' => 'filter', 'username' => $comment['user']['username']), array('title' => 'Search for more posts by this author')) .
+						"<div class=\"post-comment-author-content\" ><div class=\"post-comment-author\">" .
+						$html->link($comment['user']['_id'], array('controller' => 'search', 'action' => 'filter', '_id' => $comment['user']['_id']), array('title' => 'Search for more posts by this author')) .
 						" {$time}</div>" .
 						"<div class=\"post-comment-content\">{$comment['content']}</div></div> {$replies}";
 
@@ -136,8 +152,8 @@ class Thread extends \lithium\template\Helper {
 			// 	$row .= $this->form(array_merge($args, array($next)));
 			// }
 			$row .= $this->comments($comment, $options, $args);
-			$id = implode('-', $args);
-			$parts[] = "<li class=\"comment\" id=\"comment-{$id}\">{$row}</li>";
+			$_id = implode('-', $args);
+			$parts[] = "<li class=\"comment\" id=\"comment-{$_id}\">{$row}</li>";
 		}
 		if (empty($parts)) {
 			return null;
@@ -147,7 +163,7 @@ class Thread extends \lithium\template\Helper {
 	}
 
 	protected function threadedIconSize($factor) {
-		$result = 64;
+		$result = 32;
 		if ($factor > 1) {
 			$result = floor($result * (1.61803399 / $factor));
 		}

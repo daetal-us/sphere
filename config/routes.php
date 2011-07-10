@@ -22,8 +22,8 @@ use \lithium\core\Environment;
  */
 Router::connect('/', array('controller' => 'search', 'action' => 'latest'));
 Router::connect('/page:{:page}', array('controller' => 'search', 'action' => 'latest'));
-Router::connect('/p/{:id}', array('controller' => 'posts', 'action' => 'comment'));
-Router::connect('/p/{:id}/{:args}', array('controller' => 'posts', 'action' => 'comment'));
+Router::connect('/p/{:_id}', array('controller' => 'posts', 'action' => 'comment'));
+Router::connect('/p/{:_id}/{:args}', array('controller' => 'posts', 'action' => 'comment'));
 Router::connect('/users/login/{:return}', array('controller' => 'users', 'action' => 'login'));
 
 /**
@@ -32,31 +32,31 @@ Router::connect('/users/login/{:return}', array('controller' => 'users', 'action
 $timespans = array(
 	'today' => array(
 		' from today',
-		date('Y-m-d')
+		array(strtotime('today'), strtotime('tomorrow')-1)
 	),
 	'yesterday' => array(
 		' from yesterday',
-		date('Y-m-d', strtotime('yesterday'))
+		array(strtotime('yesterday'), strtotime('today')-1)
 	),
 	'1wk' => array(
 		' in the last week',
-		'['.date('Y-m-d', strtotime('-1 week')).' TO '.date('Y-m-d').']'
+		array(strtotime('-1 week'), time())
 	),
 	'2wk' => array(
 		' in the last two weeks',
-		'['.date('Y-m-d', strtotime('-2 weeks')).' TO '.date('Y-m-d').']'
+		array(strtotime('-2 week'), time())
 	),
 	'1mo' => array(
 		' in the last month',
-		'['.date('Y-m-d', strtotime('-1 month')).' TO '.date('Y-m-d').']'
+		array(strtotime('-1 month'), time())
 	),
 	'1yr' => array(
 		' in the last year',
-		'['.date('Y-m-d', strtotime('-1 year')).' TO '.date('Y-m-d').']',
+		array(strtotime('-1 year'), time())
 	),
 	'all' => array(
 		' since the big bang',
-		'[2010-02-09 TO '.date('Y-m-d').']',
+		array(strtotime('02-10-10'), time())
 	)
 );
 
@@ -80,7 +80,7 @@ foreach ($timespans as $key => $options) {
 	$date = $options[1];
 	Router::connect("/{$key}/{:page}", array(
 		'controller' => 'search', 'action' => 'filter'
-	) + compact('date','title'));
+	) + compact('date','title','page'));
 	Router::connect("/{$key}", array(
 		'controller' => 'search', 'action' => 'filter'
 	) + compact('date','title'));
@@ -104,11 +104,11 @@ foreach ($tags as $tag => $title) {
 	) + compact('tag','title'));
 }
 
-Router::connect('/u/{:username}/{:page}', array(
+Router::connect('/u/{:_id}/{:page}', array(
 	'controller' => 'search', 'action' => 'filter'
 ));
 
-Router::connect('/u/{:username}', array(
+Router::connect('/u/{:_id}', array(
 	'controller' => 'search', 'action' => 'filter'
 ));
 
@@ -140,8 +140,8 @@ if (!Environment::is('production')) {
 /**
  * Finally, connect the default routes.
  */
-Router::connect('/{:controller}/{:action}/{:id:[0-9]+}.{:type}', array('id' => null));
-Router::connect('/{:controller}/{:action}/{:id:[0-9]+}');
+// Router::connect('/{:controller}/{:action}/{:_id:[0-9]+}.{:type}', array('_id' => null));
+// Router::connect('/{:controller}/{:action}/{:_id:[0-9]+}');
 Router::connect('/{:controller}/{:action}/{:args}');
 
 ?>

@@ -7,11 +7,16 @@ if (!empty($user)) {
 	return;
 }
 ?>
-<h1><?=$this->title('Login')?></h1>
+<h1><?php echo $this->title('Login')?></h1>
+<?php if ($errors) {
+	echo "<h2>{$errors}</h2>";
+} ?>
 <?php
-echo $this->form->create();
-echo $this->form->field('username');
-echo $this->form->field('password', array('type' => 'password'));
-echo $this->form->submit('login');
-echo $this->form->end();
+if (!$disabled) {
+	echo $this->form->create();
+	echo $this->form->field('_id', array('label' => 'User ID'));
+	echo $this->form->field('password', array('type' => 'password'));
+	echo $this->form->submit('login');
+	echo $this->form->end();
+}
 ?>

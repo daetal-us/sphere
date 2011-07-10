@@ -2,12 +2,6 @@
 
 namespace app\models;
 
-use \lithium\data\collection\DocumentSet;
-use \lithium\util\Inflector;
-use \lithium\storage\Session;
-use \li3_users\models\User;
-use \app\models\Comment;
-
 class Post extends \lithium\data\Model {
 
 	public $validates = array(
@@ -21,71 +15,102 @@ class Post extends \lithium\data\Model {
 	);
 
 	protected $_schema = array(
-		'id' => array('type' => 'string'),
-		'rev' => array('type' => 'string'),
+		'_id' => array('type' => 'string', array('primary' => true)),
+		'created' => array('type' => 'date'),
 		'title' => array('type' => 'string', 'length' => 250),
+		'_title' => array('type' => 'array', 'default' => array()),
 		'content' => array('type' => 'text'),
 		'rating' => array('type' => 'numeric', 'default' => 0),
-		'endorsements' => array('type' => 'array'),
-		'comments' => array('type' => 'array'),
+		'endorsements' => array('type' => 'array', 'default' => array()),
+		'comments' => array('type' => 'array', 'default' => array()),
 		'comment_count' => array('type' => 'numeric', 'default' => 0),
-		'created' => array('type' => 'date'),
 		'type' => array('type' => 'string', 'default' => 'post'),
-		'user_username' => array('type' => 'string'),
-		'user_id' => array('type' => 'string')
+		'user_id' => array('type' => 'string', 'default' => null),
 	);
 
+	/**
+	 * Container for Post Author
+	 */
+	protected $_user = null;
+
+	/**
+	 * Top-level tags
+	 */
 	public static $tags = array(
 		'apps','questions','press','tutorials','code','videos','podcasts','slides','events','docs',
 		'jobs','misc'
 	);
 
+	protected static $_classes = array(
+		'inflector'   => 'lithium\util\Inflector',
+		'set'         => 'lithium\data\collection\DocumentSet',
+		'session'     => 'lithium\storage\Session',
+		'user'        => 'li3_users\models\User',
+		'comment'     => 'app\models\Comment',
+	);
+
 	public static function __init(array $options = array()) {
 		parent::__init($options);
-		static::applyFilter('save', function ($self, $params, $chain) {
+		$classes = static::$_classes;
+
+		static::applyFilter('save', function ($self, $params, $chain) use ($classes) {
 			if (empty($params['entity']->created)) {
 
-				$id = Inflector::slug($params['entity']->title);
-				if (strlen($id) < 5) {
-					$id = $id . '-' . substr(md5($id . time()), 0, 5);
+				$params['entity']->title = trim(preg_replace(
+					'/\s{2,}/', ' ', $params['entity']->title
+				));
+
+				$_id = $classes['inflector']::slug($params['entity']->title);
+				if (strlen($_id) < 5) {
+					$_id = $_id . '-' . substr(md5($_id . time()), 0, 5);
 				}
-				$slug = $id;
-				while ($existing = $self::first($id)) {
-					$id = "$slug-" .  substr(md5($slug . time()), 0, 4);
+				$slug = $_id;
+				while ($existing = $self::first($_id)) {
+					$_id = "$slug-" .  substr(md5($slug . time()), 0, 4);
 				}
-				$params['entity']->id = $id;
+				$params['entity']->_id = $_id;
 
 				$params['entity']->created = time();
+
+				$params['entity']->_title = array_filter(array_unique(explode(
+					' ', $params['entity']->title
+				)));
+
 				if (!empty($params['entity']->tags) && is_string($params['entity']->tags)) {
 					$params['entity']->tags = array_unique(array_filter(explode(
 						",", str_replace(' ', '', $params['entity']->tags)
 					)));
 					if (!empty($params['entity']->tags)) {
-						foreach ($params['entity']->tags as $key => $tag) {
-							$params['entity']->tags[$key] = Inflector::slug($tag);
-						}
+						$params['entity']->tags->each(function($v) use ($classes) {
+							return $classes['inflector']::slug($v);
+						});
 					}
 				}
-				if ($user = Session::read('user', array('name' => 'li3_user'))) {
-					$params['entity']->user_username = $user['username'];
-					$params['entity']->user_id = $user['id'];
+				if (empty($params['entity']->user_id)
+					&& $user = $classes['session']::read('user', array('name' => 'li3_user'))
+				) {
+					$params['entity']->user_id = $user['_id'];
+					$params['entity']->user_id = $user['_id'];
 				}
 			}
+
+			if (!empty($params['entity']->comments) && is_object($params['entity']->comments)) {
+				$params['entity']->comments = $params['entity']->comments->data();
+			}
+
 			$params['entity']->rating = $params['entity']->rating();
 			return $chain->next($self, $params, $chain);
 		});
 
-		static::applyFilter('find', function ($self, $params, $chain) {
+		static::applyFilter('find', function ($self, $params, $chain) use ($classes) {
 			$result = $chain->next($self, $params, $chain);
-
 			if (!empty($result->comments)) {
-				$comments = new DocumentSet(array(
+				$comments = new $classes['set'](array(
 					'data' => $result->comments->data(),
-					'model' => 'app\models\Comment'
+					'model' => $classes['comment']
 				));
 				$result->set(compact('comments'));
 			}
-
 			return $result;
 		});
 	}
@@ -94,18 +119,19 @@ class Post extends \lithium\data\Model {
 		if (!empty($record->_user)) {
 			return $record->_user;
 		}
-		return $record->_user = User::find($record->user_id);
+		$user = static::$_classes['user'];
+		return $record->_user = $user::find($record->user_id);
 	}
 
 	public function comment($record, $params = array()) {
-		$record = static::first($record->id);
 		$default = array('args' => array(), 'data' => array());
 		$params += $default;
 		extract($params);
 
-		$comment = Comment::create($data);
+		$comment = static::$_classes['comment'];
+		$comment = $comment::create($data);
 
-		if (empty($record->id) || !$comment->save()) {
+		if (empty($record->_id) || !$comment->save()) {
 			return null;
 		}
 		$data = $comment->data();
@@ -132,59 +158,76 @@ class Post extends \lithium\data\Model {
 		return $record->save();
 	}
 
-	public function endorse($record, $options = array()) {
-		$defaults = array(
-			'author' => Session::read('user', array('name' => 'li3_user')), 'args' => array(),
+	public function endorse($record, $params = array()) {
+		$session = static::$_classes['session'];
+		$default = array(
+			'author' => $session::read('user', array('name' => 'li3_user')),
+			'args' => array(),
 		);
-		$options += $defaults;
-		extract($options);
+		$params += $default;
+		extract($params);
 
-		if (empty($record->id) || empty($author['id'])) {
+		if (empty($record->_id) || empty($author['_id'])) {
 			return false;
 		}
-		$data = $record->data() + array('endorsements' => array());
 
-		$endorse = function ($data, $args) use ($author) {
-			if (array_search($author['id'], $data['endorsements']) !== false) {
-				return $data['endorsements'];
+		$data = $record->data();
+
+		$endorse = function ($comments, $args) use (&$endorse, $author, $data) {
+			while($args) {
+				$key = array_shift($args);
+				if (isset($comments['comments'][$key])) {
+					$comments['comments'][$key] = $endorse($comments['comments'][$key], $args);
+				}
+				if ($key != $data['_id']) {
+					return $comments;
+				}
 			}
-			$data['endorsements'][] = $author['id'];
-			return $data['endorsements'];
+			$comments += array('endorsements' => array());
+			if ((isset($comments['user_id']) && $author['_id'] == $comments['user_id'])
+				|| (isset($comments['user']) && $author['_id'] == $comments['user']['_id'])
+				|| (array_search($author['_id'], $comments['endorsements']) !== false)
+			){
+				return $comments;
+			}
+			$comments['endorsements'][] = $author['_id'];
+			$comments['rating']++;
+			return $comments;
 		};
-		$endorsements = $endorse($data, $args);
-		return $record->save(compact('comments', 'endorsements'));
+
+		$data = $endorse($data, $args);
+		return $record->save($data);
 	}
 
 	public static function rating($record) {
 		$rating = 0;
 		if (is_object($record)) {
-			if (get_class($record) == 'lithium\data\entity\Document') {
-				$record = $record->data();
-			}
-			$record = (array) $record;
+			$record = $record->data();
 		}
-		if (!empty($record['endorsements'])) {
-			$rating += count($record['endorsements']);
+		if (!empty($record['rating'])) {
+			$rating = $record['rating'];
 		}
 		if (!empty($record['comments'])) {
-			$rating += count($record['comments'])  * .5;
+			$rating += count($record['comments'])  * .1;
 			foreach ($record['comments'] as $comment) {
-				$rating += (static::rating($comment) * .5);
+				$rating += (static::rating($comment) * .1);
 			}
 		}
 		return ceil($rating);
 	}
 
 	public function comments($record) {
+		$set = static::$_classes['set'];
 		$comments = null;
 		if (!empty($record->comments)) {
-			$comments = new DocumentSet(array(
+			$comments = new $set(array(
 				'data' => $record->comments->data(),
 				'model' => 'app\models\Comment',
 			));
 		}
 		return $comments;
 	}
+
 
 }
 

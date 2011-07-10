@@ -11,20 +11,20 @@
 <head>
 	<?php echo $this->html->charset();?>
 	<title>▴❍ <?php echo $this->title?></title>
-	<?php echo $this->html->style(array('http://daetal.us/css/reset.css', 'http://daetal.us/css/base.css', 'http://daetal.us/css/forms.css', 'http://daetal.us/css/polish.css', 'sphere'));?>
+	<?php echo $this->html->style(array('reset', 'base', 'forms', 'polish', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
 </head>
 <body class="app">
 	<div id="header">
-		<h1><?=$this->html->link('Lithium Sphere', '/');?></h1>
-		<h2><?=$this->html->link('power of community', '/');?></h2>
+		<h1><?php echo $this->html->link('Lithium Sphere', '/');?></h1>
+		<h2><?php echo $this->html->link('power of community', '/');?></h2>
 		<div class="nav account">
 			<?php
 				if ($user = $this->user->session()) {
 					echo $this->html->image(
 						'http://gravatar.com/avatar/' . md5($user['email']) . '?s=16',
-						array('title' => $user['username'])
+						array('title' => $user['_id'])
 					);
 					echo $this->html->link('logout', array(
 						'controller' => 'users', 'action' => 'logout'
@@ -65,8 +65,7 @@
 			<nav>
 				<?php
 				echo $this->form->create(null, array('url' => array('controller' => 'search', 'action' => 'index', 'q' => null), 'method' => 'GET', 'class' => 'mini-search-form'));
-				echo $this->form->text('q', array('class' => 'search-query', 'value' => (isset($q) ? $q : null)));
-				echo $this->form->submit('Search', array('class' => 'search-submit'));
+				echo $this->form->search('q', array('placeholder' => 'search...', 'class' => 'search-query', 'value' => (isset($q) ? $q : null)));
 				echo $this->form->end();
 				?>
 			</nav>
@@ -100,26 +99,33 @@
 		</div>
 	</div>
 	<div class="footer">
-		<p class="copyright">this badapp &copy; 2010 and beyond, <?php echo $this->html->link('the Union of Rad', 'http://union-of-rad.org/'); ?> &nbsp; ▴ &nbsp; hosting by <a href="http://www.rackspacecloud.com/519.html" title="Learn more about cloud computing from The Rackspace Cloud at rackspacecloud.com"><img src="http://cdn.cloudfiles.rackspacecloud.com/c110782/the-rackspace-cloud-125-wide.png" border="0" alt="The Rackspace Cloud" width="125" height="35" /></a></p>
+		<p class="copyright">&copy; 2010 and beyond, <?php echo $this->html->link('the union of rad', 'http://union-of-rad.org/'); ?> &nbsp; ▴ &nbsp; powered by <?php echo $this->html->link('lithium', 'http://lithify.me'); ?> and <?php echo $this->html->link('mongodb', 'http://mongodb.org'); ?> &nbsp; ▴ &nbsp; <?php echo $this->html->link('open source', 'http://github.com/pointlessjon/sphere'); ?> &nbsp; ▴ &nbsp; <?php echo $this->html->link('@lithified', 'http://twitter.com/lithified'); ?></p>
 	</div>
 	<?php echo $this->html->script(array(
-		"jquery-1.4.1.min",
+		"jquery-1.6.2.min",
 		"jquery.xdomainajax",
 		"sphere",
-		"jquery.oembed",
+		"jquery.oembed.2",
 		"pretty.date",
-		"showdown/showdown",
+		// "showdown/showdown",
 		"http://lithify.me/js/rad.cli.js",
 	)); ?>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			li3Sphere.setup();
-			$('.post-content a, .post-comment-content a').oembed(null, {
-				embedMethod: 'annotate',
-				maxWidth: 425,
-				maxHeight: 425
+			$('.post-content a').oembed(null, {
+				embedMethod: 'replace',
+				maxWidth: 700,
+				maxHeight: 525,
 			});
 			RadCli.setup();
+		});
+		$(document).ready(function() {
+			$('.post-comment-content a').oembed(null, {
+				embedMethod: 'annotate',
+				maxWidth: 425,
+				maxHeight: 425,
+			});
 		});
 	</script>
 	<?php if (isset($this->viewJs)) echo $this->viewJs; ?>

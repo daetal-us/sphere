@@ -4,19 +4,25 @@ namespace app\extensions\helper;
 
 class Search extends \lithium\template\Helper {
 
-	public function pagination($results, $url = null) {
+	public function pagination($results, $options = array()) {
+		$defaults = array(
+			'url' => null,
+			'page' => 1,
+			'limit' => 0,
+			'count' => 0
+		);
+		extract($options + $defaults);
+
 		$html = $this->_context->helper('html');
 		$out = '<div class="pagination">';
 
-		if (!empty($results->rows)) {
-			$current = $results->skip + 1;
-			$current_page = ceil($current / $results->limit);
-			$count = $results->rows->count();
-			$last = $results->skip + $count;
-			$total = $results->total_rows;
-			$pages = ceil($total / $results->limit);
+		if ($count) {
+			$current = $limit * $page - ($limit - 1);
+			$current_page = $page;
+			$last = ($limit * $page > $count) ? $count : $limit * $page;
+			$pages = ceil($count / $limit);
 
-			$out .= "<div class=\"total\">displaying {$current}-{$last} of {$total} result(s)</div>";
+			$out .= "<div class=\"total\">displaying {$current}-{$last} of {$count} result(s)</div>";
 
 			if (empty($url)) {
 				$url = array('controller' => 'search', 'action' => 'index', 'q' => $results->q);

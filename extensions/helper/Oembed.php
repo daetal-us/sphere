@@ -23,7 +23,7 @@ class Oembed extends \lithium\template\Helper {
 
 		extract($options + $defaults);
 
-		if (!$options['markdown']) {
+		if (!$markdown) {
 			$link = "<a href=\"$1\" class=\"{$class}\">$1</a>";
 		} else {
 			$link = "[$1]($1)";

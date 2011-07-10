@@ -1,2 +1,2 @@
-<h1><?=$user->username;?></h1>
-<?=$user->email;?>
+<h1><?php echo $user->_id;?></h1>
+<?php echo $user->email;?>
