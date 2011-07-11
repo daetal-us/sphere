@@ -1,0 +1,123 @@
+/*-------------------------------------------------------------------------------------------------
+   Lithium: the most rad php framework
+
+   @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
+   @license       http://opensource.org/licenses/bsd-license.php The BSD License
+-------------------------------------------------------------------------------------------------*/
+/**
+ * Colors and non-site-specific layout
+ */
+
+/** Links and Headings **/
+a {
+	text-decoration: none;
+	color: #4C8499;
+	border-bottom: 1px dotted #00bbff;
+}
+a:visited {
+	color: #994C99;
+	border-bottom-color: #ff59ff;
+}
+a:hover {
+	color: #00bbff;
+	border-bottom: 1px dotted #00bbff;
+}
+a:visited:hover {
+	color: #ff59ff;
+}
+a img {
+	border: none;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+h2, h5 {
+	color: rgba(0,0,0,.4);
+}
+h3, h6 {
+	color: #00a8e6;
+}
+
+/** Tables **/
+table {
+	clear: both;
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid #e6e6e6;
+	background: #fafafa;
+	margin: 12px 0;
+}
+td, th {
+	padding: 0.25em 1em;
+	border: 1px solid #e6e6e6;
+	vertical-align: middle;
+	text-align: left;
+	font-weight: normal;
+	color: #666;
+	font-size: 0.85em;
+}
+tr:nth-child(even) {
+	background: #fff;
+}
+thead th, tfoot td {
+	background: #f3f3f3;
+	color: #333;
+	text-align: left;
+	font-size: 1em;
+	font-weight: bold;
+	padding: .5em .75em;
+}
+
+/** Forms **/
+input {
+	-moz-box-shadow: inset 0 0 6px rgba(0,0,0,.05);
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.05);
+}
+input[type=submit], input[type=button], input[type=reset], input[type=file], button, .button {
+	-moz-box-shadow: 0 0 6px rgba(0,0,0,.1);
+	-webkit-box-shadow: 0 0 6px rgba(0,0,0,.1);
+	box-shadow: 0 0 6px rgba(0,0,0,.1);
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+}
+input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover, input[type=file]:hover, button:hover, .button:hover {
+	-moz-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+}
+
+/** Misc. **/
+hr {
+	border: 1px solid #ccc;
+	border-width: 1px 0 0 0;
+}
+abbr, acronym {
+	font-style: italic;
+	color: #336633;
+	border-bottom: 1px dotted #00ff00;
+}
+
+/** Code **/
+pre > code {
+	display: block;
+	color: white;
+	background: #141414;
+	border: 1px solid white;
+	padding: 1em !important; /* remove if base important is removed, too */
+	overflow: auto;
+}
+code, pre, .fixed {
+	font-family: Monaco, Courier, monospace !important;
+	font-weight: normal;
+	font-size: .85em;
+	white-space: pre;
+}
+code {
+	padding: .2em .25em !important;
+	border: 1px solid #f0f0f0;
+	background: #fafafa;
+}
+pre {
+	padding-bottom: 0.5em;
+}

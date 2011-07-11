@@ -1,0 +1,84 @@
+/*-------------------------------------------------------------------------------------------------
+   Lithium: the most rad php framework
+
+   @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
+   @license       http://opensource.org/licenses/bsd-license.php The BSD License
+-------------------------------------------------------------------------------------------------*/
+/**
+ * Form styling for Lithium network sites.
+ */
+
+form {
+	display: block;
+	clear: both;
+	background: #fafafa;
+	padding: 1em 2em 2em 2em;
+	border: 1px solid #e6e6e6;
+}
+fieldset {
+	padding: 2em;
+	margin: 0 0 1em 0;
+	border: 1px solid #e6e6e6;
+	background: #f3f3f3;
+}
+legend {
+	padding: .5em 1em;
+	border: 1px solid #e6e6e6;
+	background: #fff;
+	font-size: 22px;
+}
+label {
+	padding: 0 1em 0 0;
+	color: #454545;
+	font-weight: normal;
+}
+input, textarea, button {
+	font-family: Helvetica, Arial, sans-serif;
+	padding: 2px 4px;
+	border: 1px solid #e0e0e0;
+	color: #454545;
+	font-size: 1em;
+	line-height: 1.25em;
+}
+input[type=text], input[type=search], input[type=email], input[type=password], input[type=submit], textarea {
+	clear: both;
+	display: block;
+	padding: .25em .5em;
+}
+input[type=text], input[type=search], input[type=email], input[type=password], textarea {
+	width: 97%;
+	max-width: 950px;
+	margin: .5em 0 1em 0;
+	padding:.5em;
+}
+input[type=submit], input[type=button], input[type=reset], input[type=file], button, .button {
+	padding: .5em 1em;
+	margin: 0 .75em 0 0;
+	background-color: white;
+	color: black !important;
+	border: 1px solid #e5e5e5 !important;
+	cursor: pointer;
+}
+select {
+	clear: both;
+	display: block;
+	margin: .5em 0 1em 0;
+}
+div.checkbox {
+	clear: both;
+	padding: 1em 0;
+}
+.checkbox label {
+	display: inline;
+}
+input[type=submit] {
+	margin: 1em inherit;
+	border: none;
+	color: #000;
+	font-size: 16px;
+	font-weight: bold;
+}
+input[type=text]:focus, input[type=password]:focus, input[type=search]:focus, input[type=email]:focus,  textarea:focus, select:focus {
+	border-color: #00a8e6;
+	outline: none;
+}
