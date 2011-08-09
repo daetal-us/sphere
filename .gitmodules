@@ -1,3 +1,6 @@
 [submodule "libraries/lithium"]
 	path = libraries/lithium
 	url = https://github.com/UnionOfRAD/lithium.git
+[submodule "libraries/markdown"]
+	path = libraries/markdown
+	url = git@github.com:pointlessjon/markdown.git
