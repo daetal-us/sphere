@@ -69,7 +69,6 @@ ul li:before {
 	font-size:.35em;
 	color:rgba(0,0,0,.35);
 	display: block;
-	height: 1em;
 }
 article img {
 	max-width: 100%;
