@@ -339,7 +339,7 @@ span.timestamp {
 	background-image: url(../img/icons/other.png);
 }
 
-.nav.sources a.jobs, .icon.tag.jobs, .posts .post .misc a {
+.nav.sources a.jobs, .icon.tag.jobs, .posts .post .jobs a {
 	background-image: url(../img/icons/jobs.png);
 }
 
