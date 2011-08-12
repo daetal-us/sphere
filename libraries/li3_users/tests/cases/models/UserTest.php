@@ -8,8 +8,8 @@
 
 namespace li3_users\tests\cases\models;
 
-use \lithium\data\Connections;
-use \lithium\data\model\Query;
+use lithium\data\Connections;
+use lithium\data\model\Query;
 
 define('LI3_USERS_TEST', 'li3_users_test');
 
@@ -61,7 +61,6 @@ class UserTest extends \lithium\test\Unit {
 	public function testClassInstanceAndConnection() {
 		$user = new User();
 	}
-
 }
 
 ?>

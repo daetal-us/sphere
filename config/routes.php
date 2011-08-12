@@ -6,8 +6,8 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-use \lithium\net\http\Router;
-use \lithium\core\Environment;
+use lithium\net\http\Router;
+use lithium\core\Environment;
 
 /**
  * Uncomment the line below to enable routing for admin actions.

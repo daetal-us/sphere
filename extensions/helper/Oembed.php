@@ -35,7 +35,6 @@ class Oembed extends \lithium\template\Helper {
 		);
 		return $string;
 	}
-
 }
 
 ?>

@@ -2,9 +2,7 @@
 
 namespace app\controllers;
 
-use \app\models\Post;
-use \lithium\util\Set;
-use \lithium\storage\Session;
+use app\models\Post;
 
 class SearchController extends \lithium\action\Controller {
 
@@ -63,7 +61,7 @@ class SearchController extends \lithium\action\Controller {
 			'order' => array(
 				'rating' => -1,
 				'created' => -1
-			),
+			)
 		);
 		extract($this->request->params + $defaults);
 
@@ -182,12 +180,13 @@ class SearchController extends \lithium\action\Controller {
 					'$or' => array(
 						array('tags' => $query),
 						array('_title' => $query),
-						array('user_id' => $query),
+						array('user_id' => $query)
 					)
 				);
 			}
 		}
 		return $conditions;
 	}
-
 }
+
+?>

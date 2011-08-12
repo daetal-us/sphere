@@ -8,14 +8,14 @@
 
 namespace li3_users\models;
 
-use \lithium\util\String;
-use \lithium\util\Validator;
+use lithium\util\String;
+use lithium\util\Validator;
 
 Validator::add('uniqueUserValue', function ($value, $format, $options) {
 	$conditions = array();
 	if (!empty($value)) {
 		$conditions[$options['field']] = $value;
-		return !(bool) User::find('count', compact('conditions'));
+		return !(boolean) User::find('count', compact('conditions'));
 	}
 	return false;
 });

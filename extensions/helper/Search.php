@@ -22,7 +22,9 @@ class Search extends \lithium\template\Helper {
 			$last = ($limit * $page > $count) ? $count : $limit * $page;
 			$pages = ceil($count / $limit);
 
-			$out .= "<div class=\"total\">displaying {$current}-{$last} of {$count} result(s)</div>";
+			$out .= "<div class=\"total\">"
+				. "displaying {$current}-{$last} of {$count} result(s)"
+				. "</div>";
 
 			if (empty($url)) {
 				$url = array('controller' => 'search', 'action' => 'index', 'q' => $results->q);
@@ -31,9 +33,11 @@ class Search extends \lithium\template\Helper {
 			if ($pages > 1) {
 				$links = array();
 				if ($pages > 5) {
-					$links[]  = $html->link('first', array('page' => 1) + $url, array('class' => 'first'));
+					$links[]  = $html->link(
+						'first', array('page' => 1) + $url, array('class' => 'first')
+					);
 				}
-				for ($page=1;$page<=$pages;$page++) {
+				for ($page = 1; $page <= $pages; $page++) {
 					$class = 'page';
 					if ($page == $current_page) {
 						$class .= " active";
@@ -42,7 +46,9 @@ class Search extends \lithium\template\Helper {
 				}
 
 				if ($pages > 5) {
-					$links[] = $html->link('last', array('page' => $pages) + $url, array('class' => 'last'));
+					$links[] = $html->link(
+						'last', array('page' => $pages) + $url, array('class' => 'last')
+					);
 				}
 				$out .= '<div class="pages">' . implode($links, " \n") . '</div>';
 			}
@@ -50,7 +56,6 @@ class Search extends \lithium\template\Helper {
 		$out .= '</div>';
 		return $out;
 	}
-
 }
 
 ?>

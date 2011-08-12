@@ -2,12 +2,14 @@
 
 namespace app\extensions\helper;
 
-use \lithium\util\String;
-
 class Sphere extends \lithium\template\Helper {
 
 	/**
 	 * A convenience method to output common site links
+	 *
+	 * @param mixed $text
+	 * @param array $data
+	 * @param array $options
 	 */
 	public function link($text, $data = array(), $options = array()) {
 		$defaults = array(
@@ -27,7 +29,6 @@ class Sphere extends \lithium\template\Helper {
 		$html = $this->_context->helper('html');
 		return $html->link($text, $link, $options);
 	}
-
 }
 
 ?>

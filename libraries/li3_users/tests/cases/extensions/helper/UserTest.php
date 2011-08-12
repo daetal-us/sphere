@@ -8,7 +8,7 @@
 
 namespace li3_users\tests\cases\extensions\helper;
 
-use li3_users\extensions\helper\User;
+//use li3_users\extensions\helper\User;
 
 class UserTest extends \lithium\test\Unit {
 
@@ -19,7 +19,6 @@ class UserTest extends \lithium\test\Unit {
 	public function tearDown() {
 		//
 	}
-
 }
 
 ?>

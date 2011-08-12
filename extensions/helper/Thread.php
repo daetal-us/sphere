@@ -2,9 +2,9 @@
 
 namespace app\extensions\helper;
 
-use \lithium\storage\Session;
-use \lithium\net\http\Router;
-use \markdown\Markdown;
+use lithium\storage\Session;
+use lithium\net\http\Router;
+use markdown\Markdown;
 
 class Thread extends \lithium\template\Helper {
 
@@ -93,16 +93,21 @@ class Thread extends \lithium\template\Helper {
 					'escape' => false
 				)
 			);
+
 			if (!empty($user)) {
-				if (
-					($comment['user']['_id'] == $user['_id']) ||
-					(!empty($comment['endorsements']) && in_array($user['_id'], $comment['endorsements']))
-				) {
+				$author = $comment['user']['_id'] == $user['_id'];
+				$endorsed = !empty($comment['endorsements'])
+					&& in_array($user['_id'], $comment['endorsements']);
+
+				if ($author || $endorsed) {
 					$endorsement = null;
 				}
 			}
 
-			$comment['content'] = $oembed->classify($html->escape($comment['content']), array('markdown' => true));
+			$comment['content'] = $oembed->classify(
+				$html->escape($comment['content']), array('markdown' => true)
+			);
+
 			$comment['content'] = Markdown::parse($comment['content']);
 
 			$replies = null;
@@ -120,19 +125,20 @@ class Thread extends \lithium\template\Helper {
 
 			$timestamp = $comment['created'];
 			$date = date("F j, Y, g:i a T", $timestamp);
-			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">{$date}" .
-						"<span class=\"timestamp\">{$timestamp}</span></span>";
+			$time = "<span class=\"post-comment-created pretty-date\" title=\"{$date}\">";
+			$time .= "{$date}<span class=\"timestamp\">{$timestamp}</span></span>";
 
 			$size = $this->threadedIconSize(count($args));
-			$style = 'style="padding:' . $size . 'px 0 0 0; width:' . $size . 'px; background-image:url('.$gravatar->url(array(
+			$avatar = $gravatar->url(array(
 				'email' => $comment['user']['email'], 'params' => compact('size')
-			)).');"';
-			$author = "<span $style title=" . $html->escape($comment['user']['_id']) . "></span>";
+			));
+			$style = 'style="padding:' . $size . 'px 0 0 0; width:' . $size . 'px; ';
+			$style .= 'background-image:url(' . $avatar . ');"';
+			$author = "<span {$style} title=" . $html->escape($comment['user']['_id']) . "></span>";
 
-			$ratingClass = ($comment['rating'] == 0 ? ' empty' : null);
-			$rating = '<span class="post-comment-rating' . $ratingClass .'">' .
-				$comment['rating'] .
-			'</span>';
+			$class = ($comment['rating'] == 0 ? ' empty' : null);
+			$rating = '<span class="post-comment-rating' . $class . '">';
+			$rating .= $comment['rating'] . '</span>';
 
 			if ($comment['rating']) {
 				$rating = "<div class=\"meta aside\"><aside>{$rating}<aside></div>";
@@ -140,18 +146,25 @@ class Thread extends \lithium\template\Helper {
 				$rating = null;
 			}
 
-			$row = 	"{$rating} {$reply} {$endorsement}" .
-						"<div class=\"post-comment-author-icon\">{$author} </div>" .
-						"<div class=\"post-comment-author-content\" ><div class=\"post-comment-author\">" .
-						$html->link($comment['user']['_id'], array('controller' => 'search', 'action' => 'filter', '_id' => $comment['user']['_id']), array('title' => 'Search for more posts by this author')) .
-						" {$time}</div>" .
-						"<div class=\"post-comment-content\">{$comment['content']}</div></div> {$replies}";
-
-			// if (isset($options['args']) && $options['args'] == $args) {
-			// 	$next = (!empty($comment->comments) ? count($comment->comments) : 0);
-			// 	$row .= $this->form(array_merge($args, array($next)));
-			// }
+			$row = "{$rating} {$reply} {$endorsement}" ;
+			$row .= "<div class=\"post-comment-author-icon\">{$author} </div>";
+			$row .= "<div class=\"post-comment-author-content\">";
+			$row .= "<div class=\"post-comment-author\">";
+			$row .= $html->link(
+				$comment['user']['_id'],
+				array(
+					'controller' => 'search',
+					'action' => 'filter',
+					'_id' => $comment['user']['_id']
+				), array(
+					'title' => 'Search for more posts by this author'
+				)
+			);
+			$row .= " {$time}</div>";
+			$row .= "<div class=\"post-comment-content\">{$comment['content']}</div>";
+			$row .= "</div> {$replies}";
 			$row .= $this->comments($comment, $options, $args);
+
 			$_id = implode('-', $args);
 			$parts[] = "<li class=\"comment\" id=\"comment-{$_id}\">{$row}</li>";
 		}
@@ -170,4 +183,5 @@ class Thread extends \lithium\template\Helper {
 		return ($result > 16) ? $result : 16;
 	}
 }
+
 ?>

@@ -6,12 +6,12 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-use \lithium\data\Connections;
+use lithium\data\Connections;
 
 Connections::add('li3_users', array(
 	'adapter' => 'MongoDb',
 	'host' => 'localhost',
-	'database' => 'li3_users',
+	'database' => 'li3_users'
 ));
 
 ?>

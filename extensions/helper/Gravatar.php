@@ -25,7 +25,7 @@ class Gravatar extends \lithium\template\Helper {
 	/**
 	 * Generate a gravatar image url
 	 *
-	 * @param array options
+	 * @param array $options
 	 * @return string
 	 */
 	public function url($options = array()) {
@@ -53,7 +53,6 @@ class Gravatar extends \lithium\template\Helper {
 
 		return $this->_base . md5($email) . '?' . http_build_query($params) . $ext;
 	}
-
 }
 
 ?>

@@ -8,9 +8,9 @@
 
 namespace li3_users\controllers;
 
-use \li3_users\models\User;
-use \lithium\security\Auth;
-use \lithium\storage\Session;
+use li3_users\models\User;
+use lithium\security\Auth;
+use lithium\storage\Session;
 
 class UsersController extends \lithium\action\Controller {
 
@@ -30,11 +30,11 @@ class UsersController extends \lithium\action\Controller {
 			$return = $this->request->params['return'];
 		}
 		$errors = $disabled = false;
-		$attempts = (int) Session::read('attempts');
+		$attempts = (integer) Session::read('attempts');
 		if (!empty($this->request->data)) {
 			$attempts++;
 		}
-		switch(true) {
+		switch (true) {
 			case $attempts == $this->_cooldown:
 				$attempts = strtotime('+10 minutes');
 			case $attempts > $this->_cooldown && $attempts > time():
@@ -48,7 +48,7 @@ class UsersController extends \lithium\action\Controller {
 				if (!empty($user)) {
 					$attempts = 0;
 					if (!empty($return)) {
-						Session:write('attempts', $attempts);
+						Session::write('attempts', $attempts);
 						return $this->redirect(base64_decode($return));
 					}
 				} else {

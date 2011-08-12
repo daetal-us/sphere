@@ -6,18 +6,18 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-use \lithium\data\Connections;
+use lithium\data\Connections;
 
 Connections::add('default', array(
 	'adapter' => 'MongoDb',
 	'host' => 'localhost',
-	'database' => 'lithosphere',
+	'database' => 'lithosphere'
 ));
 
 Connections::add('test', array(
 	'adapter' => 'MongoDb',
 	'host' => 'localhost',
-	'database' => 'lithosphere_test',
+	'database' => 'lithosphere_test'
 ));
 
 ?>

@@ -2,9 +2,8 @@
 
 namespace app\controllers;
 
-use \app\models\Post;
-use \lithium\util\Set;
-use \lithium\storage\Session;
+use app\models\Post;
+use lithium\storage\Session;
 
 class PostsController extends \lithium\action\Controller {
 
