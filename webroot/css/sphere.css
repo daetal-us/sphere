@@ -46,7 +46,7 @@ html {
 	-moz-box-shadow: 0 0 12px rgba(0,0,0,.15);
 	-webkit-box-shadow: 0 0 12px rgba(0,0,0,.15);
 	box-shadow: 0 0 12px rgba(0,0,0,.15);
-	border: 1px solid #e5e5e5;
+	border: 1px solid rgb(200,200,200);
 	padding: 2em;
 	margin-bottom: 2em;
 	float: left;
@@ -74,11 +74,11 @@ article img {
 	max-width: 100%;
 }
 .markdown-help {
-	margin: 0 .35em 1em 0;
-	padding: 2em 2em 1em;
+	margin: 0 .75em 0 0;
+	padding: 1.25em 2em;
 	background: #e0e0e0;
 	background: rgba(0,0,0,.05);
-	font-size: 0.85em;
+	font-size: 12px;
 	border: 1px solid #E0E0E0;
 	border-top-width: 0;
 	border-radius: 0 0 .35em .35em;
@@ -86,6 +86,7 @@ article img {
 .markdown-help h4 {
 	font-weight: normal;
 	margin-top: 0;
+	display: none;
 }
 .markdown-help aside {
 	color: rgba(0,0,0,.5);
@@ -95,23 +96,33 @@ article img {
 	display: block;
 	float: left;
 	min-width: 12%;
-	background: rgba(0,0,0,.05);
+	background: rgba(0,0,0,.1);
 	border-radius: .35em;
 	margin: .25em;
 	padding: .25em .5em;
 	text-align: center;
 }
 .markdown-help span:hover {
-	background: rgba(0,0,0,.1);
+	background-color: rgba(0,0,0,.15);
 }
 .markdown-help pre code {
 	margin-top: 1em !important;
 	clear: both;
 }
 .icon.toggle-markdown-help {
+	background-color: rgba(0, 168, 230, .85);
+	border: 1px solid rgba(0,0,0,.25);
+	width: 24px;
+	padding: 24px 0 0 0;
 	background-image: url(../img/icons/edit-code.png) !important;
-	border: none;
 	font-size: 10px;
+	border-radius: .5em;
+	position: relative;
+	top: -1em;
+	left: -1em;
+}
+.icon.toggle-markdown-help:hover {
+	background-color: rgba(0, 168, 230, .65);
 }
 
 .footer {
@@ -172,15 +183,19 @@ span.timestamp {
 	width: auto;
 	padding: 0 0 0 20px;
 }
-#timespan-icon {
+#search {
 	position: relative;
 	top: -.5em;
 	left: -.5em;
-	background: rgba(0,0,0,.1) url(../img/icons/timespan.png) no-repeat center center;
+	background: rgba(0,0,0,.1) url(../img/icons/magnifier.png) no-repeat center center;
 	float: left;
 	border-radius: .35em 0 0 0;
 	width: 3em;
 	padding: 2.5em 0 0 0;
+}
+#search:hover, #search.open {
+	cursor: pointer;
+	background-color: rgba(0,168,230,.85);
 }
 #sources-icon {
 	background: url(../img/icons/arrow-000-medium-grey.png) no-repeat center center;
@@ -195,7 +210,7 @@ span.timestamp {
 
 #sources-icon:hover {
 	background-image: url(../img/icons/arrow-000-medium.png);
-	background-color: rgba(0,168,230,.5);
+	background-color: rgba(0,168,230,.85);
 }
 
 .closed #sources-icon {
@@ -243,7 +258,7 @@ span.timestamp {
 	float: inline;
 	list-style: none;
 	margin: 0;
-	padding: 0 1em 0 2em;
+	padding: 0 0 0 2em;
 }
 .nav.timespan ul li {
 	display: inline;
@@ -256,10 +271,25 @@ span.timestamp {
 	display: none;
 }
 
-.nav.search {
-	border-radius: 6px 6px 0 0;
+.nav.new-post {
+	background: none;
 	float: left;
-	margin-left: 10.5em;
+	margin-left: 14.5em;
+	padding: 0;
+	width: auto;
+}
+
+.nav.new-post a.button {
+	border-radius: 6px 6px 0 0;
+	border-color: rgb(0,168,230);
+	background-color: rgba(0,168,230,.85);
+	color: white;
+	font-size: 14px;
+	padding: .5em 1.5em;
+	display: block;
+}
+.nav.new-post a:hover {
+	background-color: rgba(0,168,230,.65);
 }
 
 .nav.sources {
@@ -352,16 +382,22 @@ span.timestamp {
 	position: absolute;
 	top: 36px;
 	right: 0;
-	font-size: 0.75em;
-	color:#e6e6e6;
+	font-size: .75em;
+	color:#aaa;
 	padding-left: 1em ;
 }
 .nav.account img {
-	padding: 2px;
+	padding: .25em 1em .25em 0;
 	float:left;
 }
 .nav.account a {
-	padding: 0 0.5em;
+	font-weight: bold;
+	padding: 0 0.5em 0 0;
+	font-size: 1em;
+}
+
+.nav.account a:first-child {
+	padding: 0 0 0 0.5em;
 }
 
 /** Oembed **/
@@ -600,11 +636,11 @@ div.post .post-meta .tags {
 	padding: 0;
 	border-radius: 2em .35em 0 .35em;
 	box-shadow: none;
-	border: none !important;
-	background: rgba(0,168,230,.65);
+	border: 1px solid rgba(0,0,0,.15);
+	background: rgba(0,168,230,.85);
 }
 .post .endorse-post:hover {
-	background: rgba(0,168,230,.85);
+	background-color: rgba(0,168,230,.65);
 }
 .post .endorse-post.endorsed {
 	display: none;
@@ -619,6 +655,7 @@ div.post .post-meta .tags {
 }
 .post span.endorsed {
 	background: rgba(0,0,0,.05);
+	border-color: transparent;
 }
 .post span.endorsed::after {
 	content: 'asdf';
@@ -639,22 +676,11 @@ h3.comments {
 	margin: 2em 0 .5em .5em;
 	font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
 }
-.post .view-all-comments {
-	color: rgba(0,0,0,.5) !important;
-}
 .post .post-comment {
-	-webkit-box-shadow: none;
-	background-color: rgba(0,168,230,.75);
-	border-color: transparent !important;
+	border: 1px solid rgba(0,0,0,.25);
 }
 .post .post-comment span {
-	color: rgba(255,255,255,1) !important;
-}
-.post-comment:hover {
-	background: rgba(0,168,230,.85);
-}
-.post .view-all-comments:hover {
-	color: rgba(0,0,0,.75) !important;
+	color: #000;
 }
 .post .post-comment:hover span {
 	color: #fff !important;
@@ -728,19 +754,21 @@ li.comment .endorse-post-comment {
 	display: none;
 	padding: 0 1em;
 	font-size: 11px;
-	background: rgba(0,168,230,.75);
+	background-color: #fff;
+	color: #000;
+	border: 1px solid rgba(0,0,0,.25);
 }
 li.comment .post-comment-reply:hover,
 li.comment .post-comment-thread:hover,
 li.comment .endorse-post-comment:hover {
-	background: rgba(0,168,230,.85);
+	background-color: rgba(0,168,230,.65);
+	color: white;
 }
 li.comment .post-comment-reply span,
 li.comment .post-comment-thread span,
 li.comment .endorse-post-comment span {
 	display: block;
 	padding: 0;
-	color: #fff;
 	font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
 /*	background: url(../img/icons/balloon-plus.png) no-repeat center right;*/
 }
@@ -752,13 +780,10 @@ li.comment .post-comment-reply, li.comment .endorse-post-comment {
 	margin-right: 0;
 	margin-left: .25em;
 }
-li.comment .endorse-post-comment {
-	border-top-width: 0;
-}
 li.comment .view-post-comment-replies {
-	font-size: 10px;
+	font-size: 11px;
 	font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
-	color: rgba(0,0,0,.5);
+	color: #000;
 	display:block;
 	clear: both;
 	text-align: right;
@@ -766,19 +791,17 @@ li.comment .view-post-comment-replies {
 	border-bottom: 1px solid transparent;
 	border-width: 1px 0 1px 1px;
 	padding: .25em 1em .25em 2em;
-	border-radius: 0 .5em .5em .5em;
+	border-radius: .5em;
+	float: right;
 }
 li.comment.focused > .view-post-comment-replies {
-	background-color: rgba(0,168,230,.25);
+	background-color: rgba(0,168,230,.15);
 }
 li.comment .view-post-comment-replies:hover {
-	color: rgba(0,0,0,.75);
-	background-color: rgba(0,168,230,.5);
+	background-color: rgba(0,168,230,.35);
 }
 li.comment .view-post-comment-replies.open {
-	display: none;
 	background-image: url(../img/icons/control-double-090-small.png);
-	border-radius: .5em .5em .5em 0;
 }
 li.comment .post-comment-thread {
 	background-image: url(../img/icons/comments.png);
@@ -855,10 +878,8 @@ li.comment .post-comment-content {
 	border-top: 1px solid rgba(0,0,0,.1);
 }
 form  {
-	-moz-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	-webkit-box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	box-shadow: inset 0 0 12px rgba(0,0,0,.15);
-	border: 1px solid rgba(0,0,0,.05);
+	box-shadow: inset 0 0 .5em rgb(200,200,200);
+	border: 1px solid rgb(200,200,200);
 	background: rgba(0,0,0,.03);
 	position: relative;
 }
@@ -875,8 +896,8 @@ li.comment form {
 	position: relative;
 	top: -1em;
 }
-li.comment form input[type=submit] {
-	margin-bottom: 0;
+#add-comment input[type=submit], li.comment form input[type=submit] {
+	margin: 0;
 }
 
 #add-post label.tags {
@@ -938,6 +959,10 @@ form .error {
 
 /** Search **/
 
+li.search {
+	margin: 0;
+}
+
 form.mini-search-form, form.search-form {
 	background: none;
 	border: none;
@@ -945,6 +970,7 @@ form.mini-search-form, form.search-form {
 	-moz-box-shadow: none;
 	box-shadow: none;
 	padding: 0 !important;
+	display: inline-block;
 }
 
 form.search-form:after {
@@ -956,7 +982,7 @@ form.search-form:after {
 }
 
 input.search-query {
-	width: 33em;
+	width: 28em;
 	float: left;
 }
 
@@ -971,15 +997,14 @@ input.search-submit {
 
 .mini-search-form input.search-query,
 .mini-search-form input.search-submit {
-	font-size: .75em;
+	font-size: 1.2em;
 	margin: 0;
 }
 
 .mini-search-form input.search-query {
-	width: 12.5em;
 	border-color: #e5e5e5;
-	height: 14px;
-	padding: 2px;
+	padding: .25em;
+	margin: .15em 0;
 }
 
 .mini-search-form input.search-submit {

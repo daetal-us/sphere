@@ -35,7 +35,7 @@ label {
 input, textarea, button {
 	font-family: Helvetica, Arial, sans-serif;
 	padding: 2px 4px;
-	border: 1px solid #e0e0e0;
+	border: 1px solid rgb(200,200,200);
 	color: #454545;
 	font-size: 1em;
 	line-height: 1.25em;
@@ -55,8 +55,8 @@ input[type=submit], input[type=button], input[type=reset], input[type=file], but
 	padding: .5em 1em;
 	margin: 0 .75em 0 0;
 	background-color: white;
-	color: black !important;
-	border: 1px solid #e5e5e5 !important;
+	color: black;
+	border: 1px solid #e5e5e5;
 	cursor: pointer;
 }
 select {
@@ -75,10 +75,10 @@ input[type=submit] {
 	margin: 1em inherit;
 	border: none;
 	color: #000;
-	font-size: 16px;
-	font-weight: bold;
+	font-size: 14px;
 }
 input[type=text]:focus, input[type=password]:focus, input[type=search]:focus, input[type=email]:focus,  textarea:focus, select:focus {
 	border-color: #00a8e6;
+	box-shadow: 0 0 .5em #00a8e6;
 	outline: none;
 }

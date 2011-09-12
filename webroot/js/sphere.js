@@ -19,6 +19,7 @@ var li3Sphere = {
 	 */
 	setup: function(options) {
 		$.extend(this.options, options);
+		this.setupSearch();
 		this.setupSourcesMenu();
 		this.setupMarkdownHelp();
 		this.setupPosts();
@@ -26,6 +27,27 @@ var li3Sphere = {
 		this.setupComments();
 		this.cleanDates();
 		return this;
+	},
+
+	setupSearch: function() {
+		$('#search').toggle(function() {
+			$('#search').addClass('open');
+			$('.nav.timespan li').each(function() {
+				$(this).hide();
+				if ($(this).hasClass('search')) {
+					$(this).fadeIn('fast');
+				}
+			});
+			$('#Q').focus();
+		}, function() {
+			$('#search').removeClass('open');
+			$('.nav.timespan li').each(function() {
+				$(this).fadeIn('fast');
+				if ($(this).hasClass('search')) {
+					$(this).hide();
+				}
+			});
+		});
 	},
 
 	setupMarkdownHelp: function() {
@@ -41,11 +63,17 @@ var li3Sphere = {
 						"<span title=\"inline code!\"><code>`inline code`</code></span> " +
 						"<pre title=\"share your awesome code!\"><code>\t// precede with `tabs` to render code</code></pre>" +
 						"<aside>we attempt to convert stand-alone urls into links and leverage oEmbed linked content when possible.</aside>";
-			var html = $("<a class=\"icon show-text toggle-markdown-help\" href=\"#\">markdown help</a><div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>"+help+"</div>");
+			var html = $(
+				"<div class=\"markdown-help\" style=\"display:none;\"><h4>markdown help:</h4>" +
+				help + "</div><a class=\"icon toggle-markdown-help\" href=\"#\" title=\"markdown enabled. click for help with syntax\">markdown help</a>"
+			);
 			$(e).after(html);
-			$(e).siblings('.toggle-markdown-help').click(function() {
-				$(this).siblings('.markdown-help').show('normal');
-				$(this).hide();
+			$(e).siblings('.toggle-markdown-help').toggle(function() {
+				$(this).siblings('.markdown-help').slideDown('normal');
+				//$(this).hide();
+				return false;
+			}, function() {
+				$(this).siblings('.markdown-help').slideUp('normal');
 				return false;
 			});
 		});
@@ -124,11 +152,11 @@ var li3Sphere = {
 		$('a.view-post-comment-replies').click(function() {
 			var comments = $(this).siblings('ul.comments');
 			if ($(this).hasClass('open')) {
-				comments.fadeOut();
+				comments.hide('fast');
 				$(this).removeClass('open');
 				$(this).text($(this).data('original.text'));
 			} else {
-				comments.fadeIn();
+				comments.show('fast');
 				$(this).addClass('open');
 				$(this).data('original.text', $(this).text());
 				$(this).text('hide replies');
@@ -203,7 +231,10 @@ var li3Sphere = {
 			'docs'
 		],
 		baseTag: null,
-		timeout: null,
+		timeout: {
+			title: null,
+			tags: null
+		},
 		setup: function() {
 			$('#add-post .base-tags a').click(function() {
 				if ($(this).hasClass('selected')) {
@@ -214,10 +245,10 @@ var li3Sphere = {
 				return false;
 			});
 			$('#add-post #PostContent').keyup(function() {
-				clearTimeout(li3Sphere.Post.timeout);
+				clearTimeout(li3Sphere.Post.timeout.title);
 				$('#add-post #PostTitle').removeClass('loading');
 				if ($('#add-post #PostTitle').val() == '') {
-					li3Sphere.Post.timeout = setTimeout(function() {
+					li3Sphere.Post.timeout.title = setTimeout(function() {
 						if ($('#add-post #PostTitle').val() == '') {
 							var content = $('#add-post #PostContent').val();
 							if (li3Sphere.Post.isUrl(content)) {
@@ -228,21 +259,28 @@ var li3Sphere = {
 				}
 			});
 			$('#add-post #PostTags').keyup(function() {
-				li3Sphere.Post.validateTags();
+				clearTimeout(li3Sphere.Post.timeout.tags);
+				li3Sphere.Post.timeout.tags = setTimeout(function() {
+					li3Sphere.Post.validateTags();
+				}, 500);
 			});
 		},
 		validateTags: function() {
 			// check for one of the base tags
 			var tags = this.getTags();
+			var baseTags = [];
 			for (i in tags) {
 				var tag = tags[i];
 				if ($.inArray(tag, li3Sphere.Post.tags) != -1) {
-					this.select('.base-tags a[data-tag='+tag+']');
+					baseTags.push(tag);
 				}
 			}
 
 			if (this.baseTag && $.inArray(this.baseTag, tags) === -1) {
 				this.deselect('.base-tags a[data-tag='+this.baseTag+']');
+			}
+			if (baseTags.length) {
+				this.select('.base-tags a[data-tag='+baseTags[0]+']');
 			}
 		},
 		tag: function(tag) {
@@ -275,10 +313,10 @@ var li3Sphere = {
 			}
 			this.baseTag = tag;
 			if ($.inArray(tag, this.getTags()) === -1) {
-				$('#PostTags').val(tag + ',' + $('#PostTags').val());
+				$('#PostTags').val(tag + ', ' + $('#PostTags').val());
 			}
 			$(e).addClass('selected');
-			$('.base-tags a:not(.selected)').hide(1000);
+			$('.base-tags a:not(.selected)').hide('fast');
 		},
 		deselect: function(e) {
 			var tag = $(e).attr('data-tag');
@@ -291,9 +329,10 @@ var li3Sphere = {
 				}
 			}
 
-			$('#PostTags').val(tags.toString());
+			$('#PostTags').val(tags.toString().replace(',',', '));
 			$(e).removeClass('selected');
-			$('.base-tags a:not(.selected)').show(1000);
+			$('.base-tags a:not(.selected)').show();
+			this.validateTags();
 		},
 		isUrl: function(string) {
 			var pattern = new RegExp();

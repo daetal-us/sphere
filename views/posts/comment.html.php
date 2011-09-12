@@ -55,7 +55,7 @@
 		<?php
 		$comments = $post->comments();
 		if ($comments->count() != $post->comment_count) {
-			echo $this->html->link('show all comments', '#', array('class' => 'view-all-comments button'));
+			echo $this->html->link('show all', '#', array('class' => 'view-all-comments button', 'title' => 'show all comments'));
 		}
 
 		echo $this->thread->comments($post->data(), compact('args'));

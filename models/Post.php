@@ -37,8 +37,18 @@ class Post extends \lithium\data\Model {
 	 * Top-level tags
 	 */
 	public static $tags = array(
-		'apps','questions','press','tutorials','code','videos','podcasts','slides','events','docs',
-		'jobs','misc'
+		'apps',
+		'questions',
+		'press',
+		'tutorials',
+		'code',
+		'videos',
+		'podcasts',
+		'slides',
+		'events',
+		'docs',
+		'jobs',
+		'misc'
 	);
 
 	protected static $_classes = array(

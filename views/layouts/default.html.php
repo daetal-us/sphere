@@ -33,13 +33,12 @@
 					echo $this->html->link('login', array(
 						'controller' => 'users', 'action' => 'login'
 					));
-					echo ' | ';
+					echo ' or ';
 					echo $this->html->link('register', array(
 						'controller' => 'users', 'action' => 'register'
 					));
 				}
 			?>
-			| <?php echo $this->html->link('new post', array('controller' => 'posts', 'action' => 'add')); ?>
 		</div>
 	</div>
 	<div class="width-constraint">
@@ -49,44 +48,179 @@
 		?>
 		<div class="nav timespan">
 			<nav>
-				<span id="timespan-icon" class="icon">Timespan</span>
+				<span id="search" class="icon" title="Search Sphere">Search</span>
 				<ul>
-					<li><?php echo $this->sphere->link('today', array('date' => 'today') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('yesterday', array('date' => 'yesterday') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('1wk', array('date' => '1wk') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('2wk', array('date' => '2wk') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('1mo', array('date' => '1mo') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('1yr', array('date' => '1yr') + compact('tag'));?></li>
-					<li><?php echo $this->sphere->link('all', array('date' => 'all') + compact('tag'));?></li>
+					<li class="search" style="display: none">
+						<?php
+						echo $this->form->create(null, array(
+							'url' => array(
+								'controller' => 'search',
+								'action' => 'index', 'q' => null
+							),
+							'method' => 'GET',
+							'class' => 'mini-search-form'
+						));
+						echo $this->form->search('q', array(
+							'placeholder' => 'search...',
+							'class' => 'search-query',
+							'value' => (isset($q) ? $q : null)
+						));
+						echo $this->form->end();
+						?>
+					</li>
+					<li><?php echo $this->sphere->link(
+						'today', array('date' => 'today') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'yesterday', array('date' => 'yesterday') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'1wk', array('date' => '1wk') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'2wk', array('date' => '2wk') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'1mo', array('date' => '1mo') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'1yr', array('date' => '1yr') + compact('tag')
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'all', array('date' => 'all') + compact('tag')
+					);?></li>
 				</ul>
 			</nav>
 		</div>
-		<div class="nav search">
+		<div class="nav new-post">
 			<nav>
-				<?php
-				echo $this->form->create(null, array('url' => array('controller' => 'search', 'action' => 'index', 'q' => null), 'method' => 'GET', 'class' => 'mini-search-form'));
-				echo $this->form->search('q', array('placeholder' => 'search...', 'class' => 'search-query', 'value' => (isset($q) ? $q : null)));
-				echo $this->form->end();
-				?>
+				<?php echo $this->html->link('new post', array(
+					'controller' => 'posts', 'action' => 'add'
+				), array('class' => 'button')); ?>
 			</nav>
 		</div>
 		<div class="nav sources closed">
 			<nav>
-				<span id="sources-icon" class="icon" title="Click me to toggle the Sources drawer.">Sources</span>
+				<span id="sources-icon" class="icon" title="Toggle the sources drawer">Sources</span>
 				<ul>
-					<li><?php echo $this->sphere->link('<span>All</span>', array(), array('escape' => false, 'class' => 'all', 'source' => null, 'title' => 'All posts from all sources'));?></li>
-					<li><?php echo $this->sphere->link('<span>Apps</span>', array('tag' => 'apps'), array('escape' => false, 'class' => 'apps', 'title' => 'Lithium powered applications'));?></li>
-					<li><?php echo $this->sphere->link('<span>Questions</span>', array('tag' => 'questions'), array('escape' => false, 'class' => 'questions', 'title' => 'Questions'));?></li>
-					<li><?php echo $this->sphere->link('<span>Press</span>', array('tag' => 'press'), array('escape' => false, 'class' => 'press', 'title' => 'Press'));?></li>
-					<li><?php echo $this->sphere->link('<span>Tutorials</span>', array('tag' => 'tutorials'), array('escape' => false, 'class' => 'tutorials', 'title' => 'Tutorials'));?></li>
-					<li><?php echo $this->sphere->link('<span>Code</span>', array('tag' => 'code'), array('escape' => false, 'class' => 'code', 'title' => 'Code'));?></li>
-					<li><?php echo $this->sphere->link('<span>Videos</span>', array('tag' => 'videos'), array('escape' => false, 'class' => 'videos', 'title' => 'Videos'));?></li>
-					<li><?php echo $this->sphere->link('<span>Podcasts</span>', array('tag' => 'podcasts'), array('escape' => false, 'class' => 'podcasts', 'title' => 'Podcasts'));?></li>
-					<li><?php echo $this->sphere->link('<span>Slides</span>', array('tag' => 'slides'), array('escape' => false, 'class' => 'slides', 'title' => 'Slides'));?></li>
-					<li><?php echo $this->sphere->link('<span>Events</span>', array('tag' => 'events'), array('escape' => false, 'class' => 'events', 'title' => 'Events'));?></li>
-					<li><?php echo $this->sphere->link('<span>Documentation</span>', array('tag' => 'docs'), array('escape' => false, 'class' => 'docs', 'title' => 'Documentation'));?></li>
-					<li><?php echo $this->sphere->link('<span>Jobs</span>', array('tag' => 'jobs'), array('escape' => false, 'class' => 'jobs', 'title' => 'Jobs'));?></li>
-					<li><?php echo $this->sphere->link('<span>Misc.</span>', array('tag' => 'misc'), array('escape' => false, 'class' => 'misc', 'title' => 'Misc.'));?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>All</span>',
+						array(),
+						array(
+							'escape' => false,
+							'class' => 'all',
+							'source' => null,
+							'title' => 'All posts from all sources'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Apps</span>',
+						array('tag' => 'apps'),
+						array(
+							'escape' => false,
+							'class' => 'apps',
+							'title' => 'Lithium powered applications'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Questions</span>',
+						array('tag' => 'questions'),
+						array(
+							'escape' => false,
+							'class' => 'questions',
+							'title' => 'Questions'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Press</span>',
+						array('tag' => 'press'),
+						array(
+							'escape' => false,
+							'class' => 'press',
+							'title' => 'Press'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Tutorials</span>',
+						array('tag' => 'tutorials'),
+						array(
+							'escape' => false,
+							'class' => 'tutorials',
+							'title' => 'Tutorials'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Code</span>',
+						array('tag' => 'code'),
+						array(
+							'escape' => false,
+							'class' => 'code',
+							'title' => 'Code'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Videos</span>',
+						array('tag' => 'videos'),
+						array(
+							'escape' => false,
+							'class' => 'videos',
+							'title' => 'Videos'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Podcasts</span>',
+						array('tag' => 'podcasts'),
+						array(
+							'escape' => false,
+							'class' => 'podcasts',
+							'title' => 'Podcasts'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Slides</span>',
+						array('tag' => 'slides'),
+						array(
+							'escape' => false,
+							'class' => 'slides',
+							'title' => 'Slides'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Events</span>',
+						array('tag' => 'events'),
+						array(
+							'escape' => false,
+							'class' => 'events',
+							'title' => 'Events'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Documentation</span>',
+						array('tag' => 'docs'),
+						array(
+							'escape' => false,
+							'class' => 'docs',
+							'title' => 'Documentation'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Jobs</span>',
+						array('tag' => 'jobs'),
+						array(
+							'escape' => false,
+							'class' => 'jobs',
+							'title' => 'Jobs'
+						)
+					);?></li>
+					<li><?php echo $this->sphere->link(
+						'<span>Misc.</span>',
+						array('tag' => 'misc'),
+						array(
+							'escape' => false,
+							'class' => 'misc',
+							'title' => 'Misc.'
+						)
+					);?></li>
 				</ul>
 			</nav>
 		</div>
