@@ -27,3 +27,7 @@ if (!$disabled) {
 	echo $this->form->end();
 }
 ?>
+
+<p class="password"><?php echo $this->html->link(
+	'...I forgot my password.', array('controller' => 'users', 'action' => 'reset')
+); ?></p>
