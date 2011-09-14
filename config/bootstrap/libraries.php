@@ -133,4 +133,8 @@ Libraries::add('li3_users');
  */
 Libraries::add('markdown');
 
+/**
+ * Swiftmailer
+ */
+Libraries::add('li3_swiftmailer');
 ?>
