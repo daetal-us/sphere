@@ -1,19 +1,10 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium Sphere: communized sphere of influence
  *
- * @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
- * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * @copyright     Copyright 2011, Union of RAD (http://union-of-rad.org)
+ * @license       http://www.opensource.org/licenses/MIT The MIT License
  */
-
-/**
- * This configures your session storage. You need to add this to your app's `bootstrap/session.php`
- */
-	// use lithium\storage\Session;
-	//
-	// Session::config(array(
-	// 	'li3_user' => array('adapter' => 'Php')
-	// ));
 
 /**
  * @see lithium\security\auth\adapter\Form
