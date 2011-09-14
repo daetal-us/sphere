@@ -10,7 +10,7 @@
 <html>
 <head>
 	<?php echo $this->html->charset();?>
-	<title>▴❍ <?php echo $this->title?></title>
+	<title>#li3 > ▴❍ > <?php echo $this->title?></title>
 	<?php echo $this->html->style(array('reset', 'base', 'forms', 'polish', 'sphere'));?>
 	<?php echo $this->scripts();?>
 	<?php echo $this->html->link('Icon', null, array('type' => 'icon'));?>
@@ -21,10 +21,10 @@
 		<h2><?php echo $this->html->link('power of community', '/');?></h2>
 		<div class="nav account">
 			<?php
-				if ($user = $this->user->session()) {
+				if ($session = $this->user->session()) {
 					echo $this->html->image(
-						'http://gravatar.com/avatar/' . md5($user['email']) . '?s=16',
-						array('title' => $user['_id'])
+						'http://gravatar.com/avatar/' . md5($session['email']) . '?s=16',
+						array('title' => $session['_id'])
 					);
 					echo $this->html->link('logout', array(
 						'controller' => 'users', 'action' => 'logout'
