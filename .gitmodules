@@ -4,3 +4,9 @@
 [submodule "libraries/markdown"]
 	path = libraries/markdown
 	url = git@github.com:pointlessjon/markdown.git
+[submodule "libraries/li3_swiftmailer"]
+	path = libraries/li3_swiftmailer
+	url = https://github.com/greut/li3_swiftmailer.git
+[submodule "libraries/swiftmailer"]
+	path = libraries/swiftmailer
+	url = https://github.com/swiftmailer/swiftmailer.git

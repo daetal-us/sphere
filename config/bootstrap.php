@@ -80,5 +80,10 @@ require __DIR__ . '/bootstrap/session.php';
  */
 require __DIR__ . '/bootstrap/console.php';
 
+/**
+ * This file configures Swiftmailer's Transport
+ */
+require __DIR__ . '/bootstrap/transports.php';
+
 
 ?>
