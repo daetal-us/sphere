@@ -1,9 +1,9 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium Sphere: communized sphere of influence
  *
- * @copyright     Copyright 2010, Union of RAD (http://union-of-rad.org)
- * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * @copyright     Copyright 2011, Union of RAD (http://union-of-rad.org)
+ * @license       http://www.opensource.org/licenses/MIT The MIT License
  */
 
 namespace li3_users\models;
@@ -15,6 +15,12 @@ Validator::add('uniqueUserValue', function ($value, $format, $options) {
 	$conditions = array();
 	if (!empty($value)) {
 		$conditions[$options['field']] = $value;
+		if ($options['events']['update'] && !empty($options['values']['_id'])) {
+			if ($options['field'] == '_id' && $value == $options['values']['_id']) {
+				return true;
+			}
+			$conditions['_id'] = array('$ne' => $options['values']['_id']);
+		}
 		return !(boolean) User::find('count', compact('conditions'));
 	}
 	return false;
@@ -28,42 +34,34 @@ class User extends \lithium\data\Model {
 		'title' => null,
 		'class' => null,
 		'locked' => true,
-		'source' => null,
+		'source' => 'users',
 		'connection' => 'li3_users',
 		'initialized' => false
 	);
 
 	public $validates = array(
 		'_id' => array(
+			array('notEmpty', 'message' => 'a user id is required.'),
 			array(
 				'alphaNumeric',
-				'message' => 'Only numbers and letters are allowed for your username'
+				'message' => 'only numbers and letters are allowed for your username.'
 			),
-			array('notEmpty', 'message' => 'Please provide a user id.'),
 			array(
 				'lengthBetween',
 				'options' => array(
-					'min' => 4,
+					'min' => 1,
 					'max' => 250
 				),
-				'message' => 'Password must be be at least.'
+				'message' => 'please provide a user id.'
 			),
-			array('uniqueUserValue', 'message' =>  'That username is already taken.')
+			array('uniqueUserValue', 'message' =>  'that username is already taken.')
 		),
 		'password' => array(
-			array('notEmpty', 'message' => 'You must provide a password.'),
-			array(
-				'lengthBetween',
-				'options' => array(
-					'min' => 6,
-					'max' => 250
-				),
-				'message' => 'Password must be be at least.'
-			)
+			array('notEmpty', 'message' => 'a password is required.'),
 		),
 		'email' => array(
-			array('email', 'message' => 'Please provide a valid email address.'),
-			array('uniqueUserValue', 'message' =>  'That email already has an account.')
+			array('email', 'message' => 'please provide a valid email address.'),
+			array('uniqueUserValue', 'message' =>  'that email already has an account.')
 		)
 	);
 
@@ -71,6 +69,8 @@ class User extends \lithium\data\Model {
 		'_id' => array('type' => 'string', 'length' => 250, 'primary' => true),
 		'password' => array('type' => 'string', 'length' => 250),
 		'email' => array('type' => 'string', 'length' => 250),
+		'token' => array('type' => 'string', 'length' => 16),
+		'expires' => array('type' => 'date'),
 		'created' => array('type' => 'date'),
 		'settings' => array('type' => 'array'),
 		'type' => array('type' => 'string', 'default' => 'user')
@@ -91,10 +91,9 @@ class User extends \lithium\data\Model {
 		static::applyFilter('save', function ($self, $params, $chain) {
 			if (empty($params['entity']->created)) {
 				$params['entity']->created = date('Y-m-d H:i:s');
-				$params['entity']->password = String::hash($params['entity']->password);
 			}
-			if (!empty($params['entity']->new_password)) {
-				$params['entity']->password = String::hash($params['entity']->new_password);
+			if (!empty($params['entity']->password)) {
+				$params['entity']->password = String::hash($params['entity']->password);
 			}
 			return $chain->next($self, $params, $chain);
 		});
@@ -116,6 +115,52 @@ class User extends \lithium\data\Model {
 			return $result;
 		}
 		return false;
+	}
+
+	/**
+	 * Validate a token against a user id
+	 *
+	 * @param array $data token and _id of user record
+	 * @return boolean
+	 */
+	public static function reset($data = array()) {
+		$defaults = array(
+			'token' => null,
+			'_id' => null,
+		);
+		extract($data + $defaults);
+		if (!empty($token) && !empty($_id)) {
+			$user = static::find('all', array(
+				'conditions' => compact('_id','token'), 'limit' => 1
+			));
+			if ($user->count()) {
+				return $user->first()->expires->sec > time();
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Initialize a token and expiry time for a user record
+	 *
+	 * @param array $record user record
+	 * @param integer optional timestamp for expiration time to count from
+	 * @return boolean|string token if valid else `false`
+	 */
+	public function token($record, $time = null) {
+		$token = false;
+		if (!empty($record->_id) && !empty($record->password)) {
+			if (empty($time)) {
+				$time = time();
+			}
+			$token = md5(
+				md5($record->_id) . md5($record->password) . md5($time)
+			);
+			$expires = date('Y-m-d H:i:s', strtotime('+10 minutes', $time));
+			$record->set(compact('token','expires'));
+			$record->save();
+		}
+		return $token;
 	}
 }
 
