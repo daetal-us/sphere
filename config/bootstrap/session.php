@@ -15,7 +15,8 @@ use lithium\storage\Session;
 Session::config(array(
 	'cookie' => array('adapter' => 'Cookie'),
 	'li3_user' => array('adapter' => 'Php'),
-	'default' => array('adapter' => 'Php')
+	'default' => array('adapter' => 'Php'),
+	'cooldown' => array('adapter' => 'Php', 'expires' => 10)
 ));
 
 ?>
