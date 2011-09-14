@@ -1,7 +1,11 @@
 /**
- * This is the master object for the Sphere application
+ * Lithium Sphere: communized sphere of influence
  *
- * This application requires jQuery 1.4.1
+ * @copyright     Copyright 2011, Union of RAD (http://union-of-rad.org)
+ * @license       http://www.opensource.org/licenses/MIT The MIT License
+ */
+/**
+ * This is the master object for the Sphere application
  */
 var li3Sphere = {
 	/**
