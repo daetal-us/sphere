@@ -8,9 +8,6 @@
 
 use lithium\data\Connections;
 
-/**
- * Default collection, primarily Posts
- */
 Connections::add('default', array(
 	'adapter' => 'MongoDb',
 	'host' => 'localhost',
@@ -23,13 +20,10 @@ Connections::add('test', array(
 	'database' => 'test'
 ));
 
-/**
- * Users Collection
- */
 Connections::add('li3_users', array(
 	'adapter' => 'MongoDb',
 	'host' => 'localhost',
-	'database' => 'li3_users'
+	'database' => 'lithosphere'
 ));
 
 ?>
