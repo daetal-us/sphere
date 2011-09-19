@@ -18,14 +18,7 @@ Auth::config(array(
 				'name' => 'li3_user'
 			)
 		),
-		'adapter' => array(
-			'Form' => array(
-				'filters' => array(
-					'password' => array('lithium\util\String', 'hash')
-				),
-				'validators' => array()
-			)
-		),
+		'adapter' => 'Form',
 		'model' => '\li3_users\models\User',
 		'fields' => array('_id', 'password'),
 		'validators' => array(
