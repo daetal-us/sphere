@@ -18,17 +18,14 @@ Auth::config(array(
 				'name' => 'li3_user'
 			)
 		),
-		'adapter' => array(
-			'Form' => array(
-				'filters' => array(
-					'password' => array('lithium\util\String', 'hash')
-				),
-				'validators' => array()
-			)
-		),
+		'adapter' => 'Form',
 		'model' => '\li3_users\models\User',
-		'query' => 'login',
-		'fields' => array('_id', 'password')
+		'fields' => array('_id', 'password'),
+		'validators' => array(
+			'password' => function($submitted, $actual) {
+				return \lithium\util\String::hash($submitted) == $actual;
+			}
+		)
 	)
 ));
 
