@@ -100,7 +100,6 @@ class Post extends \lithium\data\Model {
 					&& $user = $classes['session']::read('user', array('name' => 'li3_user'))
 				) {
 					$params['entity']->user_id = $user['_id'];
-					$params['entity']->user_id = $user['_id'];
 				}
 			}
 
