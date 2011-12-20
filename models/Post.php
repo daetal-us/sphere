@@ -141,8 +141,9 @@ class Post extends \lithium\data\Model {
 		$comment = $comment::create($data);
 
 		if (empty($record->_id) || !$comment->save()) {
-			return null;
+			return false;
 		}
+
 		$data = $comment->data();
 		$comments = !empty($record->comments) ? $record->comments->data() : array();
 
